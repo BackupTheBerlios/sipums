@@ -1,6 +1,6 @@
 package OpenUMS::Menu::IntroMP ; 
 
-### $Id: IntroMP.pm,v 1.6 2004/09/01 03:16:35 kenglish Exp $
+### $Id: IntroMP.pm,v 1.7 2004/09/10 21:36:28 kenglish Exp $
 #
 # IntroMP.pm
 #
@@ -26,6 +26,7 @@ use strict ;
 use OpenUMS::Config; 
 use OpenUMS::Log; 
 use OpenUMS::Menu::MenuProcessor; 
+use OpenUMS::Object::SoundVariables;
 use base ("OpenUMS::Menu::MenuProcessor");
 
 
@@ -64,15 +65,16 @@ sub _play_menu () {
   $log->normal("[IntroMP.pm] Playing Intro to user at ext " . $user->extension() . 
      ", new = $new_message_count , saved = $saved_message_count "); 
 
-#  if ($new_message_count > 0 ) { 
-#    OpenUMS::Mwi::mwi_extension_on($self->{DBH},$user->{EXTENSION});
-#  } 
 
   foreach my $msound ( @{$menuSounds->{M} } ) {
-    if ($msound->{sound_file}) { 
-      push @to_play_sounds,OpenUMS::Common::get_prompt_sound($msound->{sound_file}) ;
+    if ($msound->{PROMPT_OBJ}) { 
+      my $sound_file = $msound->{PROMPT_OBJ}->file(); 
+      push @to_play_sounds, $sound_file;
+
     } 
+
     if (defined($msound->{var_name} ) ) { 
+      # $log->debug("[IntroMP.pm] THere's a variable here called " . $msound->{var_name});
       if  ($msound->{var_name} eq 'NAME') {
         my ($name_wav_file , $name_wav_path) = OpenUMS::DbQuery::get_name_file($self->{DBH}, $user->extension);
         if ($name_wav_file ) { 
@@ -80,6 +82,7 @@ sub _play_menu () {
         } 
       } 
       elsif ($msound->{var_name} eq 'NEW_MESSAGE_COUNT' ) {
+        # $log->debug("[IntroMP.pm] NEW_MESSAGE_COUNT = $new_message_count ");
         if ($new_message_count > 0 ) { 
           my $sound = OpenUMS::Common::count_sound_gen($new_message_count); 
           push @to_play_sounds,  $sound; 
@@ -87,12 +90,15 @@ sub _play_menu () {
       }  
       elsif ($msound->{var_name} eq 'NEW_MESSAGE_SOUND' ) {
         if (!$new_message_count) { 
-          push @to_play_sounds, OpenUMS::Common::get_prompt_sound(  "nonewmessages") ; 
+          my $prompt = OpenUMS::Object::SoundVariables::get_prompt($self->{DBH},'NO_NEW_MESSAGES');
+          push @to_play_sounds, $prompt->file(); 
         } elsif ($new_message_count ==1 )  { 
          ## singular...
-          push @to_play_sounds, OpenUMS::Common::get_prompt_sound(  "newmessage") ; 
+          my $prompt =  OpenUMS::Object::SoundVariables::get_prompt($self->{DBH},'NEW_MESSAGE');
+          push @to_play_sounds, $prompt->file(); 
         } else  {
-          push @to_play_sounds, OpenUMS::Common::get_prompt_sound( "newmessages") ; 
+          my $prompt =  OpenUMS::Object::SoundVariables::get_prompt($self->{DBH},'NEW_MESSAGES');
+          push @to_play_sounds, $prompt->file(); 
         } 
       }
       elsif ($msound->{var_name} eq 'SAVED_MESSAGE_COUNT' ) {
@@ -102,17 +108,22 @@ sub _play_menu () {
         } 
       } elsif ($msound->{var_name} eq 'SAVED_MESSAGE_SOUND' ) { 
         if (!$saved_message_count) {
-          push @to_play_sounds, OpenUMS::Common::get_prompt_sound( "nosavedmessages") ;
+          my $prompt = OpenUMS::Object::SoundVariables::get_prompt($self->{DBH},'NO_SAVED_MESSAGES');
+          push @to_play_sounds, $prompt->file(); 
         } elsif ($saved_message_count ==1 )  {
          ## singular...
-          push @to_play_sounds, OpenUMS::Common::get_prompt_sound( "savedmessage") ;
+          my $prompt = OpenUMS::Object::SoundVariables::get_prompt($self->{DBH},'SAVED_MESSAGE');
+          push @to_play_sounds, $prompt->file(); 
         } else  {
-          push @to_play_sounds, OpenUMS::Common::get_prompt_sound(  "savedmessages") ;
+          my $prompt = OpenUMS::Object::SoundVariables::get_prompt($self->{DBH},'SAVED_MESSAGES');
+          push @to_play_sounds, $prompt->file(); 
         }
       } 
     }
   } 
+  # $log->debug("[IntroMP.pm] creating sound for " . scalar(@to_play_sounds) )  ; 
   $sound = join (" ", @to_play_sounds ); 
+  # $log->debug("[IntroMP.pm] Sounds are $sound")  ; 
 
   if (defined($sound) ) { 
     ## hey, it's gotta be there...

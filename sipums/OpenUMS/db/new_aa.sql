@@ -30,4 +30,30 @@ INSERT INTO auto_attendant (aa_dayofweek, aa_start_hour, aa_start_minute, menu_s
 INSERT INTO auto_attendant (aa_dayofweek, aa_start_hour, aa_start_minute, menu_sound) VALUES (6,17,0,'aa_default_night.wav');
 INSERT INTO auto_attendant (aa_dayofweek, aa_start_hour, aa_start_minute, menu_sound) VALUES (7,0,0,'aa_default_night.wav');
 
+
+DROP TABLE IF EXISTS sound_variables;
+
+CREATE TABLE sound_variables (
+  sound_var_name VARCHAR( 40 ) NOT NULL ,
+  sound_var_file VARCHAR( 100 ) NOT NULL ,
+  custom_sound_flag TINYINT( 1 ) DEFAULT '0' NOT NULL ,
+  PRIMARY KEY ( sound_var_name )
+);
+
+INSERT INTO sound_variables (sound_var_name, sound_var_file, custom_sound_flag) 
+VALUES ('DEFAULT_INVALID_SOUND','invalid.wav',0); 
+INSERT INTO sound_variables (sound_var_name, sound_var_file, custom_sound_flag) 
+VALUES ('NO_NEW_MESSAGES','nonewmessages.wav',0); 
+INSERT INTO sound_variables (sound_var_name, sound_var_file, custom_sound_flag) 
+VALUES ('NEW_MESSAGE','newmessage.wav',0); 
+INSERT INTO sound_variables (sound_var_name, sound_var_file, custom_sound_flag) 
+VALUES ('NEW_MESSAGES','newmessages.wav',0); 
+
+INSERT INTO sound_variables (sound_var_name, sound_var_file, custom_sound_flag) 
+VALUES ('NO_SAVED_MESSAGES','nosavedmessages.wav',0); 
+INSERT INTO sound_variables (sound_var_name, sound_var_file, custom_sound_flag) 
+VALUES ('SAVED_MESSAGE','savedmessage.wav',0); 
+INSERT INTO sound_variables (sound_var_name, sound_var_file, custom_sound_flag) 
+VALUES ('SAVED_MESSAGES','savedmessages.wav',0); 
+
 ALTER TABLE  holiday_sounds ADD COLUMN custom_sound_flag bool not null default 0; 

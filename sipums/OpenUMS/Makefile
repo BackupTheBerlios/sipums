@@ -15,7 +15,8 @@ MENU_LIBS =  OpenUMS/Menu/AAGMP.pm OpenUMS/Menu/AdminMP.pm OpenUMS/Menu/AppendMs
              OpenUMS/Menu/PostRecMsgMP.pm OpenUMS/Menu/RecMsgMP.pm OpenUMS/Menu/UserSettingsMP.pm
                                                                                                                                                
 OBJ_LIBS = OpenUMS/Object/DbnmSpool.pm OpenUMS/Object/ForwardMessageObj.pm OpenUMS/Object/MessageObj.pm  \
-           OpenUMS/Object/MessageSpool.pm OpenUMS/Object/User.pm OpenUMS/Object/IpAddress.pm OpenUMS/Object/Prompt.pm
+           OpenUMS/Object/MessageSpool.pm OpenUMS/Object/User.pm OpenUMS/Object/IpAddress.pm \
+           OpenUMS/Object/Prompt.pm OpenUMS/Object/SoundVariables.pm
                                                                                                                                                
 PHONESYS_LIBS = OpenUMS/PhoneSystem/PhoneSystemBase.pm OpenUMS/PhoneSystem/SIP.pm 
 

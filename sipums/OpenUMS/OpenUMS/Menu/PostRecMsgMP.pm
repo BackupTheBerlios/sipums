@@ -1,5 +1,5 @@
 package OpenUMS::Menu::PostRecMsgMP; 
-### $Id: PostRecMsgMP.pm,v 1.5 2004/09/08 22:32:05 kenglish Exp $
+### $Id: PostRecMsgMP.pm,v 1.6 2004/09/10 21:36:28 kenglish Exp $
 #
 # RecMsgMP.pm
 #
@@ -54,7 +54,7 @@ sub _play_menu() {
      if ($file_duration >= $max_duration ) { 
         $sound =  $menuSounds->{M}->[1]->{PROMPT_OBJ}->file()  ;
      } else {
-        $sound =  $menuSounds->{M}->[0]->{PROMPT_OBJ}->file(); ##  OpenUMS::Common::get_prompt_sound( $menuSounds->{M}->[0]->{sound_file})  ;
+        $sound =  $menuSounds->{M}->[0]->{PROMPT_OBJ}->file(); 
      } 
   }
   $log->debug("[PostRecMsgMP] will play sound $sound");

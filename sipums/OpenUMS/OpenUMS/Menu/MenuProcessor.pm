@@ -1,5 +1,5 @@
 package OpenUMS::Menu::MenuProcessor;
-### $Id: MenuProcessor.pm,v 1.5 2004/09/08 22:32:05 kenglish Exp $
+### $Id: MenuProcessor.pm,v 1.6 2004/09/10 21:36:28 kenglish Exp $
 #
 # MenuProcessor.pm
 #
@@ -170,14 +170,15 @@ sub _get_data  {
 
   my $sql = "SELECT sound_type, sound_title, sound_file, var_name, custom_sound_flag " ;
   $sql  .= qq{ FROM menu_sounds WHERE menu_id = ? order by order_no };
+
   ##################$log->debug($sql . $menu_id); 
+
   my $sth = $dbh->prepare($sql) ;
   $sth->execute($menu_id);
   my $menuSounds;
   while (my ($sound_type, $sound_title , $sound_file, $var_name , $custom_sound_flag) = $sth->fetchrow_array() ) {
      my $sound_ref ;
      $sound_ref->{sound_title} = $sound_title ;
-     $sound_ref->{sound_file} = $sound_file ;
      $sound_ref->{var_name} = $var_name ;
      # $sound_ref->{custom_sound_flag} = $custom_sound_flag ;
      if ($sound_file ) { 
@@ -286,10 +287,11 @@ sub _play_menu () {
   ## get the array of sounds  
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
   ## get the first sound off that sound array 
-  my $sound =  OpenUMS::Common::get_prompt_sound($menuSounds->{M}->[0]->{sound_file})  ; 
-  if (defined($sound) ) { 
+  my $sound_file = $menuSounds->{M}->[0]->{PROMPT_OBJ}->file(); 
+
+  if (defined($sound_file) ) { 
     ## hey, if there, let 'em hear it
-      $ctport->play($sound); 
+      $ctport->play($sound_file); 
   } 
   return ;
 } 
@@ -305,14 +307,21 @@ sub play_invalid {
 
   my $ctport = $self->{CTPORT}; 
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
-  if (defined($menuSounds->{I}->[0]->{sound_file}) ) { 
+  
+  $log->debug("in play_invalid  defined = " . defined($menuSounds)  );
+
+  if (defined($menuSounds->{I}) ) { 
      ## they could define a blank invalid sound.... 
-      my $invalid_sound  = $menuSounds->{I}->[0]->{sound_file};
+      my $invalid_sound  = $menuSounds->{I}->[0]->{PROMPT_OBJ}->file() ;
       if ($invalid_sound) { 
-        $ctport->play(OpenUMS::Common::get_prompt_sound( $invalid_sound) ) ; 
+        $ctport->play($invalid_sound ); #OpenUMS::Common::get_prompt_sound( $invalid_sound) ) ; 
       } 
-    }  else {
-       $ctport->play(OpenUMS::Common::get_prompt_sound(DEFAULT_INVALID_SOUND)) ; 
+  } else {
+      ## it's just faster to do it this way....
+      #my $prompt = OpenUMS::Object::SoundVariables($self->{DBH},'DEFAULT_INVALID_SOUND');  
+      my $sound_file = OpenUMS::Common::get_prompt_sound(DEFAULT_INVALID_SOUND) ; 
+      $log->debug("invalid sound_file = $sound_file");
+      $ctport->play($sound_file) ; 
   } 
   return ;
 } 

@@ -1,5 +1,5 @@
 package OpenUMS::Menu::UserSettingsMP ; 
-### $Id: UserSettingsMP.pm,v 1.5 2004/09/01 03:16:35 kenglish Exp $
+### $Id: UserSettingsMP.pm,v 1.6 2004/09/10 21:36:28 kenglish Exp $
 #
 # UserSettingsMP.pm
 #
@@ -44,7 +44,7 @@ sub _play_menu () {
 
   my $menuSounds = $self->{SOUNDS_ARRAY};
   my $sound  ; 
-  $sound .=   OpenUMS::Common::get_prompt_sound($menuSounds->{M}->[0]->{sound_file})  ;
+  $sound .=   $menuSounds->{M}->[0]->{PROMPT_OBJ}->file()  ;
   if ($self->setting_type() =~ /^PLAY/ ) {
      ## what's the variable to play....
      my $msound = $menuSounds->{M}->[1] ;  
@@ -82,8 +82,8 @@ sub _play_menu () {
                                                                                                                              
      while (defined($menuSounds->{M}->[$i] )  ) {
           my $msound = $menuSounds->{M}->[$i];
-          if ($msound->{sound_file}) {
-            push @to_play_sounds, OpenUMS::Common::get_prompt_sound( $msound->{sound_file}) ;
+          if ($msound->{PROMPT_OBJ}) {
+            push @to_play_sounds, $msound->{PROMPT_OBJ}->file() ;
           }
                                                                                                                              
           if ($msound->{var_name} eq 'NEW_PASSWORD') {

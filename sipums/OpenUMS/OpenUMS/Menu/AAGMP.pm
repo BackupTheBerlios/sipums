@@ -1,5 +1,5 @@
 package OpenUMS::Menu::AAGMP; 
-### $Id: AAGMP.pm,v 1.5 2004/09/10 01:36:32 kenglish Exp $
+### $Id: AAGMP.pm,v 1.6 2004/09/10 21:36:28 kenglish Exp $
 #
 # AAGMP.pm
 #
@@ -50,7 +50,6 @@ sub _post_data {
     $log->debug("[AAGMP] _post_data: current sound =- $sound_file custom_sound_flag=$custom_sound_flag,sound_type=$sound_type ");
     my $sound_ref ;
     $sound_ref->{sound_title} = "auto attendat sound";
-    $sound_ref->{sound_file} = $sound_file ;
     if ($sound_file ) {
        $sound_ref->{PROMPT_OBJ} = new OpenUMS::Object::Prompt($sound_file, $custom_sound_flag) ;
     }
@@ -130,21 +129,21 @@ sub _play_menu () {
 #################################
 ## sub play_invalid
 #################################
-sub play_invalid {
-  ## this is executed if they user enters an invalid option
-
-  my $self = shift ; 
-
-  ## get the local objects...
-  my $ctport = $self->{CTPORT}; 
-  my $menuSounds = $self->{SOUNDS_ARRAY}; 
-
-  my $invalid_sound  = $menuSounds->{I}->[0]->{sound_file};
-  if ($invalid_sound) { 
-      $ctport->play(OpenUMS::Common::get_prompt_sound(  $invalid_sound) ) ; 
-  } 
-  return ;
-} 
+#sub play_invalid {
+#  ## this is executed if they user enters an invalid option
+#
+#  my $self = shift ; 
+#
+#  ## get the local objects...
+#  my $ctport = $self->{CTPORT}; 
+#  my $menuSounds = $self->{SOUNDS_ARRAY}; 
+#
+#  my $invalid_sound  = $menuSounds->{I}->[0]->{PROMPT_OBJ}->file();
+#  if ($invalid_sound) { 
+#      $ctport->play(OpenUMS::Common::get_prompt_sound(  $invalid_sound) ) ; 
+#  } 
+#  return ;
+#} 
 
 
 #################################

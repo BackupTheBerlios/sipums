@@ -1,5 +1,5 @@
 package OpenUMS::Holidays;
-### $Id: Holidays.pm,v 1.3 2004/09/10 01:36:32 kenglish Exp $
+### $Id: Holidays.pm,v 1.4 2004/09/10 21:36:28 kenglish Exp $
 #
 # Holidays.pm
 #
@@ -67,25 +67,25 @@ my $Holidays =
 
 my $Holiday_Sounds =
   {
-    "New Years Day"       => "new_years_day.vox", 
-    "MLK Day"             => "martin_luther_king_junior_day.vox", 
-    "Presidents Day"      => "presidents_day.vox", 
-    "Kuhio Day"           => "kuhio_day.vox",
-    "Memorial Day"        => "memorial_day.vox",
-    "Kamehameha Day"      => "kamehameha_day.vox",
-    "Independence Day"    => "independence_day.vox",
-    "Admissions Day"      => "admissions_day.vox",
-    "Labor Day"           => "labor_day.vox",
-    "Columbus Day"        => "columbus_day.vox",
-    "Election Day"        => "election_day.vox", ## add
-    "Veterans Day"        => "veterans_day.vox", 
-    "Thanksgiving Day"    => "thanksgiving_holiday.vox", 
-    "Day After Thanksgiving"    => "thanksgiving_holiday.vox", 
-    "Boxing Day"          => "christmas_holiday.vox",
-    "Christmas Eve"       => "christmas_holiday.vox",
-    "Christmas Day"       => "christmas_holiday.vox",
-    "Day After Christmas" => "christmas_holiday.vox",
-    "New Years Eve"       => "new_years_eve.vox"
+    "New Years Day"       => "new_years_day.wav", 
+    "MLK Day"             => "martin_luther_king_junior_day.wav", 
+    "Presidents Day"      => "presidents_day.wav", 
+    "Kuhio Day"           => "kuhio_day.wav",
+    "Memorial Day"        => "memorial_day.wav",
+    "Kamehameha Day"      => "kamehameha_day.wav",
+    "Independence Day"    => "independence_day.wav",
+    "Admissions Day"      => "admissions_day.wav",
+    "Labor Day"           => "labor_day.wav",
+    "Columbus Day"        => "columbus_day.wav",
+    "Election Day"        => "election_day.wav", ## add
+    "Veterans Day"        => "veterans_day.wav", 
+    "Thanksgiving Day"    => "thanksgiving_holiday.wav", 
+    "Day After Thanksgiving"    => "thanksgiving_holiday.wav", 
+    "Boxing Day"          => "christmas_holiday.wav",
+    "Christmas Eve"       => "christmas_holiday.wav",
+    "Christmas Day"       => "christmas_holiday.wav",
+    "Day After Christmas" => "christmas_holiday.wav",
+    "New Years Eve"       => "new_years_eve.wav"
   };
 
 
@@ -300,7 +300,7 @@ sub load_holiday_sounds {
   my ($dbh, $holiday_name)  = @_; 
   my $sql1 = qq{INSERT INTO holiday_sounds (holiday_name, sound_file, order_no) VALUES (?,?,?) }; 
   my $sth = $dbh->prepare($sql1); 
-  my @files = ("aloha_and_ty4_calling.vox", $Holiday_Sounds->{$holiday_name},"aa_menu.vox") ; 
+  my @files = ("aloha_and_ty4_calling.wav", $Holiday_Sounds->{$holiday_name},"aa_menu.wav") ; 
   my $ord = 1; 
   foreach my $file ( @files )  {
      $sth->execute($holiday_name, $file,$ord);

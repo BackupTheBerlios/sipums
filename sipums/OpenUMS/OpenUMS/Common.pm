@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.12 2004/09/10 01:36:32 kenglish Exp $
+### $Id: Common.pm,v 1.13 2004/09/10 21:36:28 kenglish Exp $
 #
 # Common.pm
 #
@@ -38,6 +38,7 @@ use MIME::Base64;
 use POSIX qw(:sys_wait_h &ceil);
 
 use OpenUMS::Config;
+use OpenUMS::Object::Prompt;
 use OpenUMS::Log;
 use OpenUMS::DbUtils;
 use OpenUMS::DbQuery;
@@ -508,10 +509,10 @@ sub count_sound_gen {
         } 
         my $sound_obj; 
         if ($card_flag && ($i == ($num_files - 1) ) ) {
-          $sound_obj =  new OpenUMS::Object::Sound($files[$i]."card",0);
+          $sound_obj =  new OpenUMS::Object::Prompt($files[$i] . 'card' . '.wav' ,0);
           #$ret_sound .= $sound_obj->file();##  .= OpenUMS::Common::get_prompt_sound($files[$i] . "card")  ; 
         }else { 
-          $sound_obj =  new OpenUMS::Object::Sound($files[$i],0);
+          $sound_obj =  new OpenUMS::Object::Prompt($files[$i] . '.wav' ,0);
         } 
         $ret_sound .= $sound_obj->file(); ## OpenUMS::Common::get_prompt_sound($files[$i])  ; 
      } 
@@ -1158,17 +1159,20 @@ sub ser_to_extension {
   return  $ext; 
 
 } 
-#sub get_prompt_sound {
-#  my $file = shift ; 
-#  my $new_file = BASE_PATH . PROMPT_PATH . $file ; 
-# #  $main::CONF->get_var('VM_PATH') . PROMPT_PATH . $file ; 
-#  if ($new_file !~ /\.wav$/) {
-#     ## add the extension
-#     $new_file .= ".wav"; 
-#  } 
-#  return $new_file; 
-#  
-#
-#} 
+sub get_prompt_sound {
+  my $file = shift ; 
+  my $new_file = BASE_PATH . PROMPT_PATH . $file ; 
+  $log->debug("amigo called get_prompt_sound( $file )"); 
+
+ #  $main::CONF->get_var('VM_PATH') . PROMPT_PATH . $file ; 
+   
+  if ($new_file !~ /\.wav$/) {
+     ## add the extension
+     $new_file .= ".wav"; 
+  } 
+  return $new_file; 
+  
+
+} 
 
 1; 

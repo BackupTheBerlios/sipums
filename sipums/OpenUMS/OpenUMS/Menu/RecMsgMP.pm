@@ -1,5 +1,5 @@
 package OpenUMS::Menu::RecMsgMP; 
-### $Id: RecMsgMP.pm,v 1.3 2004/09/01 03:16:35 kenglish Exp $
+### $Id: RecMsgMP.pm,v 1.4 2004/09/10 21:36:28 kenglish Exp $
 #
 # RecMsgMP.pm
 #
@@ -100,8 +100,8 @@ sub _get_input {
   my $menuSounds = $self->{SOUNDS_ARRAY};
   my $sound; 
 
-  if ($menuSounds->{M}->[0]->{sound_file} ) {
-     $sound .=    OpenUMS::Common::get_prompt_sound($menuSounds->{M}->[0]->{sound_file})  ;
+  if ($menuSounds->{M}->[0]->{PROMPT_OBJ} ) {
+     $sound .=    $menuSounds->{M}->[0]->{PROMPT_OBJ} ; 
   }
 
   $ctport->play($sound); 

@@ -1,5 +1,5 @@
 package OpenUMS::Menu::MessageMP; 
-### $Id: MessageMP.pm,v 1.4 2004/09/01 03:16:35 kenglish Exp $
+### $Id: MessageMP.pm,v 1.5 2004/09/10 21:36:28 kenglish Exp $
 #
 # MessagePresenter.pm
 #
@@ -100,8 +100,8 @@ sub _play_menu () {
     if ($event_var) {
       my $var_ref = $self->get_sound_var_ref($event_var) ;
 
-      if ($var_ref->{sound_file}) { 
-        $sound .= OpenUMS::Common::get_prompt_sound( $var_ref->{sound_file}) ;
+      if ($var_ref->{PROMPT_OBJ}) { 
+        $sound .= $var_ref->{PROMPT_OBJ}->file(); 
         $sound .= " " ; 
   
         $message_spool->set_last_action(undef);
@@ -111,10 +111,10 @@ sub _play_menu () {
     if (!$event_var ) { 
       ## they just got here, didn't do nothing...
       my $var_ref = $self->get_sound_var_ref('NOMSG') ;
-      $sound .= OpenUMS::Common::get_prompt_sound(  $var_ref->{sound_file}) . " "  ;
+      $sound .= $var_ref->{PROMPT_OBJ}->file()  . " "  ;
     } else {
       my $var_ref = $self->get_sound_var_ref('NOMOREMSG') ;
-      $sound .= OpenUMS::Common::get_prompt_sound(  $var_ref->{sound_file}) . " "  ;
+      $sound .= $var_ref->{PROMPT_OBJ}->file()  ; 
     } 
 
     if (defined($sound) ) { 
@@ -133,7 +133,7 @@ sub _play_menu () {
 
     if ($event_var) { 
       my $var_ref = $self->get_sound_var_ref($event_var) ; 
-      $sound .= OpenUMS::Common::get_prompt_sound($var_ref->{sound_file}) ; 
+      $sound .= $var_ref->{PROMPT_OBJ}->file() ; 
       $sound .= " " ; 
       $message_spool->set_last_action(undef); 
     } 
@@ -151,7 +151,7 @@ sub _play_menu () {
 
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
 
-  $sound .=   OpenUMS::Common::get_prompt_sound($menuSounds->{M}->[0]->{sound_file})  ; 
+  $sound .=   $menuSounds->{M}->[0]->{PROMPT_OBJ}->file()  ; 
 
   if (!$msg_obj->heard()) {
     $msg_obj->play_started(); 
@@ -171,7 +171,7 @@ sub play_invalid {
   ## get the 2 objects...
   my $ctport = $self->{CTPORT}; 
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
-  my $invalid_sound  = $menuSounds->{I}->[0]->{sound_file};
+  my $invalid_sound  = $menuSounds->{I}->[0]->{PROMPT_OBJ}->file() ;
   if ($invalid_sound) { 
       $ctport->play(OpenUMS::Common::get_prompt_sound($invalid_sound) ) ; 
   } 

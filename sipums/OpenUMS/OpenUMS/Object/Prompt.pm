@@ -92,7 +92,6 @@ sub file() {
     return ""; 
   }  
 
-  $log->debug("called file " . $self->{SOUND_FILE});
   my $new_file; ## = $main::CONF->get_var('VM_PATH') . PROMPT_PATH . $file ; 
 
   $new_file= $self->_get_path(). $self->{SOUND_FILE};
@@ -101,6 +100,7 @@ sub file() {
      ## add the extension
      $new_file .= ".wav";
   }
+  $log->debug("returning file " . $new_file);
   return $new_file;
 }
 1; 
