@@ -160,6 +160,7 @@
     <TD><!--{if $edit_mailbox}-->
        <INPUT name='mailbox' value='<!--{$mailbox}-->' >
         <!--{else}-->
+         <INPUT type='hidden' name='mailbox' value='<!--{$mailbox}-->' >
            <b><!--{$mailbox}--></b>
         <!--{/if}-->
        <INPUT type=hidden name='old_mailbox' value='<!--{$old_mailbox}-->' >
@@ -178,7 +179,7 @@
     <TD><INPUT type='password' name='vm_password_re' value='' ></TD>
   </tr>
   <TR>
-    <TD colspan=2><b>Reset SpWeb Password (Numbers only)</b> </td>
+    <TD colspan=2><b>Reset SpWeb Password </b> </td>
   </tr>
   <TR>
     <TD>New SpWeb Password&nbsp;&nbsp; </td>
