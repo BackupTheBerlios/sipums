@@ -67,7 +67,7 @@ my $domain_vm_db =  &change_domain_db($dbh,$domain);
 ## create a ctport, a phonesys and load global settings
 my $ctport    = new Telephony::CTPortJr($PORT);
 my $phone_sys = new OpenUMS::PhoneSystem::SIP;
-$GLOBAL_SETTINGS->load_settings($domain_vm_db);
+$CONF->load_settings($domain_vm_db);
 
   syslog('info', "NEW CALL ON IS $PORT"); 
 
