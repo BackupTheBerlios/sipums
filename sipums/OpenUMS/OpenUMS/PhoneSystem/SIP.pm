@@ -1,5 +1,5 @@
 package OpenUMS::PhoneSystem::SIP ; 
-### $Id: SIP.pm,v 1.9 2004/08/19 01:57:56 kenglish Exp $
+### $Id: SIP.pm,v 1.10 2004/08/31 06:49:35 kenglish Exp $
 #
 # SIP.pm
 #
@@ -131,8 +131,10 @@ sub do_transfer {
 } 
 sub send_to_conference_room {
   my ($self,$room_number) = @_; 
-  my $sip_address = "<sip:con+$room_number>"; 
+  my $sip_address = "<sip:000$room_number\@corp.servpac.com>"; 
   $log->debug("calling ivr::redirect($sip_address)");
+
+  my $dbh_ser = OpenUMS::Common::get_dbh(SER_DB_NAME); 
 
   ivr::redirect($sip_address); 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.7 2004/08/19 03:06:13 kenglish Exp $
+### $Id: delivermail,v 1.8 2004/08/31 06:49:35 kenglish Exp $
 #
 # delivermail
 #
@@ -520,8 +520,10 @@ $MARKUP{'LI'}{$email_type}Length:    $durationstring
 $MARKUP{'TSIL'}{$email_type}
 $MARKUP{'REDAEH'}{$email_type}
 
-$MARKUP{'P'}{$email_type}$callout_link 
 EOF
+
+
+### $MARKUP{'P'}{$email_type}$callout_link 
 
 
   return ($return);
