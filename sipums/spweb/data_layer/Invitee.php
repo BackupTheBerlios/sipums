@@ -185,7 +185,7 @@ class Invitee {
         . '   Conference Date: '. $conference->conferenceDate->getMonth(). "-" . $conference->conferenceDate->getDay().'-' . $conference->conferenceDate->getYear() . "\n\n" 
         . 'Start Time : '. $conference->beginTime->getHour(). ":" . $conference->beginTime->getMinute() . "\n"
         . 'Your Conference Code : '. $this->inviteeCode . "\n"
-        . "Number to Call: 356-0078\n\n You may call 5 minutes prior to the conference\n";
+        . "Number to Call: 237-5209\n\n You may call 5 minutes prior to the conference\n";
         mail($this->inviteeEmail, "Invitation to " . $conference->conferenceName,  $email_body,
            "From: kelepona@{$_SERVER['SERVER_NAME']}\r\n" .
            "X-Mailer: PHP/" . phpversion());

@@ -28,11 +28,11 @@ function get_init_time($name) {
   } elseif ($date->getMinute() <= 30) {
     $init_time = $date->getHour() .  ":15";
   } elseif ($date->getMinute() <= 45) {
-    $init_time = $date->getHour() .  ":45";
+    $init_time = $date->getHour() .  ":30";
   } else {
     $init_time = $date->getHour() .  ":45";
   }
-  $log->log("init_time $init_time ") ; 
+  $log->log("init_time $init_time mins:" . $date->getMinute()) ; 
   return $init_time ; 
 
 } 
