@@ -1,4 +1,3 @@
-### $Id: SipUmsMwi.pm,v 1.9 2004/10/23 02:38:23 kenglish Exp $
 #
 # Copyright (C) 2003 Comtel
 #
@@ -146,14 +145,14 @@ sub get_data {
           $data->{$ext}->{action} = 'A'; ## activate
       }
 
-      #my $last_visit_flag =  ($last_visit_uts > $last_sent_uts ); 
-#
-#      ## if they logged in and still have new messages
-#      if ($last_visit_flag && $new_msg_count) {
-#          $data->{$ext}->{saved_message_count} = $saved_msg_count ; 
-#          $data->{$ext}->{new_message_count} = $new_msg_count ; 
-#          $data->{$ext}->{action} = 'A'; ## activate
-#      }
+      my $last_visit_flag =  ($last_visit_uts > $last_sent_uts ); 
+
+      ## if they logged in and still have new messages
+      if ($last_visit_flag && $new_msg_count) {
+          $data->{$ext}->{saved_message_count} = $saved_msg_count ; 
+          $data->{$ext}->{new_message_count} = $new_msg_count ; 
+          $data->{$ext}->{action} = 'A'; ## activate
+      }
 
    }
    $sql = qq{select extension, unix_timestamp(last_visit) last_visit ,
@@ -234,7 +233,7 @@ sub save {
    my $sql = qq{UPDATE mwi_status SET last_sent = NOW()  , 
     last_new_message_count = $new_message_count 
     WHERE  extension = $ext }; 
-  $log->debug("update mwi_status $ext  $new_message_count   ");
+  # $log->debug("update mwi_status $ext  $new_message_count   ");
   $dbh->do($sql); 
   return 
 } 
@@ -243,9 +242,12 @@ sub save {
 #################################
 sub send_mwi {
   my ($ser_user, $mwi_action,$new_count, $saved_count) = @_;
-  $saved_count = "0" if (!$saved_count); 
-  $new_count = "0" if (!$saved_count); 
   my $flash; 
+
+  $saved_count = "0" if (!$saved_count); 
+  $new_count = "0" if (!$new_count); 
+
+  $log->log("send_mwi : $ser_user, $mwi_action,$new_count, $saved_count ");
 
   if ($mwi_action eq 'A') {
      $flash =  "yes" ; 
@@ -253,7 +255,7 @@ sub send_mwi {
      $flash =  "no"; 
   }
 
-  $log->debug("send_mwi :: ser_user = $ser_user flash = $flash action=$mwi_action ");
+#  $log->debug("send_mwi :: ser_user = $ser_user flash = $flash action=$mwi_action ");
 
 
   # my $resp = (int(rand(10000)) + 1) .  ".fifo";
@@ -278,17 +280,13 @@ Voicemail: $new_count/$saved_count
 .
                                                                                                                                                
 );
-   $log->debug("cmd=\n$mwi_fifo_cmd ");
 
-   $log->debug("cmd_file=\n$cmd_file ");
 
    print $handle "$mwi_fifo_cmd";
    autoflush $handle 1; 
    my $cmd = "cat $cmd_file > /tmp/ser_fifo "; 
-   $log->debug("cmd =$cmd");
 
    my $ret = `$cmd`; 
-   $log->debug("cat returned $ret");
 
    close($handle); 
   

@@ -57,6 +57,9 @@ HTML-Template-2.7 :
 CGI-Enurl-1.07
   http://search.cpan.org/CPAN/authors/id/J/JE/JENDA/CGI-Enurl-1.07.tar.gz
 
+File-Temp-0.14
+  http://search.cpan.org/~tjenness/File-Temp-0.14/
+
 
 INSTALLATION:
 

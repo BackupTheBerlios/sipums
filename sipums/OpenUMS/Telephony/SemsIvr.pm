@@ -28,6 +28,9 @@ my $CALLER_HUNG_UP =0 ;
 
 sub hang_up {
   $Telephony::SemsIvr::CALLER_HUNG_UP = 1; 
+  if ($main::dbh) {
+      $dbh->disconnect(); 
+  } 
   syslog('info', "onBye: hang up call "); 
   ivr::wakeUp(); 
 

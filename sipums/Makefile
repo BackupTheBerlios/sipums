@@ -4,8 +4,7 @@ LIBDIR=$(BASEDIR)/lib
 INSTALL=/usr/bin/install
 
 DOMAIN_DIRS = $(BASEDIR)/scripts/o-matrix.org $(BASEDIR)/scripts/o-matrix.net $(BASEDIR)/scripts/o-matrix.com
-SEMS_SCRIPT= scripts/main.pl
-CONF_SCRIPT= scripts/3560078.pl
+SEMS_SCRIPT= scripts/main.pl scripts/conference.pl
 
 default: compile
 .compiledok : compile
@@ -57,6 +56,14 @@ dist:  .compiledok
 	rm -f .compiledok
 install:  .compiledok
 	cd OpenUMS && make install
+<<<<<<< Makefile
+	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/centuryc.servpac.com/
+=======
 	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.org/
 	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.com/
 	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.net/
+<<<<<<< Makefile
+	$(INSTALL) -v -m 744 $(CONF_SCRIPT) $(BASEDIR)/scripts/o-matrix.org/
+>>>>>>> 1.4
+=======
+>>>>>>> 1.5
