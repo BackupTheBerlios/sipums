@@ -39,6 +39,10 @@ $log = new OpenUMS::Log($PORT);
 
 my $ser_to = ivr::getTo; 
 my $ser_from = ivr::getFrom; 
+my $uri_from = ivr::getFromURI;
+$log->debug("ivr::getFrom ='$ser_from'"); 
+$log->debug("ivr::getTo ='$ser_to'"); 
+$log->debug("ivr::getFromURI ='$uri_from'"); 
 
 my ($uname,$domain) ;  # = &get_user_domain($ser_to); 
 $uname = ivr::getUser();
@@ -185,6 +189,7 @@ sub get_caller_id {
     my ($name,$sip_from) = split(/\<sip:/,$sip_from);
     my ($num,$d) = split(/\@/,$sip_from);
     $name =~ s/\"//g;
+    $name =~ s/\s+$//;
     chop($name);
     return "$name $num";
   }
