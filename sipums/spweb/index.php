@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: index.php,v 1.15 2004/09/07 21:22:40 kenglish Exp $
+ * $Id: index.php,v 1.16 2004/09/07 22:02:27 kenglish Exp $
  */
 
 require "prepend.php";
@@ -41,17 +41,16 @@ do {
     }  else {
        $msg = "Could not login";
        break;
-    } 
-                                                                                                                                               
+    }
+
     $log->log( " register session variables phplib_id = $phplib_id ");
     $sess->register('pre_uid');
     $sess->register('uname');
     $sess->register('udomain');
-    $sess->register("adomain");
-    $sess->register("company_logo_image");
+    $sess->register('company_logo_image');
 
+    $company_logo_image=$data->get_company_logo($temp_uname,$temp_udomain);
 
-    $company_logo_image =  $data->get_company_logo();
     $log->log( " got company_logo_image = $company_logo_image");
 
     $pre_uid=$phplib_id;
