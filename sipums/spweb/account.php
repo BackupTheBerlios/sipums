@@ -104,20 +104,23 @@ function update_user_info(){
   if ($spUser->updateBasic()) { 
     $user_info_msgs[] = "Name, E-mail Updated." ;
     // if they have a mailbox, we gotta update that too...
-
-
   } else {
     $user_info_msgs[] = "Could not update Name, E-mail." ;
     return $user_info_msgs; 
   } 
+
+  $log->log("Checking vmUser");
   if ($vmUser) { 
-       $vmUser->dbFields[first_name] = $_POST[first_name];
-       $vmUser->dbFields[last_name] = $_POST[last_name];
-       $vmUser->dbFields[email_address] = $_POST[email_address];
-       if (!$vmUser->updateBasic())  {
+     $vmUser->dbFields[first_name] = $_POST[first_name];
+     $vmUser->dbFields[last_name] = $_POST[last_name];
+     $vmUser->dbFields[email_address] = $_POST[email_address];
+     $log->log("Calling vmUser->updateBasic() ");
+     if (!$vmUser->updateBasic())  {
          $user_info_msgs[] = "Failed to update voicemail info." ;
        }  
-  }    
+  }    else {
+     $log->log("no VMUSER");
+  } 
    
   // Are they changing the spweb_password?
   if ($_POST[spweb_password] ) {
@@ -249,6 +252,9 @@ function update_um(){
 
     $vmUser->dbFields[vstore_email] = $_POST[vstore_email] ; 
     $vmUser->dbFields[email_delivery] = $_POST[email_delivery] ; 
+    if (!$vmUser->dbFields[email_delivery] ) {
+      $vmUser->dbFields[email_delivery] = 'S'; 
+    } 
     $vmUser->dbFields[email_user_name] = $_POST[email_user_name] ; 
     $vmUser->dbFields[email_server_address] = $_POST[email_server_address] ; 
     $vmUser->dbFields[mobile_email_flag] = $_POST[mobile_email_flag] ; 
@@ -332,8 +338,8 @@ function get_um_form(&$smarty, $msgs )  {
   global $log; 
   $smarty->assign('vstore_email_options', array(
                        'N'  => 'Do not send Voicemail over E-mail (Default)',
-                       'C' => 'Send a copy of voicemail over e-mail',
-                        'S' => 'Send a copy of voicemail over E-mail and delete it from the voicemail'));
+                       'C' => 'Send a copy of voicemail to my e-mail',
+                        'S' => 'Send a copy of voicemail to my e-mail and delete it from the voicemail'));
   $smarty->assign('email_delivery_options', Array(
                         'I'  => "Deliver and store in IMAP folder 'INBOX Voicemail'",
                         'S' => 'Deliver and store in Main Inbox'));

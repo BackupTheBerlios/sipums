@@ -10,7 +10,10 @@ class Conference {
   var $companyId;
   // these are PEAR Date objects
   var $conferenceDate;
+  var $conferenceDateFormatted;
+  var $beginTimeFormatted;
   var $beginTime;
+  var $endTimeFormatted;
   var $endTime;
 
 //  var $conferenceDate;
@@ -40,14 +43,19 @@ class Conference {
     global $log; 
     // all these must be present to do the query
     if ($this->conferenceId) { 
+      $date_format = "if(c.conference_date=current_date(),'Today',date_format(c.conference_date,'%m-%d-%Y')) conference_date_formatted" ;
+      $begin_time_format = " time_format(begin_time,'%l:%i %p') begin_time_formatted"; 
+      $end_time_format = " time_format(end_time,'%l:%i %p') end_time_formatted"; 
+
       $q = "SELECT c.conference_id, c.company_id, conference_name, conference_date,begin_time, end_time,  "
-         . " invitee_email, invitee_name "
+         . " invitee_email, invitee_name,$date_format,$begin_time_format,$end_time_format "
          . " FROM conferences c, invitees i " 
          . " WHERE i.conference_id = c.conference_id "
          . " AND   i.owner_flag = 1 "
          . " AND c.conference_id = " . $this->conferenceId ;
 
       change_to_conference_db($this->db);
+     // $log->log("QUERY = $q ");
       $res =  $res=$this->db->query($q);
       if (DB::isError($res) ) {
          $log->log("ERROR IN QUERY $q ");
@@ -59,6 +67,9 @@ class Conference {
       $this->conferenceName = $row['conference_name'] ;
       $this->conferenceDate = new Date(); 
       $this->conferenceDate->setDate($row['conference_date']);  
+      $this->conferenceDateFormatted = $row['conference_date_formatted'];  
+      $this->beginTimeFormatted = $row['begin_time_formatted'];  
+      $this->endTimeFormatted = $row['end_time_formatted'];  
       $this->ownerName = $row['invitee_name'] ;
 
       list ($beginHour, $beginMinute ) = split(':',$row['begin_time']);
@@ -72,15 +83,15 @@ class Conference {
       $this->endTime->setHour($endHour);
       $this->endTime->setMinute($endMinute);
 
-      $log->log("month = " . $this->conferenceDate->getMonth()  ); 
-      $log->log("day = " . $this->conferenceDate->getDay()  ); 
-      $log->log("year = " . $this->conferenceDate->getYear()  ); 
+      //$log->log("month = " . $this->conferenceDate->getMonth()  ); 
+      //$log->log("day = " . $this->conferenceDate->getDay()  ); 
+      //$log->log("year = " . $this->conferenceDate->getYear()  ); 
 
-      $log->log("Begin hour = " . $this->beginTime->getHour() ) ;
-      $log->log("Begin min = " . $this->beginTime->getMinute() ) ;
+      //$log->log("Begin hour = " . $this->beginTime->getHour() ) ;
+      //$log->log("Begin min = " . $this->beginTime->getMinute() ) ;
 
-      $log->log("End Hour = " . $this->endTime->getHour() ) ;
-      $log->log("End Min = " . $this->endTime->getMinute() ) ; 
+      //$log->log("End Hour = " . $this->endTime->getHour() ) ;
+      //$log->log("End Min = " . $this->endTime->getMinute() ) ; 
     } 
   }  
 
@@ -253,7 +264,6 @@ class Conference {
         $row = $res->fetchRow();
         $this->conferenceId = $row[0] ;
         $res->free(); 
-  
      } 
 
      $log->log("insert is $q");  
@@ -261,6 +271,60 @@ class Conference {
      change_to_default_db($this->db);
 
      return $ret;    
+  } 
+  function sendNotifyCancel() { 
+      ///
+    global $log ; 
+    if ($this->conferenceId){ 
+      $q = "select invitee_email, invitee_name FROM invitees WHERE conference_id = " . $this->conferenceId; 
+      $log->log("q = $q") ; 
+      // conference db
+      change_to_conference_db($this->db);
+
+      $res=$this->db->query($q);
+
+      while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) { 
+        if ($row[invitee_email]) { 
+          $email_body = "Aloha $row[invitee_name], \n"
+          . "   The conference '" . $this->conferenceName . "' has been cancelled by " . $this->ownerName . "\n"
+          . '   Conference Date: '. $this->conferenceDateFormatted  . "\n"
+          . '   Start Time : '. $this->beginTimeFormatted . "\n"
+          . "\n";
+          $log->log("email_body $email_body"); 
+          mail($row[invitee_email] , "Cancellation of " . $this->conferenceName,  $email_body,
+             "From: kelepona@{$_SERVER['SERVER_NAME']}\r\n" .
+             "X-Mailer: PHP/" . phpversion());
+        } else {
+          $log->log("$row[invitee_name] has no e-mail");
+        } 
+  
+      } 
+     $res->free();
+     change_to_default_db($this->db);
+       
+    }
+     return ;
+  } 
+  function cancel() {
+     global $log ; 
+     if ($this->conferenceId)  { 
+       change_to_conference_db($this->db);
+
+       $q1 = "DELETE FROM invitees WHERE conference_id = " . $this->conferenceId ; 
+       $q2 = "DELETE FROM conferences WHERE conference_id = " . $this->conferenceId ; 
+       $res=$this->db->query($q1);
+       if (dB::isError($res) ) {
+          $log->log("error running q1 $q1"); 
+       } 
+       $res=$this->db->query($q2);
+       if (dB::isError($res) ) {
+          $log->log("error running q2 $q2"); 
+       } 
+
+       change_to_default_db($this->db);
+   
+     } 
+
   } 
 
 

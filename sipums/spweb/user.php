@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: user.php,v 1.14 2004/08/20 20:48:08 kenglish Exp $
+ * $Id: user.php,v 1.15 2004/08/30 04:22:54 kenglish Exp $
  */
 
 require 'prepend.php';

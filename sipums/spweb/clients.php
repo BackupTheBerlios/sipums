@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: resellers.php,v 1.2 2004/08/30 04:22:54 kenglish Exp $
+ * $Id: clients.php,v 1.1 2004/08/30 04:22:54 kenglish Exp $
  */
 
 require 'prepend.php';
@@ -26,16 +26,16 @@ $perm->check('SUPER');
 
 $header_smarty = get_smarty_header($data, $auth, $perm); 
 
-$reseller_smarty = get_smarty(); 
+$clients_smarty = get_smarty(); 
 
-$resellers = $data->get_resellers(); 
+$clients = $data->get_clients(); 
 
-$reseller_smarty->assign("resellers",$resellers); 
+$clients_smarty->assign("clients",$clients); 
 
 $footer_smarty = get_smarty(); 
 
 $header_smarty->display('app_header.tpl');
-$reseller_smarty->display('resellers.tpl');
+$clients_smarty->display('clients.tpl');
 $footer_smarty->display('app_footer.tpl');
 
 

@@ -5,6 +5,7 @@ function get_smarty_header($data, $auth, $perm ) {
   $smarty->assign("uname",$auth->auth[uname]);
   if ($perm->have_perm('SUPER') ) {
     $smarty->assign("admin_reseller",1); 
+    $smarty->assign("admin_clients",1); 
   } 
 
   if ($perm->have_perm('SUPER') || $perm->have_perm('RESELLER') ) {

@@ -61,7 +61,7 @@ $conference_data = $data->get_conference_summary($auth->auth["uname"],$perm->hav
 $footer_smarty = get_smarty(); 
 $header_smarty->assign('conference_bg_flag',1);
 $header_smarty->display('app_header.tpl');
-$smarty->display('conference_user.tpl');
+$smarty->display('conference.tpl');
 $footer_smarty->display('app_footer.tpl');
 
 

@@ -214,10 +214,11 @@
 <input type='hidden' name='func' value='update_um'>
 <b>Unified Messaging Settings</b><br />
   <table>
-  <tr>
+<!--  <tr>
 
      <Td colspan=2><b>Message Storage Options</b></Td>
   </tr>
+-->
 
   <!--{if $um_msgs}-->
   <TR>
@@ -229,18 +230,21 @@
   </tr>
   <!--{/if}-->
 
-  <tr>
+<!--  <tr>
      <Td colspan=2><i><input type='radio' name='store_flag' value='V' <!--{if $store_flag eq 'V'}-->CHECKED<!--{/if}-->>
         Use Voicemail Store. </I></Td>
   
-  </tr><tr>
+  </tr>--><tr>
   <!-- N-->
+    <input type=hidden name=store_flag value='V'>
    <Td>E-mail Option</b></Td>
    <TD><select name='vstore_email'>
           <!--{html_options options=$vstore_email_options selected=$vstore_email}-->
         </select>
       </TD>
-  </tr><tr>
+  </tr>
+<!--
+<tr>
      <Td colspan=2><i><input type='radio' name='store_flag' value='E' <!--{if $store_flag eq 'E'}-->CHECKED<!--{/if}--> >
       Use E-mail Store. </I></Td>
     </tr><tr>
@@ -249,9 +253,11 @@
    <TD><select name='email_delivery'>
           <!--{html_options options=$email_delivery_options selected=$email_delivery}-->
         </select>
-      <!-- I -->
       </TD>
-  </tr><tr>
+  </tr>
+-->
+<!--
+<tr>
      <Td>E-mail Server Address</b></Td>
 
    <TD><INPUT TYPE='TEXT' NAME="email_server_address" value="<!--{$email_server_address}-->" size=30>  </TD>
@@ -259,22 +265,32 @@
      <Td>E-mail User Name</b></Td>
      <TD><INPUT TYPE='TEXT' NAME="email_user_name" value="<!--{$email_user_name}-->" size=30>  </TD>
 
-  </tr><tr>
-     <Td>Mobile E-mail </b></Td>
-     <TD><INPUT TYPE='TEXT' NAME="mobile_email" value="<!--{$mobile_email}-->" size=30>  </TD>
-  </tr><tr>
+  </tr>
+-->
+<TR>
+    <TD colspan=2 align=left><B>Mobile Notification (note: this is different than your e-mail)</b> </td>
+</TR>
+<tr>
      <Td>Mobile E-mail Flag </b></Td>
      <TD><SELECT NAME='mobile_email_flag'> 
          <OPTION VALUE='1' <!--{if $mobile_email_flag eq "1"}-->SELECTED<!--{/if}-->  >On</option>
          <OPTION VALUE='0' <!--{if $mobile_email_flag eq "0"}-->SELECTED<!--{/if}--> >Off</option>
         </SELECT></TD>
-  </tr><tr>
+</tr>
+<tr>
+     <Td>Mobile E-mail </b></Td>
+     <TD><INPUT TYPE='TEXT' NAME="mobile_email" value="<!--{$mobile_email}-->" size=30>  </TD>
+</tr>
+<!--
+<tr>
      <Td>E-mail Password </b></Td>
      <TD><INPUT TYPE='PASSWORD' NAME="email_password" value="" size=30>  </TD>
   </tr><tr>
      <Td>Retype E-mail Password </b></Td>
      <TD><INPUT TYPE='PASSWORD' NAME="email_password_re" value="" size=30>  </TD>
-  </tr><tr>
+  </tr>
+-->
+<tr>
     <TD colspan=2 valign='top' align=center>
       <input type="submit" value="Apply">
     </TD>
@@ -354,7 +370,7 @@
      </td>
   </tr>
   <tr>
-     <td align='center'><INPUT TYPE=submit value='Apply'></td>
+     <td align='center'><BR><BR><INPUT TYPE=submit value='Apply'></td>
   </tr>
   </table>
   

@@ -15,9 +15,10 @@
 	</tr>
 
 	<tr>
-	<td align="left"><font class="main">Servpac - Serving the Pacific, Feeding the World.</font></td>
+	<td align='left' valign='top'><font class="main">Servpac - VoIP Solutions for Hawaii and the Pacific.</font></td>
 		<td align="center">&nbsp;</td>
-	<td align="right"><font class="main">Copyright &copy;2004 Servpac INC. All Rights Reserved.</font></td>
+	<td align="right"><font class="main">Copyright &copy;2004 Servpac Inc. All Rights Reserved.</font><BR>
+           <img src="images/php-power-micro.png"></td>
 	</tr>
 
 	<tr>

@@ -6,6 +6,7 @@
 require 'prepend.php';
 require 'Smarty.class.php';
 require 'lib/nav.php';
+
 require_once 'data_layer/SpUser.php';
 
 function save_caller_id() {
@@ -40,7 +41,7 @@ function save_perm() {
   $log->log("save_perm " . $_GET[edit_user] );
 
   if ($spUser->username) {
-    if ($spUser->changePerm($_POST[perm]) ) { 
+    if ($spUser->changePerm($_POST[new_perm]) ) { 
       $log->log("perm updated " . $spUser->username);
       header("Location: subscribers.php?msg=Permissions updated for " . $spUser->username);
     }  else { 
@@ -121,19 +122,20 @@ function get_perm_form(&$smarty,&$template_name,$msg) {
   return ;
 }
 
+$log->log("Putting Headers"); 
 
 put_headers();
 
 // get db connect 
 $data = CData_Layer::create($errors) ;
 
+$log->log("doing page open"); 
 // get the sess, auth and perm vars
 page_open (array("sess" => "phplib_Session_Pre_Auth",
    "auth" => "phplib_Pre_Auth",
    "perm" => "phplib_Perm"));
-
+global $perm; 
 ## do this in every file after the page_open
-$perm->check('ADMIN');
 
 $header_smarty = get_smarty_header($data, $auth, $perm); 
 
@@ -179,4 +181,5 @@ $header_smarty->display('app_header.tpl');
 $main_smarty->display($main_template);
 $footer_smarty->display('app_footer.tpl');
 page_close(); 
+
 ?>

@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: conference.php,v 1.3 2004/08/20 20:48:08 kenglish Exp $
+ * $Id: conference.php,v 1.4 2004/08/30 04:22:54 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -12,9 +12,9 @@ class CData_Layer extends CDL_common{
     global $config,$log ; 
 
     change_to_conference_db($this->db); 
-
-    $q= "SELECT c.conference_id, c.conference_date,c.conference_name, " 
-      .  " c.begin_time,c.end_time,c.creator,c.conference_number,  count(*) invitee_count " 
+    $date_format = "if(c.conference_date=current_date(),'Today',date_format(c.conference_date,'%m-%d-%Y'))" ; 
+    $q= "SELECT c.conference_id, $date_format conference_date,c.conference_name, " 
+      .  " c.begin_time,c.end_time,c.creator,c.conference_number, IF(c.creator='3560074',1,0) owner_flag,   count(*) invitee_count " 
       .	 "  FROM conferences c, invitees i " 
       .	 " WHERE c.conference_id = i.conference_id "
       . " AND c.conference_Date >= NOW() " ; 

@@ -9,8 +9,33 @@ require 'data_layer/SpUser.php';
 require 'data_layer/Conference.php';
 require 'data_layer/Invitee.php';
 require_once 'Date.php';
-require_once 'Date/Calc.php';
+require_once 'Date/Span.php';
 
+function get_init_time($name) {
+  global $log; 
+  $date = new Date();  
+ 
+  $log->log("name = $name") ; 
+  if ($name == 'end'){ 
+     $add_hour = 1;
+     $date->addSeconds(3600);  
+  } 
+   
+  if ($date->getMinute() ==0 ) {
+    $init_time = $date->getHour() .  ":00";
+  } elseif($date->getMinute() <= 15) {
+    $init_time = $date->getHour() .  ":15";
+  } elseif ($date->getMinute() <= 30) {
+    $init_time = $date->getHour() .  ":30";
+  } elseif ($date->getMinute() <= 45) {
+    $init_time = $date->getHour() .  ":30";
+  } else {
+    $init_time = ($date->getHour()+1) .  ":00";
+  }
+  $log->log("init_time $init_time ") ; 
+  return $init_time ; 
+
+} 
 
 function create_conference() {
   global $log, $spUser,$_POST,$data; 
@@ -67,7 +92,6 @@ function create_conference() {
   $conference->getCompanyId(); 
   $conference->loadConstraints() ; 
   // set the date objects.
-  $conference->conferenceDate = $confDate; 
   $conference->conferenceDate = $confDate; 
   $conference->beginTime = $beginTime; 
   $conference->endTime = $endTime; 
@@ -192,8 +216,10 @@ if ($_POST[begin_time] ){
   $begin_time = $_POST[begin_time]; 
 } else { 
   // default value
+  $log->log("Minute = " . $date->getMinute()); 
 
-  $begin_time = $date->getHour() .  ":00";
+  $begin_time = get_init_time('begin'); 
+
   $log->log("begin time = $begin_time ");
 }
 
@@ -201,8 +227,8 @@ if ($_POST[end_time] ){
   $end_time = $_POST[end_time]; 
 } else { 
   // default value
- 
-  $end_time = ($date->getHour() +1) . ":00"; 
+  $end_time = get_init_time('end'); 
+  $log->log("end time = $end_time "); 
 }
 
 

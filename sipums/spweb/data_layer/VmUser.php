@@ -146,7 +146,7 @@ class VmUser {
                                                                                                                                                
        $res = $this->db->query($q);
        if (DB::isError($res)) {
-         $log->log("FAILED TO VmUser->updateBasic : $q",LOG_ERR);
+         $log->log("FAILED TO VmUser->updateBasic : $q");
          change_to_default_db($this->db); 
          $returnValue = false ; 
        } else { 

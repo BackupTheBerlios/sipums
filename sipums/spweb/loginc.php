@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: index.php,v 1.14 2004/08/30 04:22:54 kenglish Exp $
+ * $Id: loginc.php,v 1.1 2004/08/30 04:22:54 kenglish Exp $
  */
 
 require "prepend.php";
@@ -74,6 +74,6 @@ $log->log("creating data layer");
 $data = CData_Layer::create($errors) ; 
 $msg ; 
 
-$smarty->display('login.tpl');
+$smarty->display('loginc.tpl');
 
 

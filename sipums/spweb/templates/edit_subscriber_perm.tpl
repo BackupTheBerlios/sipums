@@ -6,7 +6,7 @@
         <td align="center" valign="top">
 <!-- Required Indent -->
 
-<form name=''  method='POST' action='' target='_self'>   
+<form name='me'  method='POST' action='' target='_self'>   
 <INPUT type='hidden' name='func' value='<!--{$func}-->'>
 <INPUT type='hidden' name='edit_user' value="<!--{$edit_user}-->">
 <INPUT type='hidden' name='edit_uname' value="<!--{$edit_uname}-->">
@@ -35,7 +35,7 @@
       </tr>
       <tr  style="cursor:default;">
         <td align="right">Permission:</td>
-        <td align="left"><select name=perm>
+        <td align="left"><select name='new_perm'>
 	<!--{html_options options=$perm_options selected=$perm}-->
          </select></td>
       </tr>

@@ -10,9 +10,9 @@
 <Tr> <Td align='center' valign='top' width="100" > 
   <!-- left column--> 
   <table> 
-     <TR><td> <li><a href='admin.cgi?mod=Menu'>Menus</a></td> </TR>
-     <TR> <td> <li><a href='admin.cgi?mod=Settings'>Sounds</a></td> </TR>
-     <TR> <td> <li><a href='admin.cgi?mod=Settings'>Global Settings</a></td> </TR>
+     <TR><td> <li><a href=''>Menus</a></td> </TR>
+     <TR> <td> <li><a href=''>Sounds</a></td> </TR>
+     <TR> <td> <li><a href=''>Settings</a></td> </TR>
 
    </table> 
 </td> 
@@ -37,7 +37,6 @@
      <Th>&nbsp;</Th> 
      <Th>&nbsp;</Th> 
   </TR>
-
   
   <TR  bgcolor='eeeeee' >
 

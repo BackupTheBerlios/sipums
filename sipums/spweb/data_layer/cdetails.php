@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: cdetails.php,v 1.3 2004/08/20 20:48:08 kenglish Exp $
+ * $Id: cdetails.php,v 1.4 2004/08/30 04:22:54 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -61,6 +61,7 @@ class CData_Layer extends CDL_common{
      
     do {
        $user_conf["invitees"][] = $row; 
+       $log->log($row["invitee_username"] ."== $username");
        if ($row["owner_flag"] && ( $row["invitee_username"] == $username ) ) { 
          $log->log("owner_flag found");
          $user_conf['owner_flag']=1;

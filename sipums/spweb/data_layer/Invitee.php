@@ -243,5 +243,74 @@ class Invitee {
       return false; 
     } 
   } 
+  function update() { 
+    global $log;
+    if ($this->inviteeId) {
+         $q = "UPDATE invitees SET  invitee_name = "  . $this->db->quote($this->inviteeName) .
+           ", invitee_email = " . $this->db->quote($this->inviteeEmail) .
+           " WHERE invitee_id = " . $this->inviteeId; 
+        $log->log("updaing $q ");
+        change_to_conference_db($this->db);
+        $retVal  = true; 
+        $res =  $res=$this->db->query($q);
+        if (DB::isError($res) ) {
+           $log->log("ERROR IN QUERY $q ");
+           $retVal  = false ; 
+        }
+        change_to_default_db($this->db);
+        return $retVal; 
+    } else {
+      $log->log("called getInfoFromUserName with no username set");
+      return false; 
+    } 
+  } 
+  function remove() {
+    if ($this->inviteeId) {
+       $q = "DELETE FROM invitees WHERE  invitee_id = "  . $this->inviteeId ; 
+       change_to_conference_db($this->db);
+       $retVal  = true; 
+       $res =  $res=$this->db->query($q);
+        if (DB::isError($res) ) {
+           $log->log("ERROR IN QUERY $q ");
+           $retVal  = false ; 
+        }
+        change_to_default_db($this->db);
+       return $retVal; 
+    } else {
+      $log->log("called getInfoFromUserName with no username set");
+      return false; 
+    } 
+    
 
+  } 
+  function sendUninvite() { 
+    global $log; 
+    if ($this->inviteeEmail ) {
+                                                                                                                                               
+        $conference = new Conference($this->db) ;
+                                                                                                                                               
+        $conference->conferenceId = $this->conferenceId;
+        $conference->get();
+                                                                                                                                               
+        $email_body = "Aloha $this->inviteeName, \n"
+        . "   We are sorry to inform you that you have been removed from the conference '" . $conference->conferenceName . "' by " . $conference->ownerName . "\n"
+        . '   Conference Date: '. $conference->conferenceDate->getMonth(). "-" . $conference->conferenceDate->getDay().'-' . $conference->conferenceDate->getYear() . "\n\n"
+        . 'Start Time : '. $conference->beginTime->getHour(). ":" . $conference->beginTime->getMinute() . "\n"
+        . "\n\n Maybe next time you well be nicer to $conference->ownerName, as of right now, he thinks you're a real jerk.\n";
+        mail($this->inviteeEmail, "Removal from  conference " . $conference->conferenceName,  $email_body,
+           "From: kelepona@{$_SERVER['SERVER_NAME']}\r\n" .
+           "X-Mailer: PHP/" . phpversion());
+                                                                                                                                               
+       $log->log("Email BODY :\n $email_body \n" );
+       $log->log("sent e-mail to :\n " . $this->inviteeEmail . "\n" );
+                                                                                                                                               
+     } else {
+                                                                                                                                               
+       $log->log("No InviteeEmai " );
+       return false;
+                                                                                                                                               
+     }
+
+
+  } 
 }
