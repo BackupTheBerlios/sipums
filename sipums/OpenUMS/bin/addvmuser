@@ -1,0 +1,58 @@
+#!/usr/bin/perl -w
+### $Id: addvmuser,v 1.1 2004/08/04 03:17:16 kenglish Exp $
+#
+# addvmuser
+#
+# add a user (w/ appropriate defaults) into database.  Doesn't do much
+# errorchecking.
+
+use strict;
+use warnings;
+use lib '/usr/local/openums/lib'; 
+
+use OpenUMS::Config;
+
+use OpenUMS::Common;
+use OpenUMS::DbUtils;
+
+print_and_die() if (@ARGV < 3);
+
+my $extension = $ARGV[0];
+my $first_name = $ARGV[1];
+my $last_name = $ARGV[2];
+my $voicemail_db = $ARGV[3];
+
+print_and_die() unless ($extension =~ /^\d+$/);
+print_and_die() unless ($extension > 0);
+# print_and_die() unless ($first_name =~ /^[a-zA-Z]+$/);
+# print_and_die() unless ($last_name =~ /^[a-zA-Z]+$/);
+
+my $dbh = OpenUMS::Common::get_dbh();
+if ($voicemail_db ) { 
+  $dbh->do("use $voicemail_db");
+}
+
+print_and_die() unless defined($dbh);
+
+my $full_user_path = OpenUMS::Common::add_user($dbh, $extension, $first_name, $last_name);
+
+unless (defined($full_user_path)) 
+  {
+    print("Error!\n");
+    exit(-1);
+  } 
+
+#print("Changing file modes.\n");
+#open(FH, "| sudo chown -R openums:openums $full_user_path");
+#open(FH, "| sudo chmod -R g+w $full_user_path");
+
+print("Success!\n");
+exit(1);
+
+sub print_and_die
+{
+  print STDERR "$0 : <#extension> <firstname> <lastname>\n";
+  exit;
+}
+
+1;
