@@ -5,6 +5,7 @@ DATADIR=$(BASEDIR)/data_layer
 LIBDIR=$(BASEDIR)/lib
 STYLEDIR=$(BASEDIR)/style
 TEMPLATEDIR=$(BASEDIR)/templates
+JSDIR=$(BASEDIR)/js
 INSTALL=/usr/bin/install
 
 default: compile
@@ -23,4 +24,5 @@ install:  .compiledok
 	$(INSTALL) -v -m 644 lib/*.php $(LIBDIR)
 	$(INSTALL) -v -m 644 style/*.css $(STYLEDIR)
 	$(INSTALL) -v -m 644 templates/*.tpl $(TEMPLATEDIR)
+	$(INSTALL) -v -m 644 js/*.js $(JSDIR)
 	$(INSTALL) -v -m 644 phplib/*.inc $(PHPLIBDIR)/phplib
