@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+
+use strict; 
+use lib '/usr/local/openums/lib';
+
+use OpenUMS::Config;
+use OpenUMS::Log;
+use OpenUMS::Common;
+use OpenUMS::GlobalSettings;
+use OpenUMS::IMAP;
+use OpenUMS::SipUmsMwi;
+
+
+
+my @databases = ('vm_canada_omatrix_org','vm_corp_servpac_com',
+                 'vm_omatrix_com', 'vm_omatrix_net',
+                 'vm_omatrix_org', 'vm_usa_omatrix_org');
+
+my $db = "vm_omatrix_net" ; 
+my $dbh = OpenUMS::Common::get_dbh($db);
+
+my $days = 2; 
+my $data = OpenUMS::DbQuery::get_deleted_messages_to_purge($dbh,$days);
+$CONF->load_settings($db); 
+print 'VM_PATH ' .$CONF->get_var('VM_PATH') . "\n" ; 
+
+foreach my $key (keys %{$data}){
+  my $path = $CONF->get_var('VM_PATH') . $data->{$key}->{message_wav_path} . $data->{$key}->{message_wav_file} ;
+  my $cmd = "rm $path"; ## a->{$key}->{message_wav_path}; 
+  print "$cmd "; 
+  # `$cmd`;
+  print "\n";
+}
+
+
+
