@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.1 2004/07/20 03:07:49 richardz Exp $
+### $Id: delivermail,v 1.2 2004/07/20 03:41:25 richardz Exp $
 #
 # delivermail
 #
@@ -23,7 +23,9 @@ use OpenUMS::IMAP;
 # Config Section
 #
 
-use constant LOGFILE => '/var/log/openums/delivermail.log';
+use constant LOGFILE => '/tmp/delivermail.log';
+use constant ERRFILE => '/tmp/delivermail.err';
+use constant DELIVERPID => '/tmp/delivermail.pid';
 
 use constant DELAY => 300;
 
@@ -78,7 +80,7 @@ my $pid = fork;
 exit if $pid;
 unless (defined($pid))
   { die("Could not daemonize : $!"); }
-unless(open(*STDERR, '>>', '/var/log/openums/delivermail.err'))
+unless(open(*STDERR, '>>', ERRFILE))
   { die("Cannot reopen STDERR to .err file"); }
 for my $handle (*STDIN, *STDOUT)
   {

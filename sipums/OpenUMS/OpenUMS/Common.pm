@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: Common.pm,v 1.2 2004/07/20 03:41:25 richardz Exp $
 #
 # Common.pm
 #
@@ -1019,13 +1019,13 @@ sub sound_duration($)
 ########################################################### signal_delivermail
 sub signal_delivermail
 {
-  unless (-e DELIVERPID)
+  unless (-e OPENUMS_DELIVERPID)
     {
       $log->err("Delivermail lock file does not exist!");
       return(undef);
     }
 
-  unless (open(FILE, "<" . DELIVERPID))
+  unless (open(FILE, "<" . OPENUMS_DELIVERPID))
     {
       $log->err("Unable to access delivermail lock file : $!");
       return(undef);

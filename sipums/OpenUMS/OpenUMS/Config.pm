@@ -1,5 +1,5 @@
 package OpenUMS::Config;
-### $Id: Config.pm,v 1.2 2004/07/20 03:38:33 richardz Exp $
+### $Id: Config.pm,v 1.3 2004/07/20 03:41:25 richardz Exp $
 #
 # Config.pm
 #
@@ -29,6 +29,8 @@ our @ISA = ('Exporter');
 use constant SAFE_PATH => "/bin:/usr/bin";
 
 ################################################################# Config
+## YOU MUST CHANGE THIS EVERTIME YOU CHANGE DELIVERMAIL PID
+use constant OPENUMS_DELIVERPID => '/tmp/delivermail.pid';
 
 ### These are the basic paths for the OpenUMS directory tree.
 ### All paths are relative to the BASE_PATH.
@@ -82,7 +84,7 @@ use constant REPEAT_MENU_FLAG => "100"; ## used by the menus to go back in the m
 ## Database Values
 use constant DB_NAME => 'voicemail' ; 
 use constant DB_USER => 'ser' ; 
-use constant DB_PASS => 'helso' ; 
+use constant DB_PASS => 'olseh' ; 
 
 #use constant "VMINBOX"       => "Inbox";
 #use constant "VMINBOX"       => "\"In Box Voicemail\"";
@@ -131,7 +133,6 @@ use constant WAV_BITRATE  => 8000.0;
 use constant VOX_BITRATE  => 4000.0;
 
 ### Process unsent messages process
-use constant DELIVERPID => '/var/run/openums/delivermail.pid';
 
 our @EXPORT=qw(SAFE_PATH
 
@@ -172,7 +173,7 @@ our @EXPORT=qw(SAFE_PATH
 
                WAV_BITRATE VOX_BITRATE
 
-               DELIVERPID);
+               OPENUMS_DELIVERPID);
 
 our @EXPORT_OK = qw(DEBUG_TEXT_MODE);
 our @EXPORT_TAGS = 
