@@ -85,9 +85,7 @@ if ($_POST[conference_id]) {
 } elseif ($_GET[conference_id]) {
   $conference_id = $_GET[conference_id] ; 
 }
-
 if (!$data->is_conference_owner($conference_id,$auth->auth["uname"]) ) {
-  #$log
    header('Location: conference.php');
 }
 

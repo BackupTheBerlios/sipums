@@ -31,7 +31,13 @@
 	<table border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr>
 	<td><img src="images/phoneworld.jpg" border="0"></a></td>
-	<td align="right"><a href="http://www.servpac.com/"><img src="images/centuryc-logo.png" border="0"></a></td>
+	<td align="right">
+          <!--{if $company_logo_image}-->
+          <img src="images/<!--{$company_logo_image}-->" border="0">
+          <!--{else}-->
+          <a href="http://www.servpac.com/"><img src="images/servpac.png" border="0"></a>
+          <!--{/if}-->
+          </td>
 	</tr>
 	</table>
 </td>

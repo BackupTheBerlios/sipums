@@ -5,7 +5,7 @@
  * Copyright (c) 1998-2000 NetUSE AG
  *                    Boris Erdmann, Kristian Koehntopp
  *
- * $Id: local.inc,v 1.2 2004/09/01 23:40:23 kenglish Exp $
+ * $Id: local.inc,v 1.3 2004/09/07 21:22:40 kenglish Exp $
  *
  */
 
@@ -221,7 +221,7 @@ class phplib_Pre_Auth extends phplib_Auth {
 			$this->auth["uname"] = $row->username;
 			$this->auth["udomain"] = $row->domain;
 			$this->auth["client_id"] = $row->client_id;
-                        $this->auth['admin_client_ids'] = $this->data->get_admin_client_ids($row->client_id); 
+                        #$this->auth['admin_client_ids'] = $this->data->get_admin_client_ids($row->client_id); 
 			$uid=$pre_uid;
 
 /*

@@ -3,6 +3,8 @@ function get_smarty_header($data, $auth, $perm ) {
 
   $smarty = get_smarty();
   $smarty->assign("uname",$auth->auth[uname]);
+  global $company_logo_image;
+  $smarty->assign("company_logo_image", $company_logo_image);
   if ($perm->have_perm('SUPER') ) {
     $smarty->assign("admin_reseller",1); 
     $smarty->assign("admin_clients",1); 
@@ -16,7 +18,8 @@ function get_smarty_header($data, $auth, $perm ) {
 
     $udomain_values = $opts[0];
     $udomain_output = $opts[1];
-                                                                                                                                               
+
+
     $smarty->assign("udomain_values", $udomain_values);
     $smarty->assign("udomain_output", $udomain_output);
     global $adomain;

@@ -209,7 +209,7 @@ class SpUser {
   function setCallerIdToUnknown() {
     global $log; 
     if ($this->username) { 
-      $q = "UPDATE subscriber SET rpid = '<sip:unknown@$" . $this->domain . ">' " . 
+      $q = "UPDATE subscriber SET rpid = '\"\" <sip:unknown@" . $this->domain . ">' " . 
         " WHERE " . $this->getMyWhere() ; 
 
       $res=$this->db->query($q);   
@@ -243,7 +243,7 @@ class SpUser {
   
       if ($first_name && $last_name) { 
          $AREA_CODE = $this->AREA_CODE; 
-         $caller_id = "\"$first_name $last_name\" <sip:$this->AREA_CODE$username@$domain>"; 
+         $caller_id = "\"\" <sip:$this->AREA_CODE$username@$domain>"; 
       }  else {
          $caller_id = "<sip:$username@$domain>"; 
       } 
@@ -278,7 +278,7 @@ class SpUser {
       $company_number  = $row[1]; 
       if ($company_name && $company_number) { 
             $AREA_CODE = $this->AREA_CODE; 
-            $caller_id = "\"$company_name\" <sip:" . $this->AREA_CODE . "$company_number@$edit_udomain>"; 
+            $caller_id = "\"\" <sip:" . $this->AREA_CODE . "$company_number@" . $this->$domain; 
             $log->log("caller_id = $caller_id"); 
       } else {
           return false ; 

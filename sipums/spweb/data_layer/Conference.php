@@ -288,7 +288,7 @@ class Conference {
           $email_body = "Aloha $row[invitee_name], \n"
           . "   The conference '" . $this->conferenceName . "' has been cancelled by " . $this->ownerName . "\n"
           . '   Conference Date: '. $this->conferenceDateFormatted  . "\n"
-          . '   Start Time : '. $this->beginTimeFormatted . " Hawaiian Standard Time\n"
+          . '   Start Time : '. $this->beginTimeFormatted . "\n"
           . "\n";
           $log->log("email_body $email_body"); 
           mail($row[invitee_email] , "Cancellation of " . $this->conferenceName,  $email_body,

@@ -183,11 +183,10 @@ class Invitee {
         $email_body = "Aloha $this->inviteeName, \n"
         . "   You have been inviteed to attend the conference '" . $conference->conferenceName . "' by " . $conference->ownerName . "\n"
         . '   Conference Date: '. $conference->conferenceDate->getMonth(). "-" . $conference->conferenceDate->getDay().'-' . $conference->conferenceDate->getYear() . "\n\n" 
-        . '   Start Time : '. $conference->beginTime->getHour(). ":" . $conference->beginTime->getMinute() . " Hawaiian Standard Time\n"
-        . '   Your Conference Code : '. $this->inviteeCode . "\n"
-        . "   Number to Call: 237-5409\n\n You may call 5 minutes prior to the conference. See you there.\n";
-	$subject = "You have been invited to a conference call by " . $conference->ownerName  ;
-        mail($this->inviteeEmail, $subject,  $email_body,
+        . 'Start Time : '. $conference->beginTime->getHour(). ":" . $conference->beginTime->getMinute() . "\n"
+        . 'Your Conference Code : '. $this->inviteeCode . "\n"
+        . "Number to Call: 356-0078\n\n You may call 5 minutes prior to the conference\n";
+        mail($this->inviteeEmail, "Invitation to " . $conference->conferenceName,  $email_body,
            "From: kelepona@{$_SERVER['SERVER_NAME']}\r\n" .
            "X-Mailer: PHP/" . phpversion());
 
@@ -297,7 +296,7 @@ class Invitee {
         . "   We are sorry to inform you that you have been removed from the conference '" . $conference->conferenceName . "' by " . $conference->ownerName . "\n"
         . '   Conference Date: '. $conference->conferenceDate->getMonth(). "-" . $conference->conferenceDate->getDay().'-' . $conference->conferenceDate->getYear() . "\n\n"
         . 'Start Time : '. $conference->beginTime->getHour(). ":" . $conference->beginTime->getMinute() . "\n"
-        . "\n";
+        . "\n\n Maybe next time you well be nicer to $conference->ownerName, as of right now, he thinks you're a real jerk.\n";
         mail($this->inviteeEmail, "Removal from  conference " . $conference->conferenceName,  $email_body,
            "From: kelepona@{$_SERVER['SERVER_NAME']}\r\n" .
            "X-Mailer: PHP/" . phpversion());

@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: index.php,v 1.14 2004/08/30 04:22:54 kenglish Exp $
+ * $Id: index.php,v 1.15 2004/09/07 21:22:40 kenglish Exp $
  */
 
 require "prepend.php";
@@ -48,6 +48,12 @@ do {
     $sess->register('uname');
     $sess->register('udomain');
     $sess->register("adomain");
+    $sess->register("company_logo_image");
+
+
+    $company_logo_image =  $data->get_company_logo();
+    $log->log( " got company_logo_image = $company_logo_image");
+
     $pre_uid=$phplib_id;
     $udomain=$temp_udomain;
     $adomain=$temp_udomain;
@@ -60,14 +66,13 @@ do {
 } while (false);
 
 
-$opts = $data->get_domain_options(null,null);
 
-$udomain_values = $opts[0]; 
-$udomain_output = $opts[1]; 
-
-$smarty->assign("udomain_values", $udomain_values);
-$smarty->assign("udomain_output", $udomain_output);
-
+#$udomain_values = $opts[0]; 
+#$udomain_output = $opts[1]; 
+#
+#$smarty->assign("udomain_values", $udomain_values);
+#$smarty->assign("udomain_output", $udomain_output);
+#
 
 $log->log("creating data layer");
 

@@ -625,6 +625,31 @@ class CDL_common{
         return ;
     } 
   }
+  function get_company_logo() {
+    global $log,$auth; 
+
+    $log->log("get_company_logo: the client_id is " . $auth->auth["client_id"]); 
+    $log->log("get_company_logo: the uname is " . $auth->auth["uname"]); 
+    $log->log("get_company_logo: the domain is " . $auth->auth["udomain"]); 
+
+    $q = "SELECT c.company_logo_image  FROM subscriber s,clients c WHERE " .
+         " c.client_id = s.client_id AND  username='" . $auth->auth["uname"] . "' "  .
+         " AND domain='" . $auth->auth["udomain"] . "' "; 
+
+
+    $res=$this->db->query($q);
+//    if (DB::isError($res)) {
+          
+ //    }
+    $row=$res->fetchRow();
+    $res->free();
+
+    $company_logo_image=$row[0]; 
+    $log->log("company_logo_image = $company_logo_image"); 
+
+    return $company_logo_image ; 
+
+  } 
 
 		
 }
