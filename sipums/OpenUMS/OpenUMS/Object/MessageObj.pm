@@ -4,7 +4,7 @@ package OpenUMS::Object::MessageObj;
 #
 # Modify/update/add/delete from list of new or saved messages.
 #
-# Copyright (C) 2003 Integrated Comtel Inc.
+# Copyright (C) 2004 Servpac Inc.
 #
 # This library is free software; you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published by the

@@ -1,9 +1,9 @@
 package OpenUMS::Menu::AppendMsgMP; 
-### $Id: AppendMsgMP.pm,v 1.3 2004/08/11 03:32:27 kenglish Exp $
+### $Id: AppendMsgMP.pm,v 1.4 2004/09/01 03:16:35 kenglish Exp $
 #
 # RecMsgMP.pm
 #
-# Copyright (C) 2003 Integrated Comtel Inc.
+# Copyright (C) 2004 Servpac Inc.
 #
 # This library is free software; you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published by the

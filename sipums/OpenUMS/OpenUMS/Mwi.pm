@@ -1,6 +1,6 @@
-### $Id: Mwi.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: Mwi.pm,v 1.2 2004/09/01 03:16:35 kenglish Exp $
 #
-# Copyright (C) 2003 Comtel
+# Copyright (C) 2004 Servpac Inc.
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
