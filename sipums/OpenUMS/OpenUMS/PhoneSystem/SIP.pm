@@ -1,5 +1,5 @@
 package OpenUMS::PhoneSystem::SIP ; 
-### $Id: SIP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: SIP.pm,v 1.2 2004/07/31 01:00:49 kenglish Exp $
 #
 # SIP.pm
 #
@@ -25,6 +25,7 @@ use OpenUMS::PhoneSystem::PhoneSystemBase;
 use OpenUMS::Log;
 use OpenUMS::DbQuery;
 use OpenUMS::Config;
+use File::Temp;
 
 use base ("OpenUMS::PhoneSystem::PhoneSystemBase"); 
 
@@ -153,7 +154,70 @@ sub do_xfer {
 
    $ctport->dial("&,$ext,");
    $ctport->clear();
+}
+
+sub send_mwi_on {
+ my ($user) = @_;  
+
+ my $mwi_fifo_cmd = qq(:t_uac_dlg:hh
+NOTIFY
+sip:$user
+.
+From:sipums\@o-matrix.org
+To:$user
+Event: message-summary
+Content-Type: application/simple-message-summary
+                                                                                                                                               
+Messages-Waiting: yes
+Voicemail: 2/5
+.
+
+);
+#send_fifo($mwi_fifo_cmd);
+  
 
 }
+sub send_mwi {
+
+  my ($user,$mwi_action) = @_;
+  $mwi_action = "no";
+
+  my $resp = (int(rand(10000)) + 1) .  ".fifo";
+  my $FIFO = "/tmp/$resp"; 
+
+  print "$FIFO...\n";
+
+  `mkfifo $FIFO`; 
+  `chmod a+w $FIFO`; 
+
+  my $handle = new File::Temp(UNLINK => 1, SUFFIX => '.fifo');
+  my $cmd_file = $handle->filename; 
+
+  my $mwi_fifo_cmd = qq(:t_uac_dlg:$resp
+NOTIFY
+sip:$user
+.
+From:sipums\@o-matrix.org
+To:$user
+Event: message-summary
+Content-Type: application/simple-message-summary
+ 
+Messages-Waiting: $mwi_action
+Voicemail: 2/5
+.
+
+);
+  print "$mwi_fifo_cmd"; 
+  trap 
+  my $val = `cat $cmd_file >/tmp/ser_fifo`;
+  open(FIFO, "< $FIFO")         or die $!;
+  while (<FIFO>) {
+    print "Got: $_";
+  }
+  close(FIFO);
+
+}
+
+
 
 1; 
