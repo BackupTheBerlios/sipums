@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.7 2004/08/11 03:32:27 kenglish Exp $
+### $Id: Common.pm,v 1.8 2004/08/13 19:32:47 kenglish Exp $
 #
 # Common.pm
 #
@@ -280,9 +280,22 @@ sub add_user($$$$)
 #                        && (-w USER_PATH) && (-x USER_PATH) );
 
   my $full_user_path = $main::CONF->get_var('VM_PATH') . USER_PATH;
-  print STDERR " full_user_path $full_user_path\n"; 
-  return(0,'User directories do not exists') unless ( (-e $full_user_path) && (-d $full_user_path) 
-                        && (-w $full_user_path) && (-x $full_user_path) );
+  #return(0,'User directories do not exists') unless ( (-e $full_user_path) && (-d $full_user_path) 
+  #                      && (-w $full_user_path) && (-x $full_user_path) );
+			 
+  unless (-e  $full_user_path) {
+     return(0, "No User directories for this domain $full_user_path") ;
+  } 
+  unless (-d  $full_user_path) {
+     return(0, "User directories for this domain are not a directory: $full_user_path") ;
+  } 
+  unless (-w  $full_user_path) {
+     return(0, "User directories for this domain are not WRITABLE $full_user_path") ;
+  } 
+  unless (-w  $full_user_path) {
+     return(0, "User directories for this domain are not EXECUTABLE $full_user_path") ;
+  } 
+
   return(0, 'User directory already exists') if (-e "$full_user_path$extension");
   umask 002;
   return(0,"Could not make $full_user_path$extension directory") unless mkdir("$full_user_path$extension");
@@ -480,7 +493,7 @@ sub count_sound_gen {
         if ($i != 0 ) { 
            $ret_sound .= " " ; 
         } 
-        $ret_sound .= $files[$i]  ; 
+        $ret_sound .= OpenUMS::Common::get_prompt_sound($files[$i])  ; 
         if ($card_flag && ($i == ($num_files - 1) ) ) {
           $ret_sound .= "card"  ; 
         } 
@@ -492,11 +505,11 @@ sub get_no_greeting_sound {
   my $sound =  OpenUMS::Common::get_prompt_sound("imsorry")   ; 
   $sound .= " "; 
   $sound .= OpenUMS::Common::get_prompt_sound("extension"); 
-  my $ext_sound = OpenUMS::Common::ext_sound_gen($ext ); 
+  my $ext_sound = OpenUMS::Common::ext_sound_gen($ext); 
   if ($ext_sound ) {
     $sound .= " $ext_sound"; 
   } 
-  $sound .= " " . OpenUMS::Common::ext_sound_gen("doesnotanswer"); 
+  $sound .= " " . OpenUMS::Common::get_prompt_sound("doesnotanswer"); 
   return $sound ; 
 }
 
@@ -512,7 +525,7 @@ sub ext_sound_gen {
   for (my $i = 0; $i < $len; $i++ ) {
 
     my $num = substr($ext, $i, 1 ); 
-    my $num_file =  OpenUMS::Common::ext_sound_gen($num); 
+    my $num_file =  OpenUMS::Common::get_prompt_sound($num); 
     push @sounds, $num_file; 
   }  
 

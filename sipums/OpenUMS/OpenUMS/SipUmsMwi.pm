@@ -1,4 +1,4 @@
-### $Id: SipUmsMwi.pm,v 1.4 2004/08/05 09:14:14 kenglish Exp $
+### $Id: SipUmsMwi.pm,v 1.5 2004/08/13 19:32:47 kenglish Exp $
 #
 # Copyright (C) 2003 Comtel
 #
@@ -52,12 +52,15 @@ my $DEBUG = 1;
 
 
 
+
 #################################
 ## sub update_mwis($$)
 #################################
 sub update_mwis($$)
 {
   my ($dbh,$user_mailboxes) = @_;
+  #my $log = &OpenUMS::Log::new();
+  $log->debug("They called update_mwis"); 
   ## populate for new users...
   populate($dbh); 
   ## these are all the guys we turn it on for...
@@ -73,7 +76,7 @@ sub update_mwis($$)
   if (scalar(@exts ) ) { 
      $log->debug(scalar(@exts )  . " Mwis processed\n"); 
   }  else {
-     $log->debug("NO  Mwi to process\n"); 
+     $log->debug("NO Mwi to process\n"); 
   } 
 } 
 
@@ -156,12 +159,12 @@ sub get_data {
    $sth  = $dbh->prepare($sql);
    $sth->execute();
 
-   #while (my ($ext,$last_visit_uts, $last_msg_uts,$new_message_count) = $sth->fetchrow_array() ) {
-   #   $log->debug("$ext--> $new_message_count");
-   #   if ($last_msg_uts > $last_visit_uts) { 
-   #       $data->{$ext}->{action} = 'A'; ## activate
-   #   } 
-   #} 
+#   while (my ($ext,$last_visit_uts, $last_msg_uts,$new_message_count) = $sth->fetchrow_array() ) {
+#      $log->debug("$ext--> $new_message_count");
+#      if ($last_msg_uts > $last_visit_uts) { 
+#          $data->{$ext}->{action} = 'A'; ## activate
+#      } 
+#   } 
    
 
    return $data ;

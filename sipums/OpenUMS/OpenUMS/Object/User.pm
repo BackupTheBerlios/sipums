@@ -1,5 +1,5 @@
 package OpenUMS::Object::User;
-### $Id: User.pm,v 1.5 2004/08/11 03:32:27 kenglish Exp $
+### $Id: User.pm,v 1.6 2004/08/13 19:32:47 kenglish Exp $
 #
 # User.pm
 #
@@ -386,7 +386,7 @@ sub save_greeting {
   my ($temp_file, $temp_path) =  $self->get_temp_file('RECGREET');
   my ($new_file,$new_path) =  OpenUMS::DbQuery::get_new_greeting_file ($self->extension());
    
-  my $target_file  = "$new_path$new_file" ; 
+  my $target_file  = $main::CONF->get_var('VM_PATH') . "$new_path$new_file" ; 
   $log->debug( "moving ... $temp_path$temp_file to $target_file" );
 
   if (!(-e "$temp_path$temp_file") )  {

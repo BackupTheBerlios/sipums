@@ -285,7 +285,7 @@ sub play($) {
   my $files_str = shift;
 
   if (!$files_str ) { 
-     syslog('debug', "PLAY CALLED WITH NO FILE " . $files_str );
+     syslog('info', "PLAY CALLED WITH NO FILE " . $files_str );
      return 
   }; 
   ## get the java object
@@ -393,7 +393,7 @@ sub record($$$$$) {
    use Data::Dumper;
    my $details = $read->details();
    my $length = $details->{'length'};
-   my $trim_length = $length - 0.060;
+   my $trim_length = $length - 0.080;
    my $tmp_file = $file; 
    $tmp_file =~ s/\.wav$/tmp.wav/; 
    my $cmd = "sox $file $tmp_file trim 0 $trim_length";

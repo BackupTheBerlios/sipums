@@ -1,6 +1,6 @@
 package OpenUMS::Menu::IntroMP ; 
 
-### $Id: IntroMP.pm,v 1.4 2004/08/11 03:32:27 kenglish Exp $
+### $Id: IntroMP.pm,v 1.5 2004/08/13 19:32:47 kenglish Exp $
 #
 # .pm
 #
@@ -70,7 +70,7 @@ sub _play_menu () {
 
   foreach my $msound ( @{$menuSounds->{M} } ) {
     if ($msound->{sound_file}) { 
-      push @to_play_sounds,OpenUMS::Common::get_prompt_sound( $msound->{sound_file}) ;
+      push @to_play_sounds,OpenUMS::Common::get_prompt_sound($msound->{sound_file}) ;
     } 
     if (defined($msound->{var_name} ) ) { 
       if  ($msound->{var_name} eq 'NAME') {

@@ -52,7 +52,7 @@ $caller = &get_caller_id($ser_from);
 $log->debug("-----------------------------------");
 $log->debug("NEW CALL");
 $log->debug("-- -- CALL TO $uname,$domain ");
-$log->debug("-- -- CALL FROM $caller");
+$log->debug("-- -- CALL FROM --$caller--");
 
 ## get the dbh, get extension and change to the voicemail database to use
 #my $dbh = OpenUMS::Common::get_dbh();

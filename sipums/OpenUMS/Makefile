@@ -23,7 +23,7 @@ CTPORT_LIBS = Telephony/CTPortJr.pm Telephony/SemsIvr.pm
 
 DELIVER_MAIL = bin/delivermail
 ADD_VM_USER = bin/addvmuser
-ADD_VM_USER = bin/deletevmuser
+DEL_VM_USER = bin/deletevmuser
 
 LIBS = $(OPENUMS_LIBS) $(MENU_LIBS) $(OBJ_LIBS)
 
@@ -51,4 +51,5 @@ install: $(LIBS)  .compiledok
 	$(INSTALL) -D -v -m 644 $(CTPORT_LIBS) $(LIBDIR)/Telephony
 	$(INSTALL) -v -m 774 $(DELIVER_MAIL) $(BASEDIR)/
 	$(INSTALL) -v -m 774 $(ADD_VM_USER) $(BASEDIR)/
+	$(INSTALL) -v -m 774 $(DEL_VM_USER) $(BASEDIR)/
 	rm -f .compiledok

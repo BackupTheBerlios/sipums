@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.5 2004/08/05 09:14:14 kenglish Exp $
+### $Id: delivermail,v 1.6 2004/08/13 19:32:47 kenglish Exp $
 #
 # delivermail
 #
@@ -15,6 +15,7 @@ use File::Copy;
 use POSIX;
 
 use OpenUMS::Config;
+use OpenUMS::Log;
 use OpenUMS::Common; 
 use OpenUMS::GlobalSettings;
 use OpenUMS::IMAP;
@@ -51,7 +52,7 @@ sub send_mobile_notice($$);
 sub send_recorded_call($$);
 sub deliver_email($$);
 sub get_vstore_email($$);
-sub get_mobile_email_flag($);
+sub get_mobile_email_flag($$);
 sub subject_string($$);
 sub email_body($$$$$);
 sub get_voicemail_store($$);
@@ -94,7 +95,7 @@ unless (POSIX::setsid())
   { die("Could not resessionize daemon : $!"); }
 
 ### Initialize the log.
-my $log = &Log::new();
+my $log = $log = new OpenUMS::Log(); 
 unless (open(FILE, ">" . DELIVERMAIL_PIDFILE))
   {
     $log->error("!!!Unable to open lockfile: $!");
@@ -131,12 +132,13 @@ while(1)
     my $dbs = get_voicemail_dbs($dbh); 
 
     foreach $DB_NAME (@{$dbs} ) {  
-
+      $main::CONF->load_settings($DB_NAME);
       $log->debug("process_unsent_messages for $DB_NAME");
       $dbh->do("use " . $DB_NAME);
       my $sent = &process_unsent_messages($dbh);
       ##  update the MWIs
       $log->debug("$DB_NAME DELIVERED $sent NEW MESSAGES");
+      $log->debug("VM_PATH = " . $main::CONF->get_var('VM_PATH') ."!!!");
 
       $dbh->do("use " . SER_DB_NAME);
 
@@ -543,11 +545,11 @@ sub get_vstore_email($$)
 
 
 ##################################################### get_mobile_email_flag($)
-sub get_mobile_email_flag($)
+sub get_mobile_email_flag($$)
 {
+  my $dbh = shift; 
   my $extension = shift;
 
-  my $dbh = OpenUMS::Common::get_dbh();
   my $sql = qq(SELECT mobile_email, mobile_email_flag
                FROM VM_Users
                WHERE extension = ?);
@@ -572,7 +574,7 @@ sub deliver_email($$)
 
   my $extension = $msg_href->{'extension_to'};
   my $caller_id = $msg_href->{'extension_from'};
-  my $path = BASE_PATH . $msg_href->{'message_wav_path'};
+  my $path = $main::CONF->get_var('VM_PATH') . $msg_href->{'message_wav_path'};
   my $file = $msg_href->{'message_wav_file'};
 
   $log->debug("Preparing $file file for delivery.");
@@ -678,7 +680,7 @@ sub deliver_email($$)
       $sth->finish();
 
       ### Do they want a mobile notice?
-      if ( defined(my $mobile_email = get_mobile_email_flag($extension)) )
+      if ( defined(my $mobile_email = get_mobile_email_flag($dbh, $extension)) )
         { send_mobile_notice($msg_href, $mobile_email); }
 
     } 
@@ -746,7 +748,7 @@ sub send_recorded_call($$)
   my $extension = $msg_href->{'extension_to'};
   my $file = $msg_href->{'message_wav_file'};
   my $caller_id = $msg_href->{'extension_from'};
-  my $path = BASE_PATH . $msg_href->{'message_wav_path'};
+  my $path = $main::CONF->get_var('VM_PATH') . $msg_href->{'message_wav_path'};
   my $subject = subject_string($caller_id, 0);
   my $wavduration = POSIX::ceil(&sound_duration("$path$file"));
   if ($wavduration == 0)
@@ -821,7 +823,7 @@ sub send_mobile_notice($$)
   my $extension = $msg_href->{'extension_to'};
   my $file = $msg_href->{'message_wav_file'};
   my $caller_id = $msg_href->{'extension_from'};
-  my $path = BASE_PATH . $msg_href->{'message_wav_path'};
+  my $path = $main::CONF->get_var('VM_PATH') . $msg_href->{'message_wav_path'};
   my $subject = subject_string($caller_id, 0);
 
   my $wavduration = POSIX::ceil(&sound_duration("$path$file"));
@@ -885,9 +887,9 @@ sub process_unsent_messages($)
   ### loop through each
   while (my $msg_href = $sth->fetchrow_hashref())
     {
-      my $temp_path = BASE_PATH . TEMP_PATH;
+      my $temp_path = $main::CONF->get_var('VM_PATH') . TEMP_PATH;
       my $extension = $msg_href->{'extension_to'};
-      my $msg_path = BASE_PATH . "users/$extension/messages/";
+      my $msg_path = $main::CONF->get_var('VM_PATH') . "users/$extension/messages/";
       my $msg_file = $msg_href->{'message_wav_file'};
       my $record_call_flag = $msg_href->{'record_call_flag'};
 
@@ -943,7 +945,7 @@ sub process_unsent_messages($)
             { deliver_email($dbh, $msg_href); }
         }
        ### Do they want a mobile notice?
-       if ( defined(my $mobile_email = get_mobile_email_flag($extension)) )
+       if ( defined(my $mobile_email = get_mobile_email_flag($dbh,$extension)) )
          { send_mobile_notice($msg_href, $mobile_email); }
        $unsent_count++; 
     }

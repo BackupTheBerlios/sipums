@@ -1,5 +1,5 @@
 package OpenUMS::Menu::PostRecMsgMP; 
-### $Id: PostRecMsgMP.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
+### $Id: PostRecMsgMP.pm,v 1.3 2004/08/13 19:32:47 kenglish Exp $
 #
 # RecMsgMP.pm
 #
@@ -43,7 +43,7 @@ sub _play_menu() {
   my $sound ; 
   if ($self->post_opt() =~ /^PLAYMSG/) {
      $log->debug("[PostRecMsgMP.pm] message_file = $message_file, " . TEMP_PATH . $message_file);
-     $sound = TEMP_PATH . $message_file; 
+     $sound = $main::CONF->get_var('VM_PATH') . TEMP_PATH . $message_file; 
   }  else {
      my $max_duration = $main::CONF->get_var('MESSAGE_TIMEOUT') ; 
      my $file_duration  = OpenUMS::Common::file_duration($message_file, $main::CONF->get_var('VM_PATH') . TEMP_PATH ) ; 
