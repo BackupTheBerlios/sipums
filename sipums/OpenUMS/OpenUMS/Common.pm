@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.10 2004/09/01 03:16:35 kenglish Exp $
+### $Id: Common.pm,v 1.11 2004/09/08 22:32:04 kenglish Exp $
 #
 # Common.pm
 #
@@ -41,6 +41,7 @@ use OpenUMS::Config;
 use OpenUMS::Log;
 use OpenUMS::DbUtils;
 use OpenUMS::DbQuery;
+use OpenUMS::Object::Sound;
 
 
 ################################################################# use Exporter
@@ -473,46 +474,54 @@ sub count_sound_gen {
   my $hundreds;
   my @files;
   my $all;
+
   unless ($num) {return undef};
   if ($num == 0) { push(@files, $num); }
-     my $thousands = int($num/1000) * 1000;
-     $num = $num - $thousands;
-     if ($thousands != 0) {
-       my $rem = $thousands/1000;
-       push(@files, $rem);
-       push(@files, "1000");
-     }
+  my $thousands = int($num/1000) * 1000;
+  $num = $num - $thousands;
+  if ($thousands != 0) {
+     my $rem = $thousands/1000;
+     push(@files, $rem);
+     push(@files, "1000");
+  }
 
-     $hundreds = int($num/100) * 100;
-     $num = $num - $hundreds;
-     if ($hundreds != 0) {
-        my $rem = $hundreds/100;
-        push(@files, $rem);
-        push(@files, "100");
-     }
+  $hundreds = int($num/100) * 100;
+  $num = $num - $hundreds;
+  if ($hundreds != 0) {
+      my $rem = $hundreds/100;
+      push(@files, $rem);
+      push(@files, "100");
+  }
                                                                                                                              
-     $tens = int($num/10) * 10;
+  $tens = int($num/10) * 10;
 
-     if ($num > 20) {
-         $num = $num - $tens;
-         if ($tens != 0) { push(@files, $tens); }
-     }
-     if ($num != 0) { push(@files, $num); }
+  if ($num > 20) {
+       $num = $num - $tens;
+       if ($tens != 0) { push(@files, $tens); }
+  }
+  if ($num != 0) { 
+        push(@files, $num); 
+  }
      my $num_files  = scalar(@files) ; 
      for (my $i =0; $i < $num_files ; $i++) {
         if ($i != 0 ) { 
            $ret_sound .= " " ; 
         } 
+        my $sound_obj; 
         if ($card_flag && ($i == ($num_files - 1) ) ) {
-          $ret_sound .= OpenUMS::Common::get_prompt_sound($files[$i] . "card")  ; 
+          $sound_obj =  new OpenUMS::Object::Sound($files[$i]."card",0);
+          #$ret_sound .= $sound_obj->file();##  .= OpenUMS::Common::get_prompt_sound($files[$i] . "card")  ; 
         }else { 
-          $ret_sound .= OpenUMS::Common::get_prompt_sound($files[$i])  ; 
+          $sound_obj =  new OpenUMS::Object::Sound($files[$i],0);
         } 
+        $ret_sound .= $sound_obj->file(); ## OpenUMS::Common::get_prompt_sound($files[$i])  ; 
      } 
   return $ret_sound;
 }
 sub get_no_greeting_sound {
   my $ext = shift; 
+  
+  my  
   my $sound =  OpenUMS::Common::get_prompt_sound("imsorry")   ; 
   $sound .= " "; 
   $sound .= OpenUMS::Common::get_prompt_sound("extension"); 
@@ -531,6 +540,7 @@ sub get_no_greeting_sound {
 sub ext_sound_gen {
   my $ext = shift ;   
   my $len = length($ext); 
+  my @sound_objs; 
 
   my @sounds ; 
   for (my $i = 0; $i < $len; $i++ ) {
@@ -1150,16 +1160,17 @@ sub ser_to_extension {
   return  $ext; 
 
 } 
-sub get_prompt_sound {
-  my $file = shift ; 
-  my $new_file = $main::CONF->get_var('VM_PATH') . PROMPT_PATH . $file ; 
-  if ($new_file !~ /\.wav$/) {
-     ## add the extension
-     $new_file .= ".wav"; 
-  } 
-  return $new_file; 
-  
-
-} 
+#sub get_prompt_sound {
+#  my $file = shift ; 
+#  my $new_file = BASE_PATH . PROMPT_PATH . $file ; 
+# #  $main::CONF->get_var('VM_PATH') . PROMPT_PATH . $file ; 
+#  if ($new_file !~ /\.wav$/) {
+#     ## add the extension
+#     $new_file .= ".wav"; 
+#  } 
+#  return $new_file; 
+#  
+#
+#} 
 
 1; 

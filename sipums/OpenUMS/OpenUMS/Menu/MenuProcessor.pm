@@ -1,5 +1,5 @@
 package OpenUMS::Menu::MenuProcessor;
-### $Id: MenuProcessor.pm,v 1.4 2004/09/01 03:16:35 kenglish Exp $
+### $Id: MenuProcessor.pm,v 1.5 2004/09/08 22:32:05 kenglish Exp $
 #
 # MenuProcessor.pm
 #
@@ -86,6 +86,7 @@ Kevin W. English, kenglish@comtelhi.com
 use strict;
 
 use OpenUMS::Config; 
+use OpenUMS::Object::Prompt; 
 use OpenUMS::Log; 
 use Telephony::SemsIvr; 
 
@@ -167,22 +168,21 @@ sub _get_data  {
   my $menu_id = $self->{MENU_ID} ; 
   my $dbh = $self->{DBH};
 
-  my $sql = "SELECT sound_type, sound_title, sound_file, var_name " ;
-  if (TEXT_MODE) {
-    ## if we're in text mode, add this, otherwise it's a waste of resourse...
-    $sql .= ", menu_text "; 
-  } 
+  my $sql = "SELECT sound_type, sound_title, sound_file, var_name, custom_sound_flag " ;
   $sql  .= qq{ FROM menu_sounds WHERE menu_id = ? order by order_no };
   ##################$log->debug($sql . $menu_id); 
   my $sth = $dbh->prepare($sql) ;
   $sth->execute($menu_id);
   my $menuSounds;
-  while (my ($sound_type, $sound_title , $sound_file, $var_name , $menu_text) = $sth->fetchrow_array() ) {
+  while (my ($sound_type, $sound_title , $sound_file, $var_name , $custom_sound_flag) = $sth->fetchrow_array() ) {
      my $sound_ref ;
      $sound_ref->{sound_title} = $sound_title ;
      $sound_ref->{sound_file} = $sound_file ;
-     $sound_ref->{menu_text} = $menu_text ;
      $sound_ref->{var_name} = $var_name ;
+     # $sound_ref->{custom_sound_flag} = $custom_sound_flag ;
+     if ($sound_file ) { 
+       $sound_ref->{PROMPT_OBJ} = new OpenUMS::Object::Prompt($sound_file, $custom_sound_flag) ;
+     } 
      push @{$menuSounds->{$sound_type}} , $sound_ref ; 
   }
   $sth->finish();

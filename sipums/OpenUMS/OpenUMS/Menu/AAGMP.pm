@@ -1,5 +1,5 @@
 package OpenUMS::Menu::AAGMP; 
-### $Id: AAGMP.pm,v 1.3 2004/09/01 03:16:35 kenglish Exp $
+### $Id: AAGMP.pm,v 1.4 2004/09/08 22:32:04 kenglish Exp $
 #
 # AAGMP.pm
 #
@@ -110,8 +110,9 @@ sub _play_menu () {
   ## get the first sound off that sound array
   my @sounds ; 
   foreach my $hr (@{$menuSounds->{M}} ) {
-     $log->debug("sound_file = $hr->{sound_file} ...");
-     push @sounds, OpenUMS::Common::get_prompt_sound(  $hr->{sound_file}); 
+     my $sound_file =  $hr->{PROMPT_OBJ}->file();  
+     push @sounds, $sound_file; 
+     $log->debug("[AAGMP] sound_file = $sound_file ...");
   } 
 
   my $sound =  join(" ", @sounds); 

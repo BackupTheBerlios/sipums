@@ -1,5 +1,5 @@
 package OpenUMS::Menu::PostRecMsgMP; 
-### $Id: PostRecMsgMP.pm,v 1.4 2004/09/01 03:16:35 kenglish Exp $
+### $Id: PostRecMsgMP.pm,v 1.5 2004/09/08 22:32:05 kenglish Exp $
 #
 # RecMsgMP.pm
 #
@@ -52,9 +52,9 @@ sub _play_menu() {
      
      $log->debug("[PostRecMsgMP.pm]  file_duration = $file_duration, max_duration = $max_duration");
      if ($file_duration >= $max_duration ) { 
-        $sound =  OpenUMS::Common::get_prompt_sound($menuSounds->{M}->[1]->{sound_file})  ;
+        $sound =  $menuSounds->{M}->[1]->{PROMPT_OBJ}->file()  ;
      } else {
-        $sound =  OpenUMS::Common::get_prompt_sound( $menuSounds->{M}->[0]->{sound_file})  ;
+        $sound =  $menuSounds->{M}->[0]->{PROMPT_OBJ}->file(); ##  OpenUMS::Common::get_prompt_sound( $menuSounds->{M}->[0]->{sound_file})  ;
      } 
   }
   $log->debug("[PostRecMsgMP] will play sound $sound");
@@ -117,6 +117,8 @@ sub process {
   
   if ($item_action =~ /^SAVEMSG/){ 
      $user->save_message();
+     $log->debug("saved message, signalling delivermail"); 
+     OpenUMS::Common::signal_delivermail() ;
   } elsif ($item_action =~ /^CANCELMSG/) { 
      $user->clear_message_file();
      $self->{CTPORT}->play(OpenUMS::Common::get_prompt_sound( "messagecanceled")); 
