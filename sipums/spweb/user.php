@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: user.php,v 1.11 2004/08/13 20:50:10 kenglish Exp $
+ * $Id: user.php,v 1.12 2004/08/17 19:33:56 kenglish Exp $
  */
 
 require 'prepend.php';
@@ -23,7 +23,7 @@ page_open (array("sess" => "phplib_Session_Pre_Auth",
 if ($perm->have_perm('SUPER') || $perm->have_perm('RESELLER') ) {
   // we send them to the account page
   $log->log("he, redirect here...");
-  header('Location: domain.php'); 
+  header('Location: domains.php'); 
   exit ;
 } elseif ($perm->have_perm('ADMIN') ) {
   // we send them to the account page

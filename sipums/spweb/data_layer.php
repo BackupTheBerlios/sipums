@@ -622,7 +622,6 @@ class CDL_common{
         $log->log("COULD NOT CHANGE DB TO $db_name");
         return ; 
     } else {
-        $log->log("CHANGED DB TO " .$this->db->_db);
         return ;
     } 
   }

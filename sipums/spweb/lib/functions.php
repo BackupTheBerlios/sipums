@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: functions.php,v 1.10 2004/08/13 20:50:10 kenglish Exp $
+ * $Id: functions.php,v 1.11 2004/08/17 19:33:56 kenglish Exp $
  */
 
 
@@ -684,7 +684,6 @@ function do_debug($msg) {
       $log->log("failed to change db to $db_name",LOG_ERR);
       return false ;
     } else {
-      $log->log("CHANGED DB TO " .$db->_db);
       return true;
     }
   } 
@@ -693,7 +692,6 @@ function do_debug($msg) {
     global $log; 
     global $config;
  
-    $log->log("CHANGING BACK  TO " . $config->data_sql->db_name); 
     $config->data_sql->db_name ;
     return change_db($db, $config->data_sql->db_name ); 
   } 
@@ -702,9 +700,16 @@ function do_debug($msg) {
     global $config;
 
     $new_db = $config->data_sql->db_name_conference;
-    $log->log("CHANGING TO CONFERENCE DB " . $new_db); 
 
     return change_db($db, $new_db); 
   }
+  function date_to_sql($dateObj) {
+     $date_sql = sprintf("%04d-%02d-%02d", $dateObj->year, $dateObj->month,$dateObj->day); 
+     return $date_sql; 
+  } 
+  function time_to_sql($dateObj) {
+     $date_sql = sprintf("%02d:%02d:%02d", $dateObj->hour, $dateObj->minute,$dateObj->second); 
+     return $date_sql; 
+  } 
 
 ?>

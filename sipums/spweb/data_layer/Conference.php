@@ -8,6 +8,7 @@ class Conference {
 
   var $conferenceId;
   var $companyId;
+  // these are PEAR Date objects
   var $conferenceDate;
   var $beginTime;
   var $endTime;
@@ -16,7 +17,7 @@ class Conference {
 //  var $beginTime;
 //  var $endTime;
 
-  var $dbFields;
+  var $constraintFields;
   var $db;
 
   // vm variables
@@ -38,7 +39,48 @@ class Conference {
   function get() {
     global $log; 
     // all these must be present to do the query
-    if ($this->conference_id) { 
+    if ($this->conferenceId) { 
+      $q = "SELECT c.conference_id, c.company_id, conference_name, conference_date,begin_time, end_time,  "
+         . " invitee_email, invitee_name "
+         . " FROM conferences c, invitees i " 
+         . " WHERE i.conference_id = c.conference_id "
+         . " AND   i.owner_flag = 1 "
+         . " AND c.conference_id = " . $this->conferenceId ;
+
+      change_to_conference_db($this->db);
+      $res =  $res=$this->db->query($q);
+      if (DB::isError($res) ) {
+         $log->log("ERROR IN QUERY $q ");
+      }
+      $row = $res->fetchRow(DB_FETCHMODE_ASSOC);
+      $res->free();
+      change_to_default_db($this->db);
+      $this->companyId = $row['company_id'] ;
+      $this->conferenceName = $row['conference_name'] ;
+      $this->conferenceDate = new Date(); 
+      $this->conferenceDate->setDate($row['conference_date']);  
+      $this->ownerName = $row['invitee_name'] ;
+
+      list ($beginHour, $beginMinute ) = split(':',$row['begin_time']);
+      list ($endHour, $endMinute ) = split(':',$row['end_time']);
+      $this->beginTime = $this->conferenceDate; 
+      $this->endTime   = $this->conferenceDate; 
+
+      $this->beginTime->setHour($beginHour);
+      $this->beginTime->setMinute($beginMinute);
+
+      $this->endTime->setHour($endHour);
+      $this->endTime->setMinute($endMinute);
+
+      $log->log("month = " . $this->conferenceDate->getMonth()  ); 
+      $log->log("day = " . $this->conferenceDate->getDay()  ); 
+      $log->log("year = " . $this->conferenceDate->getYear()  ); 
+
+      $log->log("Begin hour = " . $this->beginTime->getHour() ) ;
+      $log->log("Begin min = " . $this->beginTime->getMinute() ) ;
+
+      $log->log("End Hour = " . $this->endTime->getHour() ) ;
+      $log->log("End Min = " . $this->endTime->getMinute() ) ; 
     } 
   }  
 
@@ -48,7 +90,7 @@ class Conference {
       change_to_conference_db($this->db);
       $q = "SELECT company_id FROM companies WHERE domain ='" . $this->domain . "' "; 
       $res =  $res=$this->db->query($q);
-      if (DB::isError($db) ) { 
+      if (DB::isError($res) ) { 
          $log->log("ERROR IN QUERY $q ");
       } 
       $row = $res->fetchRow();
@@ -58,14 +100,18 @@ class Conference {
       $this->companyId = $company_id; 
 
       return $company_id; 
+      
     } 
-  } 
+  }  
+
   function isPastDate() {
     global $log; 
     // get the unix timestamps
     $now_uts =  mktime(); 
+
     list($conf_mon, $conf_day, $conf_year) =  split("-",$this->dbFields[conference_date] ) ; 
     $log->log("$conf_mon, $conf_day,$conf_year  "); 
+
     $conference_uts = mktime(23,59,59,$conf_mon,$conf_day,$conf_year) ; 
     $log->log("now = $now_uts, conference_uts = $conference_uts "); 
     if ($conference_uts < $now_uts ) {
@@ -80,50 +126,140 @@ class Conference {
       $this->getCompanyId() ; 
     } 
       change_to_conference_db($this->db);
-      $q = "SELECT max_concurrent, max_time_mins,  max_invite FROM companies WHERE domain ='" . $this->domain . "' ";
-      $res =  $res=$this->db->query($q);
-      IF (dB::isError($db) ) {
+      $q = "SELECT max_concurrent, max_time_mins,  max_invitees  FROM companies WHERE domain ='" . $this->domain . "' ";
+      $res =  $this->db->query($q);
+      IF (dB::isError($res) ) {
          $log->log("ERROR IN QUERY $q ");
       }
       $log->log("q is $q");
       $row = $res->fetchRow(); 
 
-      $this->dbFields[max_concurrent] = $row[0] ;
-      $this->dbFields[max_time_mins] = $row[1] ;
-      $this->dbFields[max_invite] = $row[2] ;
-      $log->log("new max_time_mins -= " . $this->dbFields[max_time_mins] ); 
+      $this->constraintFields[max_concurrent] = $row[0] ;
+      $this->constraintFields[max_time_mins] = $row[1] ;
+      $this->constraintFields[max_invitees] = $row[2] ;
+      $log->log("new max_time_mins -= " . $this->constraintFields[max_time_mins] ); 
       change_to_default_db($this->db);
                                                                                                                                                
       $this->companyId = $company_id;
   } 
+
   function isMaxConcurrent() {
     global $log; 
     if (!$this->companyId) { 
       $this->getCompanyId() ; 
     } 
-    $log->log("creating ds");
-    $ds = new Date_Span();
+    $sql_conference_date = date_to_sql($this->conferenceDate); 
+    $sql_begin_time = time_to_sql($this->beginTime); 
+    $sql_end_time = time_to_sql($this->endTime); 
+    $q = "select count(*) FROM conferences WHERE conference_date = '$sql_conference_date' "
+     . "  AND (( begin_time >= '$sql_begin_time' and end_time <= '$sql_end_time')  "
+     . "  OR ( begin_time <= '$sql_begin_time' and end_time >= '$sql_end_time')  " 
+     . "  OR ( begin_time > '$sql_begin_time' and begin_time < '$sql_end_time')  " 
+     . "  OR ( end_time > '$sql_begin_time' and end_time < '$sql_end_time')  " 
+     . " ) "; 
 
-   
-    return true ; 
-   
+    $log->log("q= $q" ) ; 
+    change_to_conference_db($this->db);
+    $res =  $res=$this->db->query($q);
+    if (DB::isError($res) ) {
+         $log->log("ERROR IN QUERY $q " . $res->getMessage() ) ; 
+    }
+    $row = $res->fetchRow();
+    $res->free();
+    $concurrent = $row[0] ;
+    $log->log("concurrent = $concurrent " ) ; 
+    $log->log("Max concurrent = " . $this->constraintFields[max_concurrent] ) ; 
+    change_to_default_db($this->db);
+    if ($concurrent >= $this->constraintFields[max_concurrent]) { 
+      return false  ; 
+    } else {
+      return true ;
+    } 
   } 
+
   function isMaxTime(){
+
     global $log; 
     $ds = new Date_Span(); 
     $ds->setFromDateDiff($this->beginTime, $this->endTime) ; 
     $log->log("span = " . $ds->toMinutes()) ; 
-    $log->log("maxItme_mine = " . $this->dbFields[max_time_mins] ) ;   
-    if ($ds->toMinutes() > $this->dbFields[max_time_mins] ) {
+    $log->log("maxItme_mine = " . $this->constraintFields[max_time_mins] ) ;   
+    if ($ds->toMinutes() > $this->constraintFields[max_time_mins] ) {
       return false ; 
     } else {  
       return true; 
     }
+
   } 
-  function create() {
-    // $q = "INSERT INTO  
-    
-   
+
+
+  function create(&$error) {
+    global $log; 
+    // Make sure that everything is here
+    if  (!($this->companyId) ) {
+      $error = "No Company Id"; 
+      return false ;
+    } 
+    if (!$this->conferenceName) { 
+      $error = "No End Time."; 
+      return false ;
+    } 
+    if (!$this->conferenceDate) { 
+      $error = "No End Time."; 
+      return false ;
+    } 
+    if (!$this->beginTime) { 
+      $error = "No Start Time."; 
+      return false ;
+    } 
+    if (!$this->endTime) { 
+      $error = "No End Time."; 
+      return false ;
+    } 
+    // change to conference db
+
+    change_to_conference_db($this->db);
+    $sql_conference_date = $this->conferenceDate->year . "-" . $this->conferenceDate->month 
+           . "-" .  $this->conferenceDate->day ; 
+
+    $sql_begin_time = $this->beginTime->hour 
+           . ":" .  $this->beginTime->minute 
+           . ":00"; 
+
+    $sql_end_time = $this->endTime->hour . ":" .  $this->endTime->minute 
+           . ":00"; 
+
+    $q = "INSERT INTO  conferences (conference_id , company_id , conference_name, " 
+     . "  conference_date ,   	 begin_time , end_time ,  creator ) "
+     . " VALUES (0, " . $this->companyId . ", " 
+     . $this->db->quote($this->conferenceName) . "," 
+     . "'$sql_conference_date'," 
+     . "'$sql_begin_time', " 
+     . "'$sql_end_time', '$this->username' ) " ; 
+
+
+     $res=$this->db->query($q);
+     $ret = true ; 
+
+     if (dB::isError($res) ) {
+        $log->log("ERROR IN QUERY $q");
+        $log->log("MEssage = " . $res->getMessage()) ; 
+        $ret = false;
+        $error = "Failed to create conference " . $res->getMessage() ; 
+     }  else { 
+        $q = "SELECT LAST_INSERT_ID() " ; 
+        $res = $this->db->query($q) ; 
+        $row = $res->fetchRow();
+        $this->conferenceId = $row[0] ;
+        $res->free(); 
+  
+     } 
+
+     $log->log("insert is $q");  
+
+     change_to_default_db($this->db);
+
+     return $ret;    
   } 
 
 

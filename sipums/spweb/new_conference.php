@@ -7,6 +7,7 @@ require 'Smarty.class.php';
 require 'lib/nav.php';
 require 'data_layer/SpUser.php';
 require 'data_layer/Conference.php';
+require 'data_layer/Invitee.php';
 require_once 'Date.php';
 require_once 'Date/Calc.php';
 
@@ -14,6 +15,7 @@ require_once 'Date/Calc.php';
 function create_conference() {
   global $log, $spUser,$_POST,$data; 
   $msgs = array(); 
+  // check the title
   if (!$_POST[conference_name] ) { 
     $msgs[] = "Conference must have a title";
     return $msgs  ; 
@@ -26,26 +28,32 @@ function create_conference() {
   } 
   list ($m,$d,$y) = split('-',$_POST[conference_date]);
 
+  // Make date objects...
   $confDate = new Date(); 
   $confDate->setMonth($m); 
   $confDate->setYear($y); 
   $confDate->setDay($d); 
+  $confDate->setHour(0); 
+  $confDate->setMinute(0); 
+  $confDate->setSecond(0); 
   $beginTime = $confDate; 
   $endTime = $confDate; 
+
   list ($beginHour,$beginMinute) = split(':', $_POST[begin_time] ); 
   list ($endHour,$endMinute) = split(':', $_POST[end_time] ); 
+
   $beginTime->setHour($beginHour); 
   $beginTime->setMinute($beginMinute); 
   $endTime->setHour($endHour); 
   $endTime->setMinute($endMinute); 
-  $log->log(" beginHour,beginMinute => ($beginTime->hour,$beginTime->minute)"); 
-  $log->log(" endHour,endMinute => ($endHour,$endMinute)"); 
 
   // see if it's the past
   if ($beginTime->isPast() ){ 
     $msgs[] = "Conference date is in the Past.";
     return $msgs ; 
   }   
+
+  // Make sure the end time is not less than the begin time
   if (Date::compare($endTime, $beginTime) != 1     ){ 
     $msgs[] = "Start time must be before end time.";
     return $msgs ; 
@@ -54,32 +62,50 @@ function create_conference() {
   // create a new Conference object
 
   $conference = new Conference($data->db, $spUser->username,$spUser->domain); 
-  // set the date objects.
+
+  // get the user's company Id and load the companies constraints
   $conference->getCompanyId(); 
   $conference->loadConstraints() ; 
   // set the date objects.
   $conference->conferenceDate = $confDate; 
+  $conference->conferenceDate = $confDate; 
   $conference->beginTime = $beginTime; 
   $conference->endTime = $endTime; 
+  $conference->conferenceName = $_POST[conference_name] ; 
 
-  // get the company Id
+  // Is the conference too long
   if (!$conference->isMaxTime()) {
     $msgs[] = "Your conference exceeds the maximum amount of minutes.";
     return $msgs  ; 
   } 
   
-  // load Constrains from db.
+  // Are there other conferences scheduled for this time.
   if (!$conference->isMaxConcurrent()) {
     $msgs[] = "Your company has other conferences scheduled for this time.";
     return $msgs  ; 
   } 
-
-  
-  if (!$_POST[conference_name] ) { 
-    $msgs[] = "Conference must have a title";
-    return $msgs  ; 
+  $error = "nay!"; 
+  if ($conference->create($error) ) { 
+    $msgs[] = "Conference created id = " . $conference->conferenceId;
+    Header("Location: conference.php?msg=Conference created ") ;
+  } else {
+    $msgs[] = "Failed to create conference. ";
+     $msgs[] = "$error";
   } 
-    
+  $owner = new Invitee($data->db, $conference->conferenceId);
+  $owner->domain = $spUser->domain;
+  $owner->username = $spUser->username;
+  $owner->companyId = $conference->companyId; 
+  $owner->inviteeEmail = $spUser->dbFields[email_address] ; 
+  $owner->ownerFlag =  1; 
+  $owner->inviteeName = $spUser->dbFields[first_name] . " " . $spUser->dbFields[last_name] ; 
+  // genereate that unique code
+  $owner->generateInviteeCode();   
+  $owner->create();   
+  $owner->sendNotify();   
+  
+  return $msgs  ; 
+
 
 }
 
@@ -161,24 +187,28 @@ if ($_POST[conference_date] ) {
 
 }
 
-
+$date = new Date();
 if ($_POST[begin_time] ){ 
   $begin_time = $_POST[begin_time]; 
 } else { 
   // default value
-  $begin_time = "12:00"; 
+
+  $begin_time = $date->getHour() .  ":00";
+  $log->log("begin time = $begin_time ");
 }
 
 if ($_POST[end_time] ){ 
   $end_time = $_POST[end_time]; 
 } else { 
   // default value
-  $end_time = "13:00"; 
+ 
+  $end_time = ($date->getHour() +1) . ":00"; 
 }
 
 
 $footer_smarty = get_smarty(); 
 $header_smarty->assign('include_js_datepicker',1); 
+$header_smarty->assign('conference_bg_flag',1); 
 $header_smarty->display('app_header.tpl');
 $smarty->assign('conference_name',$conference_name); 
 $smarty->assign('conference_date',$conference_date); 

@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: new_conference.php,v 1.3 2004/08/13 20:50:10 kenglish Exp $
+ * $Id: new_conference.php,v 1.4 2004/08/17 19:33:56 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -26,9 +26,18 @@ class CData_Layer extends CDL_common{
        } 
 
        $row  = $res->fetchRow() ; 
-       $count = $row[0]; 
+       $count = $row[0] ; 
        $company_name = $row[1]; 
        $res->free(); 
+
+       if (!$count) {
+          $q = "SELECT company_name FROM companies WHERE domain='$domain' "  ; 
+          $res=$this->db->query($q);
+          $row = $res->fetchRow() ;
+          $company_name = $row[0];
+          $count  =0; 
+       } 
+       $count++;
        $conf_name = "$company_name Conference #$count" ; 
        $log->log("count = $count $conf_name "); 
   
