@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.11 2004/09/08 22:32:04 kenglish Exp $
+### $Id: Common.pm,v 1.12 2004/09/10 01:36:32 kenglish Exp $
 #
 # Common.pm
 #
@@ -41,7 +41,6 @@ use OpenUMS::Config;
 use OpenUMS::Log;
 use OpenUMS::DbUtils;
 use OpenUMS::DbQuery;
-use OpenUMS::Object::Sound;
 
 
 ################################################################# use Exporter
@@ -521,7 +520,6 @@ sub count_sound_gen {
 sub get_no_greeting_sound {
   my $ext = shift; 
   
-  my  
   my $sound =  OpenUMS::Common::get_prompt_sound("imsorry")   ; 
   $sound .= " "; 
   $sound .= OpenUMS::Common::get_prompt_sound("extension"); 

@@ -1,5 +1,5 @@
 package OpenUMS::Menu::AAGMP; 
-### $Id: AAGMP.pm,v 1.4 2004/09/08 22:32:04 kenglish Exp $
+### $Id: AAGMP.pm,v 1.5 2004/09/10 01:36:32 kenglish Exp $
 #
 # AAGMP.pm
 #
@@ -32,61 +32,62 @@ use OpenUMS::DbQuery;
 
 use base ("OpenUMS::Menu::MenuProcessor");
 
-
-#################################
-## sub _pre_data
-#################################
-sub _pre_data {
-  my $self = shift ; 
-  my $dbh = $self->{DBH}; 
-  my ($menu_id,$holiday_name) = OpenUMS::Holidays::get_holiday_menu_id($dbh);
-  if (!defined($menu_id) ) {
-     $self->{IS_HOLIDAY} = 0; 
-     my $old_menu_id = $menu_id ; 
-     $menu_id = OpenUMS::DbQuery::get_current_aa_menu_id($dbh); 
-     $log->debug("Called get current = $menu_id old_menu_id = $old_menu_id ");
-  } else {
-     $log->debug("It is a holiday!!!!!!!!!!!!!!!!!!!...");
-     $self->{IS_HOLIDAY} = 1; 
-     $self->{HOLIDAY_NAME} = $holiday_name; 
-  }  
-
-  $self->{MENU_ID} = $menu_id; 
-  return 1; 
-
-}
 sub _post_data {
   my $self = shift ;
   my $menu_id = $self->{MENU_ID} ;
   my $dbh = $self->{DBH};
-  if (!$self->{IS_HOLIDAY}  && $self->{HOLIDAY_NAME} ) {
-    return ; 
-  } 
-                                                                                                                                               
-  my $sql = "SELECT sound_file, order_no " ;
-  $sql  .= " FROM holiday_sounds ";
-  #$sql  .= " WHERE holiday_name =   " . $dbh->quote($self->{HOLIDAY_NAME}) ; 
-  $sql  .= " WHERE holiday_name = ?  "; 
-  $sql  .= " ORDER BY order_no "; 
 
-  my $sth = $dbh->prepare($sql) ;
-  $sth->execute($self->{HOLIDAY_NAME} );
+  $log->debug("[AAGMP] Let's check to see if it's a holiday");
+  my ($holiday_name) = OpenUMS::Holidays::get_holiday_name($dbh);
   my $menuSounds;
-  my $count =0; 
-
-  while (my ($sound_file, $order_no) = $sth->fetchrow_array() ) {
-     my $sound_ref ;
-     $sound_ref->{sound_file} = $sound_file ;
-     $log->debug("_post_data " . $sound_file ); 
-     push @{$menuSounds->{'M'}} , $sound_ref ;
-     $count++; 
+  if ($holiday_name) { 
+    $log->debug("today is a holiday! $holiday_name");
+    $menuSounds = OpenUMS::Holidays::get_holiday_menu_sounds($dbh,$holiday_name); 
+  } else { 
+    my $sound_file = OpenUMS::DbQuery::get_aag_sound($dbh);
+    my $custom_sound_flag=1; ## auto attendant greetings should always be custom
+    my $sound_type ='M'; ## auto attendant greetings should always be custom
+    $log->debug("[AAGMP] _post_data: current sound =- $sound_file custom_sound_flag=$custom_sound_flag,sound_type=$sound_type ");
+    my $sound_ref ;
+    $sound_ref->{sound_title} = "auto attendat sound";
+    $sound_ref->{sound_file} = $sound_file ;
+    if ($sound_file ) {
+       $sound_ref->{PROMPT_OBJ} = new OpenUMS::Object::Prompt($sound_file, $custom_sound_flag) ;
+    }
+    push @{$menuSounds->{$sound_type}} , $sound_ref ;
   }
-  $sth->finish();
+  $self->{SOUNDS_ARRAY}  = $menuSounds ;
+  return ;
 
-  if ($count) { 
-     ## something is wrong so don't hose the sounds_array... 
-     $self->{SOUNDS_ARRAY}  = $menuSounds ;
-  } 
+
+#  if (!$self->{IS_HOLIDAY}  && $self->{HOLIDAY_NAME} ) {
+#    return ; 
+#  } 
+#                                                                                                                                               
+#  my $sql = "SELECT sound_file, order_no " ;
+##  $sql  .= " FROM holiday_sounds ";
+#  #$sql  .= " WHERE holiday_name =   " . $dbh->quote($self->{HOLIDAY_NAME}) ; 
+#  $sql  .= " WHERE holiday_name = ?  "; 
+#  $sql  .= " ORDER BY order_no "; 
+
+#  my $sth = $dbh->prepare($sql) ;
+#  $sth->execute($self->{HOLIDAY_NAME} );
+#  my $menuSounds;
+#  my $count =0; 
+
+#  while (my ($sound_file, $order_no) = $sth->fetchrow_array() ) {
+#     my $sound_ref ;
+#     $sound_ref->{sound_file} = $sound_file ;
+#     $log->debug("_post_data " . $sound_file ); 
+#     push @{$menuSounds->{'M'}} , $sound_ref ;
+#     $count++; 
+#  }
+#  $sth->finish();
+#
+#  if ($count) { 
+#     ## something is wrong so don't hose the sounds_array... 
+#     $self->{SOUNDS_ARRAY}  = $menuSounds ;
+#  } 
 
   return ;
 

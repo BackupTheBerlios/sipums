@@ -1,5 +1,5 @@
 package OpenUMS::Holidays;
-### $Id: Holidays.pm,v 1.2 2004/09/01 03:16:35 kenglish Exp $
+### $Id: Holidays.pm,v 1.3 2004/09/10 01:36:32 kenglish Exp $
 #
 # Holidays.pm
 #
@@ -29,6 +29,7 @@ use Date::Calendar::Profiles;
 
 use OpenUMS::Config;
 use OpenUMS::Log;
+use OpenUMS::Object::Prompt;
 
 
 ################################################################# use Exporter
@@ -175,6 +176,31 @@ sub add_holiday($$$$$$$$)
 #    }
 }
 
+
+#################################
+## sub get_holiday_name($)
+#################################
+
+sub get_holiday_name($)
+{
+  my $dbh = shift;
+
+  my ($yr, $mo, $dy, $hr, $mn, $sc)  = Today_and_Now();
+  my $date = sprintf("%04d-%02d-%02d", $yr, $mo, $dy);
+  my $sql = qq(SELECT holiday_name
+               FROM holidays
+               WHERE (holiday_date = '$date')
+                     AND ( ($hr > start_hour AND $hr < end_hour)
+                           OR ($hr = start_hour AND $mn > start_minute)
+                           OR ($hr = end_hour AND $mn < end_minute) ) );
+  my (@row_ary)  = $dbh->selectrow_array($sql);
+  if ($row_ary[0]){
+    return $row_ary[0]; 
+  } 
+  return undef; 
+
+}
+
 #################################
 ## sub get_holiday_menu_id($$$$$$$$)
 #################################
@@ -287,6 +313,28 @@ sub remove_holiday_sounds {
   my ($dbh, $holiday_name)  = @_; 
   my $sql = "DELETE FROM holiday_sounds WHERE holiday_name = " . $dbh->quote($holiday_name) ; 
   $dbh->do($sql); 
+
+}
+sub get_holiday_menu_sounds {
+  my ($dbh,$holiday_name) = @_ ; 
+  my $sql = "SELECT sound_file, custom_sound_flag, order_no " ;
+    $sql  .= " FROM holiday_sounds ";
+    $sql  .= " WHERE holiday_name =   " . $dbh->quote($holiday_name) ;
+    $sql  .= " ORDER BY order_no ";
+
+
+  my $sth = $dbh->prepare($sql) ;
+  $sth->execute();
+  my $menuSounds;
+  my $count =0;
+  while (my ($sound_file,$custom_sound_flag,$order_no) = $sth->fetchrow_array() ) {
+    my $sound_ref ;
+    $sound_ref->{PROMPT_OBJ} = new OpenUMS::Object::Prompt($sound_file, $custom_sound_flag) ;
+    push @{$menuSounds->{'M'}} , $sound_ref ;
+    $count++;
+  }
+  $sth->finish();
+  return $menuSounds ; 
 
 }
 1;

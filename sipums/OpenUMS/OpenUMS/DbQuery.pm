@@ -1,5 +1,5 @@
 package OpenUMS::DbQuery;
-### $Id: DbQuery.pm,v 1.4 2004/09/01 03:16:35 kenglish Exp $
+### $Id: DbQuery.pm,v 1.5 2004/09/10 01:36:32 kenglish Exp $
 #
 # DbQuery.pm
 #
@@ -632,7 +632,41 @@ sub _get_dbnm_list_det {
 ##
 ####################################################
 
-sub get_current_aa_menu_id {
+#sub get_current_aa_menu_id {
+#  my $dbh = shift;
+#  my ($now_year,$now_mon, $now_day, $now_hour, $now_min, $now_sec,$now_dayofweek,$test);
+#  ($test, $now_dayofweek, $now_hour, $now_min) = @_;
+#
+#  if (!$test) {
+#     ($now_year,$now_mon, $now_day, $now_hour, $now_min, $now_sec) = Date::Calc::Today_and_Now() ;
+#     ## ok, mysql considers sunday to be day of week 1 whereas perl's Date::Calc considers
+#     ## sunday to be day seven. so we trick it by adding 1 to the current day...
+#                                                                                                                             
+#     ## these are the trick day,
+#     my ($tr_year, $tr_mon,$tr_day) = Date::Calc::Add_Delta_Days($now_year, $now_mon, $now_day,1);
+#     $now_dayofweek = Date::Calc::Day_of_Week($tr_year,$tr_mon,$tr_day);
+#  }
+#  
+# my $sql = qq{SELECT  aa.menu_id
+#        FROM auto_attendant aa
+#        WHERE aa.aa_dayofweek = $now_dayofweek
+#          AND (aa.aa_start_hour  < $now_hour
+#          OR (aa.aa_start_hour = $now_hour  AND aa.aa_start_minute <= $now_min ) )
+#        ORDER BY aa.aa_start_hour DESC  , aa.aa_start_minute DESC LIMIT 1
+#          };
+#
+#  my $sth = $dbh->prepare($sql);
+#  $sth->execute();
+#  my $menu_id = $sth->fetchrow()  ;
+#  $sth->finish();
+#  
+#  $log->debug("[DbQuery] get_current_aa_menu_id = $menu_id ");  
+#  return ($menu_id) ;
+#
+#
+#}
+
+sub get_aag_sound {
   my $dbh = shift;
   my ($now_year,$now_mon, $now_day, $now_hour, $now_min, $now_sec,$now_dayofweek,$test);
   ($test, $now_dayofweek, $now_hour, $now_min) = @_;
@@ -647,7 +681,7 @@ sub get_current_aa_menu_id {
      $now_dayofweek = Date::Calc::Day_of_Week($tr_year,$tr_mon,$tr_day);
   }
   
- my $sql = qq{SELECT  aa.menu_id
+ my $sql = qq{SELECT  menu_sound
         FROM auto_attendant aa
         WHERE aa.aa_dayofweek = $now_dayofweek
           AND (aa.aa_start_hour  < $now_hour
@@ -657,12 +691,13 @@ sub get_current_aa_menu_id {
 
   my $sth = $dbh->prepare($sql);
   $sth->execute();
-  my $menu_id = $sth->fetchrow()  ;
+  my $menu_sound = $sth->fetchrow()  ;
   $sth->finish();
   
-  $log->debug("[DbQuery] get_current_aa_menu_id = $menu_id ");  
-  return ($menu_id) ;
-}
+  $log->debug("[DbQuery] get_aag_sound = $menu_sound ");  
+  return ( $menu_sound ) ;
+
+} 
 
 
 ##################################################3
@@ -1135,54 +1170,54 @@ sub validate_sound_file_id {
 ##     this sub generates aa_start_hour_ampm, aa_start_ampm  for friendly display
 ########################################
 
-sub aa_settings { 
-  my $dbh  = shift; 
-  my ($aa_dayofweek, $aa_start_hour, $aa_start_minute) = @_;
-
-  my $sql = qq{SELECT  aa_dayofweek,  aa_start_hour ,  aa_start_minute , m.menu_id, m.title
-        FROM auto_attendant aa LEFT JOIN menu m ON (aa.menu_id = m.menu_id ) }; 
-  if (defined($aa_dayofweek) &&  defined($aa_start_hour) &&  defined($aa_start_minute)) { 
-     $sql .= " WHERE aa_dayofweek = $aa_dayofweek and aa_start_hour = $aa_start_hour  " ; 
-     $sql .= " and aa_start_minute = '$aa_start_minute' "; 
-  } 
-  $sql .= " ORDER BY aa_dayofweek,  aa_start_hour ,  aa_start_minute " ; 
-  my $sth = $dbh->prepare($sql) ; 
-  $sth->execute(); 
-
-  my @arr; 
-                                                                                                                             
-  my %days = (1 => "Sunday", 2 =>"Monday", 3=>"Tuesday", 
-              4=>"Wednesday", 5=>"Thursday", 6=>"Firday", 
-              7=>"Saturday") ; 
-
-  while (my ($aa_dayofweek,  $aa_start_hour,  $aa_start_minute, $menu_id,$menu_title ) = 
-          $sth->fetchrow_array() ) {
-    my %data; 
-    ## ok, mysql considers sunday to be day of week 1 whereas perl's Date::Calc considers
-    ## sunday to be day seven. so we trick it by adding 1 to the current day...
-    $data{aa_dayofweek} = $aa_dayofweek ; 
-    $data{aa_start_hour} = $aa_start_hour;
-    $data{aa_start_minute} = sprintf("%02d",$aa_start_minute);
-    if ($aa_start_hour == 0) {
-       $data{aa_start_hour_ampm} = "12";
-       $data{aa_start_ampm} = "AM"; 
-    } elsif ($aa_start_hour > 0 && $aa_start_hour  < 12) {
-       $data{aa_start_hour_ampm} = $aa_start_hour;
-       $data{aa_start_ampm} = "AM"; 
-    } elsif ($aa_start_hour == 12)  {
-       $data{aa_start_hour_ampm} = $aa_start_hour;
-       $data{aa_start_ampm} = "PM"; 
-    } else {
-       $data{aa_start_hour_ampm} = $aa_start_hour -12;
-       $data{aa_start_ampm} = "PM"; 
-    } 
-    $data{menu_id} = $menu_id; 
-    $data{menu_title} = $menu_title; 
-    $data{aa_day} = $days{$aa_dayofweek} ;
-    push @arr , \%data; 
-  }  
-  return \@arr; 
-}
+#sub aa_settings { 
+#  my $dbh  = shift; 
+#  my ($aa_dayofweek, $aa_start_hour, $aa_start_minute) = @_;
+#
+#  my $sql = qq{SELECT  aa_dayofweek,  aa_start_hour ,  aa_start_minute , m.menu_id, m.title
+#        FROM auto_attendant aa LEFT JOIN menu m ON (aa.menu_id = m.menu_id ) }; 
+#  if (defined($aa_dayofweek) &&  defined($aa_start_hour) &&  defined($aa_start_minute)) { 
+#     $sql .= " WHERE aa_dayofweek = $aa_dayofweek and aa_start_hour = $aa_start_hour  " ; 
+#     $sql .= " and aa_start_minute = '$aa_start_minute' "; 
+#  } 
+#  $sql .= " ORDER BY aa_dayofweek,  aa_start_hour ,  aa_start_minute " ; 
+#  my $sth = $dbh->prepare($sql) ; 
+#  $sth->execute(); 
+#
+#  my @arr; 
+#                                                                                                                             
+#  my %days = (1 => "Sunday", 2 =>"Monday", 3=>"Tuesday", 
+#              4=>"Wednesday", 5=>"Thursday", 6=>"Firday", 
+#              7=>"Saturday") ; 
+#
+#  while (my ($aa_dayofweek,  $aa_start_hour,  $aa_start_minute, $menu_id,$menu_title ) = 
+##          $sth->fetchrow_array() ) {
+#    my %data; 
+#    ## ok, mysql considers sunday to be day of week 1 whereas perl's Date::Calc considers
+#    ## sunday to be day seven. so we trick it by adding 1 to the current day...
+#    $data{aa_dayofweek} = $aa_dayofweek ; 
+#    $data{aa_start_hour} = $aa_start_hour;
+#    $data{aa_start_minute} = sprintf("%02d",$aa_start_minute);
+#    if ($aa_start_hour == 0) {
+#       $data{aa_start_hour_ampm} = "12";
+#       $data{aa_start_ampm} = "AM"; 
+#    } elsif ($aa_start_hour > 0 && $aa_start_hour  < 12) {
+#       $data{aa_start_hour_ampm} = $aa_start_hour;
+#       $data{aa_start_ampm} = "AM"; 
+#    } elsif ($aa_start_hour == 12)  {
+#       $data{aa_start_hour_ampm} = $aa_start_hour;
+#       $data{aa_start_ampm} = "PM"; 
+#    } else {
+#       $data{aa_start_hour_ampm} = $aa_start_hour -12;
+#       $data{aa_start_ampm} = "PM"; 
+#    } 
+#    $data{menu_id} = $menu_id; 
+#    $data{menu_title} = $menu_title; 
+#    $data{aa_day} = $days{$aa_dayofweek} ;
+#    push @arr , \%data; 
+#  }  
+#  return \@arr; 
+#}
 #####################################
 ## sub get_menu_sound
 ##  gets the current sound for a menu, only the first 1....not all the others, hehehe, that's version 12
