@@ -1,5 +1,5 @@
 package OpenUMS::Menu::ExtensionMP ;
-### $Id: ExtensionMP.pm,v 1.3 2004/09/01 03:16:35 kenglish Exp $
+### $Id: ExtensionMP.pm,v 1.4 2004/12/15 03:11:43 kenglish Exp $
 #
 # ExtensionMP.pm
 #
@@ -39,7 +39,7 @@ sub _get_input {
   my $ctport = $self->{CTPORT}; 
   my $input ; 
   ## phone mode here dood...
-  $input = $ctport->collect(EXTENSION_LENGTH, $main::CONF->get_var('COLLECT_TIME') ,2);
+  $input = $ctport->collect($main::CONF->get_var('EXTENSION_LENGTH'), $main::CONF->get_var('COLLECT_TIME') ,2);
   if ($input =~ /#$/ ) {
      chop ($input); 
   } 

@@ -1,6 +1,6 @@
 package OpenUMS::Menu::Menu;
 
-### $Id: Menu.pm,v 1.6 2004/09/01 03:16:35 kenglish Exp $
+### $Id: Menu.pm,v 1.7 2004/12/15 03:11:44 kenglish Exp $
 #
 # Menu.pm
 #
@@ -608,7 +608,7 @@ sub do_return_call {
   $log->debug("[Menu.pm] DOING RETURN CALL ... $ext_from ") ; 
   my $to_dial ; 
   my $area_code = AREA_CODE  ; 
-  if (length($ext_from) ==  EXTENSION_LENGTH) { 
+  if (length($ext_from) ==  $main::CONF->get_var('EXTENSION_LENGTH') ) { 
      $to_dial = $ext_from ; 
   } else {
     $to_dial = $ext_from ; 

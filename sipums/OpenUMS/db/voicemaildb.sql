@@ -1285,3 +1285,6 @@ CREATE TABLE web_sessions (
 --
 
 
+INSERT INTO global_settings (var_name,var_display_name,var_value,var_type,var_min_value,var_max_value,description )
+VALUES ('EXTENSION_LENGTH','Extension Length','3','INTEGER','0','100000','');
+

@@ -618,6 +618,7 @@ sub deliver_email($$)
   my $sql = qq(SELECT email_address, email_type
                FROM VM_Users
                WHERE extension = $extension);
+  $log->log('sql '. $sql); 
   my $sth = $dbh->prepare($sql);
 
   $sth->execute;
@@ -629,8 +630,6 @@ sub deliver_email($$)
       $log->err("No email_address defined for extension $extension");
       return(undef);
     }
-  $log->debug("Found email=$email_address");
-  $log->debug("Found email=$email_address");
   $log->debug("Found email=$email_address");
 
   $log->debug("Building message for $email_address");
