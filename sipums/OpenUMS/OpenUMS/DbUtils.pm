@@ -1,5 +1,5 @@
 package OpenUMS::DbUtils;
-### $Id: DbUtils.pm,v 1.5 2004/11/25 00:03:52 kenglish Exp $
+### $Id: DbUtils.pm,v 1.6 2004/12/01 01:20:52 kenglish Exp $
 #
 # DbUtils.pm
 #
@@ -473,9 +473,9 @@ sub add_sound_file {
   my ($dbh , $file, $path) = @_;
                                                                                                                                                
   my $ins = qq{INSERT INTO sound_files 
-          (file_id, sound_file, file_description, professional) 
+          (file_id, sound_file, file_description, professional,custom_sound_flag) 
           VALUES 
-          (0, '$file', 'new sound', 0) };
+          (0, '$file', 'new sound', 0,1) };
   ## create the database record
   $log->debug( "[DbUtils] add_sound_file: file=$file path=$path" );
   $dbh->do($ins);
