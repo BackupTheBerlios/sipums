@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.5 2004/07/31 20:27:05 kenglish Exp $
+### $Id: Common.pm,v 1.6 2004/08/04 04:19:57 kenglish Exp $
 #
 # Common.pm
 #
@@ -237,10 +237,10 @@ sub add_user($$$$)
   my $name_first = shift;
   my $name_last = shift;
 
-  return(undef) unless $extension =~ /^\d+$/;
+  return(0,"Extesion is no a number") unless $extension =~ /^\d+$/;
 
-  return(undef) unless ( (-e BASE_PATH) && (-d BASE_PATH) 
-                        && (-w BASE_PATH) && (-x BASE_PATH) );
+#  return(0, "Invalid Permissions on directories") unless ( (-e USER_PATH) && (-d USER_PATH) 
+#                        && (-w USER_PATH) && (-x USER_PATH) );
 
   my $full_user_path = USER_PATH;
   print STDERR " full_user_path $full_user_path\n"; 

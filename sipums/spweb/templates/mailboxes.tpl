@@ -35,7 +35,9 @@
 <TR>
    <Td><!--{$mb.extension}--></Td>
    <Td><a href='account.php?func=change_edit_user&edit_user=<!--{$mb.user}-->'><!--{$mb.did|default:"&nbsp;"}--></a> </Td>
-   <Td><!--{if $mb.last_name}--><!--{$mb.last_name}-->, <!--{/if}--><!--{$mb.first_name}--> </Td>
+   <Td><!--{if $mb.last_name}--><!--{$mb.last_name}-->, <!--{/if}--><!--{$mb.first_name}-->
+
+       <!--{if !$mb.last_name && !$mb.first_name }-->&nbsp;<!--{/if}--></Td>
    <Td><!--{$mb.email_address|default:"&nbsp;"}--> </Td>
    <Td><!--{$mb.email_user_name|default:"&nbsp;"}--> </Td>
    <TD><!--{$mb.store_flag}--> - <!--{$mb.email_delivery}--><!--{$mb.vstore_email}--></td>

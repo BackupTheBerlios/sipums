@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: account.php,v 1.3 2004/08/03 09:14:40 kenglish Exp $
+ * $Id: account.php,v 1.4 2004/08/04 04:19:57 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -65,11 +65,30 @@ class CData_Layer extends CDL_common{
     
   } 
 
-  function update_user_info ($p_user_info) {
+  function update_user_info ($p_user_info,&$error) {
     $this->user_info = $p_user_info; 
     foreach ($p_user_info as $key => $value){
        do_debug("user_info $key;$value"); 
     } 
+
+    if (is_numeric($this->user_info[mailbox])  ) { 
+       do_debug("GONNA GET VM INFO");
+
+       $vm_info  = $this->get_vm_info() ; 
+       if (!$vm_info[extension]) { 
+          if (!$this->create_mailbox()) { 
+             $error = "Failed to add mailbox";     
+	     do_debug("create_mailbox failed $error");
+             return false ;   
+	  } 
+       } else {  
+          do_debug("calling update_mailbox");
+          $this->update_mailbox() ;
+       } 
+
+    }  else { 
+       do_debug("mailbox is not numeric");
+    }
 
     do_debug("CALLED update_user_info "); 
     if ($this->uname and $this->udomain) {  
@@ -81,8 +100,7 @@ class CData_Layer extends CDL_common{
        $q = "UPDATE subscriber " 
           . " SET first_name =$first_name,  "
           . " last_name = $last_name , "
-          . " email_address = $email_address, "
-          . " mailbox = $mailbox "; 
+          . " email_address = $email_address " ; 
       if ($this->user_info[spweb_password] ) {
         $q .= ", web_password = PASSWORD('" . $this->user_info[spweb_password] ."') " ; 
       } 
@@ -91,24 +109,17 @@ class CData_Layer extends CDL_common{
       $res = $this->db->query($q);  
       if (DB::isError($res)) {
          do_debug("FAILED QUERY : $q");
+         $errors  = "Failed to update user info";     
+         return false;
       }
 
     } else {
       do_debug("NO USER SPECIFIED");
     } 
+    return true;
 
-    if (is_numeric($this->user_info[mailbox])  ) { 
-       do_debug("GONNA GET VM INFO");
-       $vm_info  = $this->get_vm_info() ; 
-       if (!$vm_info[extension]) { 
-          $this->create_mailbox() ;
-       } else {  
-          do_debug("calling update_mailbox");
-          $this->update_mailbox() ;
-       } 
-    }  else { 
-       do_debug("mailbox is not numeric");
-    }
+
+
 
   } 
 
@@ -143,6 +154,9 @@ class CData_Layer extends CDL_common{
 
     $this->db->_db=$this->user_info[voicemail_db];
     $this->change_db($this->db->_db);
+    if (!$this->user_info[mailbox] ) { 
+       return false; 
+    } 
 
    $q = "SELECT extension,first_name,last_name,email_address,store_flag,
          email_delivery, email_server_address, email_type, email_user_name ,
@@ -193,15 +207,22 @@ class CData_Layer extends CDL_common{
 
   function create_mailbox() {
     if ($this->user_info[mailbox]) { 
-      do_debug("called create_mailbox()");  
-      if (!$this->user_info[voicemail_db]) {
-          $this->get_voicemail_db($this->udomain);
-      }
-      $cmd = "perl /usr/local/openums/addvmuser " .   
+       do_debug("called create_mailbox()");  
+       if (!$this->user_info[voicemail_db]) {
+           $this->get_voicemail_db($this->udomain);
+       }
+       $cmd = "perl /usr/local/openums/addvmuser " .   
               $this->user_info[mailbox] . " \"" .
               $this->user_info[first_name]. "\" \"" .$this->user_info[last_name] . "\" " . $this->user_info[voicemail_db]  ;
-      $output = `$cmd` ;
-      do_debug("\ndid $cmd: $output ");
+       $output = `$cmd` ;
+       do_debug("\ndid $cmd: $output ");
+       if (preg_match("/Success/", $output) ) {
+          do_debug("ADD VM USER SUCCESS");
+	  return true ; 
+       } else { 
+          do_debug("ADD VM USER FAILED");
+          return false; 
+       } 
      } else {
       do_debug("create_mailbox faild, no mailbox specified");
      } 

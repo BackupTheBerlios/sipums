@@ -194,8 +194,12 @@ if ($FORM_VARS[func] == 'update_user_vm') {
     foreach ($user_info as $key => $value){
       do_debug("user_info $key;$value");
      }
-     $data->update_user_info($user_info); 
-     $user_info_msgs[] = "User Info updated." ;
+     if (!$data->update_user_info($user_info,$error) ) { 
+       do_debug("update_user failed got back $error"); 
+       $user_info_msgs = array(); 
+       $user_info_msgs[] = $error;
+       $user_info = $data->get_user_info(); 
+     } 
   }
 
   $account_smarty->assign('user_info_msgs', $user_info_msgs ); 
