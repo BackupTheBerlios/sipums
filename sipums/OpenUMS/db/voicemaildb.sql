@@ -138,8 +138,8 @@ CREATE TABLE VM_Users (
 --
 
 INSERT INTO VM_Users VALUES (0,'77eecc750f0e0c90','USER',1,'Outside','Caller','','V',0,1,NULL,0,688,225,0,'S','','','','','H','\'\'',NULL,NULL,0,'2001-01-01 00:00:00','C',1,0);
-INSERT INTO VM_Users VALUES (799,'6dddeb0074689d69','SUPER',1,'Supervisor','','','V',1,0,NULL,0,787,NULL,0,'I','','','','','T',NULL,NULL,'',0,'2004-11-20 12:07:56','N',0,0);
-INSERT INTO VM_Users VALUES (798,'6dddeb0074689d69','ADMIN',1,'Administrator','',NULL,'V',0,0,NULL,0,236,NULL,0,'I','','','','','T',NULL,NULL,'',0,'2001-01-01 00:00:00','N',0,0);
+INSERT INTO VM_Users VALUES (79,'6dddeb0074689d69','SUPER',1,'Supervisor','','','V',1,0,NULL,0,787,NULL,0,'I','','','','','T',NULL,NULL,'',0,'2004-11-20 12:07:56','N',0,0);
+INSERT INTO VM_Users VALUES (78,'6dddeb0074689d69','ADMIN',1,'Administrator','',NULL,'V',0,0,NULL,0,236,NULL,0,'I','','','','','T',NULL,NULL,'',0,'2001-01-01 00:00:00','N',0,0);
 
 --
 -- Table structure for table `auto_attendant`
@@ -243,6 +243,8 @@ INSERT INTO global_settings VALUES ('REWIND_SECS','Number of Seconds rewind/fast
 INSERT INTO global_settings VALUES ('INTERGRATION_WAIT','Time to wait for Intergration Digits','4','INTEGER',1,10,'');
 INSERT INTO global_settings VALUES ('VOICEMAIL_DB','Voicemail Database','vm_usa_omatrix_org','CHAR',0,100000,'');
 INSERT INTO global_settings VALUES ('VM_PATH','Voicemail Directory','usa_omatrix_org','CHAR',0,100000,'');
+INSERT INTO global_settings (var_name,var_display_name,var_value,var_type,var_min_value,var_max_value,description )
+VALUES ('EXTENSION_LENGTH','Extension Length','2','INTEGER','0','100000','');
 
 --
 -- Table structure for table `holiday_names`
@@ -892,20 +894,6 @@ CREATE TABLE mwi_status (
 -- Dumping data for table `mwi_status`
 --
 
-INSERT INTO mwi_status VALUES ('342','2001-01-01 00:00:00',0);
-INSERT INTO mwi_status VALUES ('473','2001-01-01 00:00:00',0);
-INSERT INTO mwi_status VALUES ('474','2004-08-04 19:22:35',0);
-INSERT INTO mwi_status VALUES ('475','2004-08-05 16:12:45',0);
-INSERT INTO mwi_status VALUES ('798','2001-01-01 00:00:00',0);
-INSERT INTO mwi_status VALUES ('799','2004-08-04 18:49:51',2);
-INSERT INTO mwi_status VALUES ('479','2001-01-01 00:00:00',0);
-INSERT INTO mwi_status VALUES ('478','2001-01-01 00:00:00',0);
-INSERT INTO mwi_status VALUES ('900','2001-01-01 00:00:00',0);
-INSERT INTO mwi_status VALUES ('901','2004-12-04 09:12:11',14);
-INSERT INTO mwi_status VALUES ('902','2001-01-01 00:00:00',0);
-INSERT INTO mwi_status VALUES ('903','2001-01-01 00:00:00',0);
-INSERT INTO mwi_status VALUES ('909','2004-12-06 09:42:24',1);
-
 --
 -- Table structure for table `sound_files`
 --
@@ -1261,6 +1249,4 @@ CREATE TABLE web_sessions (
 --
 
 
-INSERT INTO global_settings (var_name,var_display_name,var_value,var_type,var_min_value,var_max_value,description )
-VALUES ('EXTENSION_LENGTH','Extension Length','3','INTEGER','0','100000','');
 
