@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: prepend.php,v 1.9 2004/08/13 00:52:33 kenglish Exp $
+ * $Id: prepend.php,v 1.10 2004/08/13 20:50:10 kenglish Exp $
  */ 
 
 require_once 'Log.php';

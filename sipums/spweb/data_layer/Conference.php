@@ -1,5 +1,6 @@
 <?  
 require_once('Date/Span.php');
+require_once('Date.php');
 class Conference {
   // essential, must have
   var $username;
@@ -7,6 +8,9 @@ class Conference {
 
   var $conferenceId;
   var $companyId;
+  var $conferenceDate;
+  var $beginTime;
+  var $endTime;
 
 //  var $conferenceDate;
 //  var $beginTime;
@@ -71,22 +75,23 @@ class Conference {
     } 
   } 
   function loadConstraints () { 
-
+    global $log; 
     if (!$this->companyId) { 
       $this->getCompanyId() ; 
     } 
       change_to_conference_db($this->db);
       $q = "SELECT max_concurrent, max_time_mins,  max_invite FROM companies WHERE domain ='" . $this->domain . "' ";
       $res =  $res=$this->db->query($q);
-      if (DB::isError($db) ) {
+      IF (dB::isError($db) ) {
          $log->log("ERROR IN QUERY $q ");
       }
-      $row = $res->fetchRow(DB_FETCHMODE_ASSOC); 
+      $log->log("q is $q");
+      $row = $res->fetchRow(); 
 
       $this->dbFields[max_concurrent] = $row[0] ;
       $this->dbFields[max_time_mins] = $row[1] ;
       $this->dbFields[max_invite] = $row[2] ;
-
+      $log->log("new max_time_mins -= " . $this->dbFields[max_time_mins] ); 
       change_to_default_db($this->db);
                                                                                                                                                
       $this->companyId = $company_id;
@@ -104,7 +109,21 @@ class Conference {
    
   } 
   function isMaxTime(){
-    return false ; 
+    global $log; 
+    $ds = new Date_Span(); 
+    $ds->setFromDateDiff($this->beginTime, $this->endTime) ; 
+    $log->log("span = " . $ds->toMinutes()) ; 
+    $log->log("maxItme_mine = " . $this->dbFields[max_time_mins] ) ;   
+    if ($ds->toMinutes() > $this->dbFields[max_time_mins] ) {
+      return false ; 
+    } else {  
+      return true; 
+    }
+  } 
+  function create() {
+    // $q = "INSERT INTO  
+    
+   
   } 
 
 

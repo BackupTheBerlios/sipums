@@ -67,10 +67,9 @@ XML;
   }
   function _get_ring_both_xml($rb_number)  {
       $xmlstr = <<<XML
-
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- (call_setting=rb) -->
  
+<!-- (call_setting=rb) -->
 <!DOCTYPE cpl PUBLIC '-//IETF//DTD RFCxxxx CPL 1.0//EN' 'cpl.dtd'>
 <cpl>
   <subaction id="voicemail">
@@ -102,6 +101,7 @@ XML;
     </location>
   </incoming>
 </cpl>
+
 XML;
    return $xmlstr ; 
 
@@ -112,10 +112,11 @@ XML;
 
       $xmlstr = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- (call_setting=fmfm) -->
+
+   <!-- (call_setting=fmfm) -->
  
 <!DOCTYPE cpl PUBLIC '-//IETF//DTD RFCxxxx CPL 1.0//EN' 'cpl.dtd'>
-<CPL>
+<cpl>
   <subaction id="voicemail">
     <location url="sip:ivr+$this->uname@$this->udomain" clear="yes">
       <proxy />
@@ -150,6 +151,7 @@ XML;
     </lookup>
   </incoming>
 </cpl>
+
 XML;
    return $xmlstr ; 
   
@@ -219,7 +221,7 @@ XML;
           $log->log("writing to fifo:--\n$fifo_cmd---");
 
     write2fifo($fifo_cmd, $errors, $status);
-    @unlink($tmppath); 
+    // @unlink($tmppath); 
     $log->log("wrote to fifo  $status:$error");
 
     if (preg_match("/OK/", $status)) { 
@@ -297,14 +299,19 @@ XML;
     foreach ($values as $key=>$val) {
       $isloc=0;
       foreach ($val as $key2=>$val2) {
-         if ($key2 =="tag" && $val2 == "LOCATION"){
+         if ($key2 =="tag" && $val2 == "LOCATION") {
             $isloc =1;    
             $rb_number =$val[attributes][URL]; 
+             if (preg_match('/ivr/',$rb_number)) {
+                $rb_number="";
+             }  else {
+                break ;
+             }
+
              break ; 
          } 
       }
       if ($rb_number) break ; 
-
     } 
     $rb_number = str_replace ("sip:","",$rb_number); 
     $pos = strpos($rb_number,'@');

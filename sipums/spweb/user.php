@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: user.php,v 1.10 2004/08/13 00:52:33 kenglish Exp $
+ * $Id: user.php,v 1.11 2004/08/13 20:50:10 kenglish Exp $
  */
 
 require 'prepend.php';
@@ -20,12 +20,22 @@ page_open (array("sess" => "phplib_Session_Pre_Auth",
    "auth" => "phplib_Pre_Auth",
    "perm" => "phplib_Perm"));
 
-if ( $perm->check('USER')) {
+if ($perm->have_perm('SUPER') || $perm->have_perm('RESELLER') ) {
   // we send them to the account page
   $log->log("he, redirect here...");
-  header('Location: account.php'); 
+  header('Location: domain.php'); 
   exit ;
-}  
+} elseif ($perm->have_perm('ADMIN') ) {
+  // we send them to the account page
+  $log->log("he, redirect here...");
+  header('Location: subscribers.php'); 
+  exit ;
+} elseif ($perm->have_perm('USER')) {
+  $log->log("he, redirect here...");
+  header('Location: account.php'); 
+  exit;
+
+} 
 
   $log->log("No Redirect...");
 

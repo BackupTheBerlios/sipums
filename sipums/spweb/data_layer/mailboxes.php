@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: mailboxes.php,v 1.8 2004/08/13 00:52:33 kenglish Exp $
+ * $Id: mailboxes.php,v 1.9 2004/08/13 20:50:10 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{

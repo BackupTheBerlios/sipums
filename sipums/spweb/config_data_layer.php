@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: config_data_layer.php,v 1.3 2004/08/13 00:52:33 kenglish Exp $
+ * $Id: config_data_layer.php,v 1.4 2004/08/13 20:50:10 kenglish Exp $
  */
 
 		$config->data_container_type="sql";		//Type of data container 'sql' or 'ldap'
