@@ -1,6 +1,6 @@
 package OpenUMS::Menu::Menu;
 
-### $Id: Menu.pm,v 1.8 2004/12/15 19:18:54 kenglish Exp $
+### $Id: Menu.pm,v 1.9 2005/02/04 20:57:52 kenglish Exp $
 #
 # Menu.pm
 #
@@ -298,6 +298,14 @@ sub run_menu {
        $rotary_flag = 0 ;
        last ;
     }  
+    ## if the option was to go back a menu, get that menu Id
+
+    if ($menu->{type} eq 'GOPREV') {
+      my $new_menu_id = $self->{USER}->get_prev_menu_id(); 
+      $menu = $self->_get_next_menu($new_menu_id);
+    } 
+    $self->{USER}->set_current_menu_id($menu->{id}) ; 
+
     ## make a local copy of the menu's menuProcessor....
 
     my $menuProcessor =  $menu->{menuProcessor} ;
@@ -320,7 +328,7 @@ sub run_menu {
          }
          $log->debug("USER SELECTED TRANSFER to $local_ext_to ");
          return $self->xfer_to_extension($local_ext_to);
-    }
+    } 
 
     $menuProcessor->init();
     ## play the sound.... 

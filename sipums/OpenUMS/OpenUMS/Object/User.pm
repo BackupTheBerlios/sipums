@@ -1,5 +1,5 @@
 package OpenUMS::Object::User;
-### $Id: User.pm,v 1.7 2004/09/01 03:16:35 kenglish Exp $
+### $Id: User.pm,v 1.8 2005/02/04 20:57:52 kenglish Exp $
 #
 # User.pm
 #
@@ -124,6 +124,8 @@ sub new {
   $sth->finish(); 
   $log->debug("last vist will be $now"); 
   $self->{LAST_VISIT} = $now ; 
+  $self->{CURRENT_MENU_ID} = undef; 
+  $self->{PREV_MENU_ID} = undef ; 
   
   ## here we will define what Input processors and Sound Players we'll be using
 #  $self->{PROCS}->{B} = new OpenUMS::InputCollector($dbh,$ctport); 
@@ -900,6 +902,29 @@ sub set_jump_to_menu_id {
   if (@_ ) { 
      $self->{JUMP_TO_MENU_ID} = shift ;
   } 
+}
+sub set_current_menu_id {
+  my ($self,$menu_id) =@_; 
+  ## they are still on the same menu
+  if (!$self->{CURRENT_MENU_ID}) { 
+    $self->{CURRENT_MENU_ID} = $menu_id;
+    $self->{PREV_MENU_ID} = $menu_id;
+    return 
+  } 
+  if ($self->{CURRENT_MENU_ID} eq $menu_id) { 
+    $log->debug("CURRENT_MENU_ID=> " . $self->{CURRENT_MENU_ID} . "========PREV_MENU_ID". $self->{PREV_MENU_ID}); 
+     return ;
+  } 
+
+  $self->{PREV_MENU_ID} = $self->{CURRENT_MENU_ID}; 
+  $self->{CURRENT_MENU_ID} = $menu_id; 
+  $log->debug("CURRENT_MENU_ID=> " . $self->{CURRENT_MENU_ID} . ",PREV_MENU_ID=> " . $self->{PREV_MENU_ID}); 
+
+}
+sub get_prev_menu_id(){
+  my $self =shift ; 
+  return $self->{PREV_MENU_ID}; 
+
 }
 
 sub clear_jump_to_menu_id {

@@ -21,6 +21,7 @@ SET dest_menu_id = '203'
 WHERE menu_item_id = '7394' ;
 
 
+-- new 2/4/2005
 INSERT INTO menu ( 
     menu_id , title , menu_type_code , max_attempts , permission_id , collect_time , param1 , param2 , param3 , param4 
 )
