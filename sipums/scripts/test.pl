@@ -57,7 +57,7 @@ $GLOBAL_SETTINGS->load_settings();
   
   # set to 1 to test , if this doesn't work we can guarentee that nothing else will 
 
-  my $TEST = 0 ; 
+  my $TEST = 1 ; 
   if ($TEST){ 
 
      $ctport->play("/var/spool/openums/prompts/1.wav /var/spool/openums/prompts/2.wav /var/spool/openums/prompts/3.wav /var/spool/openums/prompts/3.wav /var/spool/openums/prompts/4.wav /var/spool/openums/prompts/5.wav /var/spool/openums/prompts/6.wav /var/spool/openums/prompts/7.wav /var/spool/openums/prompts/8.wav /var/spool/openums/prompts/9.wav /var/spool/openums/prompts/1000.wav");
