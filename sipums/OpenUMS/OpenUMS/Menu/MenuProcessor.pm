@@ -1,5 +1,5 @@
 package OpenUMS::Menu::MenuProcessor;
-### $Id: MenuProcessor.pm,v 1.6 2004/09/10 21:36:28 kenglish Exp $
+### $Id: MenuProcessor.pm,v 1.7 2005/01/24 19:13:12 kenglish Exp $
 #
 # MenuProcessor.pm
 #
@@ -288,6 +288,9 @@ sub _play_menu () {
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
   ## get the first sound off that sound array 
   my $sound_file = $menuSounds->{M}->[0]->{PROMPT_OBJ}->file(); 
+
+  ## $log->debug("sound_file = " . $sound_file ) ;
+  ## $log->debug("CUSTOM_FLAG = " . $menuSounds->{M}->[0]->{PROMPT_OBJ}->{CUSTOM_FLAG} )  ;
 
   if (defined($sound_file) ) { 
     ## hey, if there, let 'em hear it

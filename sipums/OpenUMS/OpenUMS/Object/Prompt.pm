@@ -77,7 +77,7 @@ sub _get_path {
   my $path ; 
   if ($self->is_custom()) {
     $path= $main::CONF->get_var('VM_PATH') . PROMPT_PATH ; 
-    $log->debug("CUSTOM PROMPT PATH " .$path);  
+    ## $log->debug("CUSTOM PROMPT PATH " .$path);  
   } else {
     $path= BASE_PATH . PROMPT_PATH ; 
   }

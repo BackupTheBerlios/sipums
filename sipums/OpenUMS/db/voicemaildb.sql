@@ -8,7 +8,6 @@
 -- Table structure for table `VM_Greetings`
 --
 
-DROP TABLE IF EXISTS VM_Greetings;
 CREATE TABLE VM_Greetings (
   greeting_id int(11) NOT NULL auto_increment,
   extension smallint(6) NOT NULL default '0',
@@ -30,7 +29,6 @@ CREATE TABLE VM_Greetings (
 -- Table structure for table `VM_Message_Status`
 --
 
-DROP TABLE IF EXISTS VM_Message_Status;
 CREATE TABLE VM_Message_Status (
   message_status_id char(1) NOT NULL default '',
   message_status_descr varchar(50) default NULL,
@@ -46,7 +44,6 @@ CREATE TABLE VM_Message_Status (
 -- Table structure for table `VM_Messages`
 --
 
-DROP TABLE IF EXISTS VM_Messages;
 CREATE TABLE VM_Messages (
   message_id int(11) NOT NULL auto_increment,
   message_created datetime NOT NULL default '0000-00-00 00:00:00',
@@ -60,6 +57,7 @@ CREATE TABLE VM_Messages (
   message_mail_sync_status tinyint(1) NOT NULL default '0',
   record_call_flag tinyint(1) NOT NULL default '0',
   forward_message_flag tinyint(1) NOT NULL default '0',
+  purged_flag tinyint(1) default '0',
   PRIMARY KEY  (message_id),
   UNIQUE KEY message_wav_file (message_wav_file),
   KEY idx_VM_Messages_extension_to (extension_to),
@@ -75,7 +73,6 @@ CREATE TABLE VM_Messages (
 -- Table structure for table `VM_Permissions`
 --
 
-DROP TABLE IF EXISTS VM_Permissions;
 CREATE TABLE VM_Permissions (
   permission_id varchar(20) NOT NULL default '',
   permission_level smallint(6) unsigned NOT NULL default '0',
@@ -97,7 +94,6 @@ INSERT INTO VM_Permissions VALUES ('SUPER',4,'Super User - Ultra Admin');
 -- Table structure for table `VM_Users`
 --
 
-DROP TABLE IF EXISTS VM_Users;
 CREATE TABLE VM_Users (
   extension smallint(6) NOT NULL default '0',
   password varchar(20) NOT NULL default '',
@@ -138,14 +134,34 @@ CREATE TABLE VM_Users (
 --
 
 INSERT INTO VM_Users VALUES (0,'77eecc750f0e0c90','USER',1,'Outside','Caller','','V',0,1,NULL,0,688,225,0,'S','','','','','H','\'\'',NULL,NULL,0,'2001-01-01 00:00:00','C',1,0);
-INSERT INTO VM_Users VALUES (79,'6dddeb0074689d69','SUPER',1,'Supervisor','','','V',1,0,NULL,0,787,NULL,0,'I','','','','','T',NULL,NULL,'',0,'2004-11-20 12:07:56','N',0,0);
-INSERT INTO VM_Users VALUES (78,'6dddeb0074689d69','ADMIN',1,'Administrator','',NULL,'V',0,0,NULL,0,236,NULL,0,'I','','','','','T',NULL,NULL,'',0,'2001-01-01 00:00:00','N',0,0);
+INSERT INTO VM_Users VALUES (799,'6dddeb0074689d69','SUPER',1,'Supervisor','','','V',1,0,NULL,0,787,NULL,0,'I','','','','','T',NULL,NULL,'',0,'2004-11-20 12:07:56','N',0,0);
+INSERT INTO VM_Users VALUES (798,'6dddeb0074689d69','ADMIN',1,'Administrator','',NULL,'V',0,0,NULL,0,236,NULL,0,'I','','','','','T',NULL,NULL,'',0,'2001-01-01 00:00:00','N',0,0);
+INSERT INTO VM_Users VALUES (900,'751b9b6924a3971c','USER',1,'test','user',NULL,'V',1,0,NULL,1,0,0,0,'I','','','','','H',NULL,NULL,NULL,0,'2004-11-16 19:56:58','N',0,0);
+INSERT INTO VM_Users VALUES (901,'446a12100c856ce9','USER',0,'Kevin','English',NULL,'V',0,0,NULL,0,0,0,0,'S','','kenglish@servpac.com','','','H','users/901/greetings/','901_name_20041204093305.wav','',0,'2004-12-04 09:32:40','C',0,0);
+INSERT INTO VM_Users VALUES (902,'751b9a1b24a397ce','USER',1,'','',NULL,'V',1,0,NULL,1,0,0,0,'I','','','','','H',NULL,NULL,NULL,0,'2004-11-20 11:33:10','N',0,0);
+INSERT INTO VM_Users VALUES (903,'751b9d9224a39d45','USER',1,'Kevin','English',NULL,'V',1,1,NULL,1,0,0,0,'S','','','','','H',NULL,NULL,'',1,'2001-01-01 00:00:00','S',0,0);
+INSERT INTO VM_Users VALUES (909,'751b9e5824a39c0b','USER',1,'','',NULL,'V',1,1,NULL,0,0,0,0,'S','','kenglish@servpac.com','','','H','users/909/greetings/','909_name_20041206094131.wav','',0,'2004-12-06 09:40:48','C',0,0);
+
+--
+-- Table structure for table `aa_action_types`
+--
+
+CREATE TABLE aa_action_types (
+  action_type varchar(10) NOT NULL default '',
+  action_type_desc varchar(200) default NULL,
+  PRIMARY KEY  (action_type)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table `aa_action_types`
+--
+
+INSERT INTO aa_action_types VALUES ('SPECLOGIN','Special Login for Users');
 
 --
 -- Table structure for table `auto_attendant`
 --
 
-DROP TABLE IF EXISTS auto_attendant;
 CREATE TABLE auto_attendant (
   aa_dayofweek tinyint(3) unsigned NOT NULL default '0',
   aa_start_hour tinyint(3) unsigned NOT NULL default '0',
@@ -180,7 +196,6 @@ INSERT INTO auto_attendant VALUES (6,17,0,'aa_default_night.wav');
 -- Table structure for table `call_log`
 --
 
-DROP TABLE IF EXISTS call_log;
 CREATE TABLE call_log (
   log_id int(11) NOT NULL auto_increment,
   intergration_digs varchar(50) default NULL,
@@ -199,7 +214,6 @@ CREATE TABLE call_log (
 -- Table structure for table `email_failures`
 --
 
-DROP TABLE IF EXISTS email_failures;
 CREATE TABLE email_failures (
   extension smallint(6) NOT NULL default '0',
   first_sent datetime NOT NULL default '0000-00-00 00:00:00',
@@ -218,7 +232,6 @@ INSERT INTO email_failures VALUES (0,'2004-08-29 14:38:15','2004-08-29 14:38:15'
 -- Table structure for table `global_settings`
 --
 
-DROP TABLE IF EXISTS global_settings;
 CREATE TABLE global_settings (
   var_name varchar(50) NOT NULL default '',
   var_display_name varchar(100) NOT NULL default '',
@@ -243,14 +256,12 @@ INSERT INTO global_settings VALUES ('REWIND_SECS','Number of Seconds rewind/fast
 INSERT INTO global_settings VALUES ('INTERGRATION_WAIT','Time to wait for Intergration Digits','4','INTEGER',1,10,'');
 INSERT INTO global_settings VALUES ('VOICEMAIL_DB','Voicemail Database','vm_usa_omatrix_org','CHAR',0,100000,'');
 INSERT INTO global_settings VALUES ('VM_PATH','Voicemail Directory','usa_omatrix_org','CHAR',0,100000,'');
-INSERT INTO global_settings (var_name,var_display_name,var_value,var_type,var_min_value,var_max_value,description )
-VALUES ('EXTENSION_LENGTH','Extension Length','2','INTEGER','0','100000','');
+INSERT INTO global_settings VALUES ('EXTENSION_LENGTH','Extension Length','2','INTEGER',0,100000,'');
 
 --
 -- Table structure for table `holiday_names`
 --
 
-DROP TABLE IF EXISTS holiday_names;
 CREATE TABLE holiday_names (
   holiday_name varchar(25) NOT NULL default '',
   holiday_desc varchar(255) NOT NULL default '',
@@ -288,7 +299,6 @@ INSERT INTO holiday_names VALUES ('Memorial Day','',5,0,'memorial_day.vox');
 -- Table structure for table `holiday_sounds`
 --
 
-DROP TABLE IF EXISTS holiday_sounds;
 CREATE TABLE holiday_sounds (
   holiday_name varchar(25) NOT NULL default '',
   sound_file varchar(100) default NULL,
@@ -316,7 +326,6 @@ INSERT INTO holiday_sounds VALUES ('Labor Day','labor_day.wav',2,0);
 -- Table structure for table `holidays`
 --
 
-DROP TABLE IF EXISTS holidays;
 CREATE TABLE holidays (
   holiday_date date NOT NULL default '0000-00-00',
   holiday_name varchar(25) NOT NULL default '',
@@ -367,7 +376,6 @@ INSERT INTO holidays VALUES ('2013-01-01','newYearsDay',0,0,23,59,603);
 -- Table structure for table `menu`
 --
 
-DROP TABLE IF EXISTS menu;
 CREATE TABLE menu (
   menu_id int(11) NOT NULL auto_increment,
   title varchar(50) NOT NULL default '',
@@ -465,7 +473,6 @@ INSERT INTO menu VALUES (262,'IP Play externel address','ADMIN',1,'ADMIN',0,'','
 -- Table structure for table `menu_functions`
 --
 
-DROP TABLE IF EXISTS menu_functions;
 CREATE TABLE menu_functions (
   menu_func_name varchar(25) NOT NULL default '',
   menu_id int(11) NOT NULL default '0',
@@ -488,7 +495,6 @@ INSERT INTO menu_functions VALUES ('user_tutorial',216);
 -- Table structure for table `menu_items`
 --
 
-DROP TABLE IF EXISTS menu_items;
 CREATE TABLE menu_items (
   menu_item_id int(11) NOT NULL auto_increment,
   menu_id int(11) NOT NULL default '0',
@@ -680,7 +686,6 @@ INSERT INTO menu_items VALUES (7425,261,'Cancel Ip Entry','9',256,'');
 -- Table structure for table `menu_sound_types`
 --
 
-DROP TABLE IF EXISTS menu_sound_types;
 CREATE TABLE menu_sound_types (
   menu_type_code varchar(10) NOT NULL default '',
   menu_type_code_descr varchar(200) NOT NULL default '',
@@ -700,7 +705,6 @@ INSERT INTO menu_sound_types VALUES ('S','Played once per session, usually after
 -- Table structure for table `menu_sounds`
 --
 
-DROP TABLE IF EXISTS menu_sounds;
 CREATE TABLE menu_sounds (
   menu_sound_id int(11) NOT NULL auto_increment,
   menu_id int(11) NOT NULL default '0',
@@ -848,7 +852,6 @@ INSERT INTO menu_sounds VALUES (2349,261,'',NULL,'ip_set_menu.wav',7,'M',NULL,0)
 -- Table structure for table `menu_types`
 --
 
-DROP TABLE IF EXISTS menu_types;
 CREATE TABLE menu_types (
   menu_type_code varchar(10) NOT NULL default '',
   menu_type_code_descr varchar(200) NOT NULL default '',
@@ -882,7 +885,6 @@ INSERT INTO menu_types VALUES ('APPENDMSG','Append to the existing message');
 -- Table structure for table `mwi_status`
 --
 
-DROP TABLE IF EXISTS mwi_status;
 CREATE TABLE mwi_status (
   extension varchar(10) NOT NULL default '',
   last_sent datetime NOT NULL default '2001-01-01 00:00:00',
@@ -894,11 +896,24 @@ CREATE TABLE mwi_status (
 -- Dumping data for table `mwi_status`
 --
 
+INSERT INTO mwi_status VALUES ('342','2001-01-01 00:00:00',0);
+INSERT INTO mwi_status VALUES ('473','2001-01-01 00:00:00',0);
+INSERT INTO mwi_status VALUES ('474','2004-08-04 19:22:35',0);
+INSERT INTO mwi_status VALUES ('475','2004-08-05 16:12:45',0);
+INSERT INTO mwi_status VALUES ('798','2001-01-01 00:00:00',0);
+INSERT INTO mwi_status VALUES ('799','2004-08-04 18:49:51',2);
+INSERT INTO mwi_status VALUES ('479','2001-01-01 00:00:00',0);
+INSERT INTO mwi_status VALUES ('478','2001-01-01 00:00:00',0);
+INSERT INTO mwi_status VALUES ('900','2001-01-01 00:00:00',0);
+INSERT INTO mwi_status VALUES ('901','2004-12-04 09:12:11',14);
+INSERT INTO mwi_status VALUES ('902','2001-01-01 00:00:00',0);
+INSERT INTO mwi_status VALUES ('903','2001-01-01 00:00:00',0);
+INSERT INTO mwi_status VALUES ('909','2004-12-06 09:42:24',1);
+
 --
 -- Table structure for table `sound_files`
 --
 
-DROP TABLE IF EXISTS sound_files;
 CREATE TABLE sound_files (
   file_id int(10) NOT NULL auto_increment,
   sound_file varchar(100) NOT NULL default '',
@@ -1191,12 +1206,12 @@ INSERT INTO sound_files VALUES (3281,'veterans_day.wav',NULL,1,0);
 INSERT INTO sound_files VALUES (3282,'yesterday.wav',NULL,1,0);
 INSERT INTO sound_files VALUES (3283,'you_have.wav',NULL,1,0);
 INSERT INTO sound_files VALUES (3284,'youentered.wav',NULL,1,0);
+INSERT INTO sound_files VALUES (3291,'sound_file_32919.wav','new sound',0,1);
 
 --
 -- Table structure for table `sound_variables`
 --
 
-DROP TABLE IF EXISTS sound_variables;
 CREATE TABLE sound_variables (
   sound_var_name varchar(40) NOT NULL default '',
   sound_var_file varchar(100) NOT NULL default '',
@@ -1220,7 +1235,6 @@ INSERT INTO sound_variables VALUES ('SAVED_MESSAGES','savedmessages.wav',0);
 -- Table structure for table `vacations`
 --
 
-DROP TABLE IF EXISTS vacations;
 CREATE TABLE vacations (
   extension smallint(6) NOT NULL default '0',
   begin_date date NOT NULL default '0000-00-00',
@@ -1237,7 +1251,6 @@ CREATE TABLE vacations (
 -- Table structure for table `web_sessions`
 --
 
-DROP TABLE IF EXISTS web_sessions;
 CREATE TABLE web_sessions (
   id varchar(32) NOT NULL default '',
   a_session text NOT NULL,
@@ -1247,6 +1260,5 @@ CREATE TABLE web_sessions (
 --
 -- Dumping data for table `web_sessions`
 --
-
 
 

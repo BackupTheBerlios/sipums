@@ -1,5 +1,5 @@
 package OpenUMS::Menu::ExtensionMP ;
-### $Id: ExtensionMP.pm,v 1.4 2004/12/15 03:11:43 kenglish Exp $
+### $Id: ExtensionMP.pm,v 1.5 2005/01/24 19:13:12 kenglish Exp $
 #
 # ExtensionMP.pm
 #
@@ -43,7 +43,9 @@ sub _get_input {
   if ($input =~ /#$/ ) {
      chop ($input); 
   } 
-  $log->debug("[ExtensionMP.pm] got $input COLLECT TIME WAS " .  $main::CONF->get_var('COLLECT_TIME') ); 
+  $log->debug("[ExtensionMP.pm] got $input ");
+  $log->debug("[ExtensionMP.pm] COLLECT TIME:" .  $main::CONF->get_var('COLLECT_TIME') ); 
+  $log->debug("[ExtensionMP.pm] EXTENSIONLENGTH " .  $main::CONF->get_var('EXTENSION_LENGTH') ); 
   $self->{INPUT_COLLECTED} = $input; 
   if (OpenUMS::Common::is_phone_input($input) ) { 
     $self->{INPUT} = $input; 

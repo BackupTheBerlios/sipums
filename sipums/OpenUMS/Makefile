@@ -25,7 +25,7 @@ CTPORT_LIBS = Telephony/CTPortJr.pm Telephony/SemsIvr.pm
 DELIVER_MAIL = bin/delivermail
 ADD_VM_USER = bin/addvmuser
 DEL_VM_USER = bin/deletevmuser
-SIPUMS_MYSQL_PASSORD = put_mysql_password_here
+SIPUMS_MYSQL_PASSORD = olseh
 
 LIBS = $(OPENUMS_LIBS) $(MENU_LIBS) $(OBJ_LIBS)
 
