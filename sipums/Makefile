@@ -5,6 +5,7 @@ INSTALL=/usr/bin/install
 
 DOMAIN_DIRS = $(BASEDIR)/scripts/o-matrix.org $(BASEDIR)/scripts/o-matrix.net $(BASEDIR)/scripts/o-matrix.com
 SEMS_SCRIPT= scripts/main.pl
+CONF_SCRIPT= scripts/3560078.pl
 
 default: compile
 .compiledok : compile
@@ -59,3 +60,4 @@ install:  .compiledok
 	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.org/
 	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.com/
 	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.net/
+	$(INSTALL) -v -m 744 $(CONF_SCRIPT) $(BASEDIR)/scripts/o-matrix.org/
