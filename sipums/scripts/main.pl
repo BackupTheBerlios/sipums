@@ -60,6 +60,7 @@ $log->debug("-----------------------------------");
 $log->debug("NEW CALL");
 $log->debug("-- -- CALL TO $uname,$domain ");
 $log->debug("-- -- CALL FROM --$caller--");
+$log->debug("-- -- CALL NUMBER --$caller_number--");
 
 ## get the dbh, get extension and change to the voicemail database to use
 #my $dbh = OpenUMS::Common::get_dbh();
@@ -69,7 +70,8 @@ my $client_id = &get_client_id($dbh, $uname);
 my $main_number_flag = &is_client_main_number($dbh, $uname,$client_id); 
 
 $log->debug("$uname client_id is $client_id");
-my $extension  = &get_user_extention($dbh,$uname,$domain); 
+my $extension_to  = &get_user_extention($dbh,$uname,$domain); 
+my $extension_from=undef;
 
 
 ## create a ctport, a phonesys and load global settings
@@ -79,41 +81,36 @@ my $phone_sys = new OpenUMS::PhoneSystem::SIP;
  syslog('info', "NEW CALL ON IS $PORT"); 
 
 
- $log->debug("User $ser_to is extension $extension ");
+ $log->debug("User $ser_to is extension_to $extension_to ");
 
  my $action = 'auto_attendant';  ## default is always auto_attendant
  $log->log('action = ' . $action); 
  my $login_ext;  
- if  (!$extension || $main_number_flag) {
+ if  (!$extension_to || $main_number_flag) {
    $action = 'auto_attendant';  
-   $log->log('no extension or main_number_flag, action = ' . $action); 
+   $log->log('no extension_to or main_number_flag, action = ' . $action); 
    if (&is_user_calling($dbh,$caller_number,$domain) ) {
       $action    = 'station_login';  
-      $extension = $caller_number;
+      $extension_from = $caller_number;
       $log->log('station_login extension or main_number_flag, action = ' . $action); 
    } 
- }  elsif ($caller eq $uname){
-   ## if the phone called from is the same as the number, they are checking voicemail
-   $action = 'station_login'; 
  } else {
    ## default, take a message for that extension
    $action = 'take_message';
  }  
 
- my $client_vm_db =  &change_client_db($dbh,$client_id); 
- $CONF->load_settings($client_vm_db);
+my $client_vm_db =  &change_client_db($dbh,$client_id); 
+$CONF->load_settings($client_vm_db);
 
-  my $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, $action);
+my $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, $action);
   
-
-
-
-
- 
-
 ## force them to leave a mesasge...
-
-my ($data1,$data2)= ($extension,$caller);
+my ($data1,$data2); 
+if ($extension_from ) { 
+  ($data1,$data2)= ($extension_from,$caller);
+} else {
+  ($data1,$data2)= ($extension_to,$caller);
+}
 
 my $menu = new OpenUMS::Menu::Menu($dbh, $ctport, $phone_sys, $data1, $data2);
 
@@ -122,15 +119,19 @@ $menu->create_menu();
 
 ## check the auto login 
 if ($action eq 'station_login') { 
-  my ($auto_login_flag,$new_user_flag,$auto_new_messages) = OpenUMS::DbQuery::is_auto_login_new_user($dbh,$extension);
+  $log->debug("It's stationg login, calling is_auto_login_new_user $extension_from");
+  my ($auto_login_flag,$new_user_flag,$auto_new_messages) = OpenUMS::DbQuery::is_auto_login_new_user($dbh,$extension_from);
+
+  $log->debug("auto_login_flag=$auto_login_flag,new_user_flag=$new_user_flag");
+
   if ($auto_login_flag) {
-     $log->debug("User is auto_login\n");
+     $log->debug("User is auto_login");
      $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, "auto_login");
      my $user = $menu->get_user();
-     $user->auto_login($extension);
+     $user->auto_login($extension_from);
   }
   if($new_user_flag) {
-    $log->debug("User is new_user \n");
+    $log->debug("User is new_user");
     $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, "user_tutorial");
   }
 }
@@ -179,7 +180,7 @@ sub change_client_db {
   if (!$db) {
     die "FATAL ERROR: No voicemail_db found for $client_id";
   } 
-  $log->debug("Client DB is $db");
+  $log->debug("Client DB is $db, cleint_id = $client_id");
 
   $dbh->do("use $db") || die "Could not use $db " . $dbh->errstr;
   return $db;

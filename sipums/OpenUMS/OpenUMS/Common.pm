@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.13 2004/09/10 21:36:28 kenglish Exp $
+### $Id: Common.pm,v 1.14 2004/12/17 00:56:59 kenglish Exp $
 #
 # Common.pm
 #
@@ -258,8 +258,10 @@ sub delete_user
   return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
   $sql = "DELETE FROM VM_Messages WHERE extension_to = $extension "; 
   return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
-  $sql = "DELETE FROM extension WHERE extension = $extension "; 
-  return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
+
+  #$sql = "DELETE FROM extension WHERE extension = $extension "; 
+  #return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
+
   $sql = "DELETE FROM VM_Greetings WHERE extension = $extension "; 
   return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
 

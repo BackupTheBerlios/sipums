@@ -1,5 +1,5 @@
 package OpenUMS::DbQuery;
-### $Id: DbQuery.pm,v 1.5 2004/09/10 01:36:32 kenglish Exp $
+### $Id: DbQuery.pm,v 1.6 2004/12/17 00:56:59 kenglish Exp $
 #
 # DbQuery.pm
 #
@@ -18,7 +18,7 @@ package OpenUMS::DbQuery;
 #  FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
 #  details.
 # 
-#  You should have received a copy of the GNU Lesser General Public License
+#  yOsu should have received a copy of the GNU Lesser General Public License
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  US
 =pod
@@ -1328,7 +1328,7 @@ sub is_auto_login_new_user {
   my ($auto_login,$new_user_flag)  = $sth->fetchrow_array() ;
   $sth->finish();
   $log->debug("[DbQuery] is_auto_login_new_user for $extension = $auto_login, $new_user_flag");
-  return $auto_login;
+  return ($auto_login,$new_user_flag);
 }
 
 sub is_auto_login {
