@@ -1,5 +1,5 @@
 package OpenUMS::IMAP;
-### $Id: IMAP.pm,v 1.4 2004/09/01 03:16:35 kenglish Exp $
+### $Id: IMAP.pm,v 1.5 2004/10/05 10:05:54 kenglish Exp $
 #
 # IMAP.pm
 #
@@ -573,7 +573,7 @@ sub move_to_folder($$$)
 
 
 ####################################################### get_email_delivery($$)
-sub get_email_delivery($$)
+sub get_email_delivery
 {
   my $dbh = shift; 
   my $extension = shift;

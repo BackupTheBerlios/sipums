@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.14 2004/10/03 00:40:15 kenglish Exp $
+### $Id: delivermail,v 1.15 2004/10/05 10:05:54 kenglish Exp $
 #
 # delivermail
 #
@@ -8,7 +8,10 @@
 # Copyright (C) 2004 Integrated Comtel Inc.
 use warnings;
 use strict ; 
-use lib qw(lib /usr/local/openums/lib); 
+
+# change this to where you install openums
+# use lib qw(lib /usr/local/openums/lib); 
+
 $ENV{PATH} = "/bin:/usr/bin";
 
 use File::Copy;
@@ -648,9 +651,9 @@ sub deliver_email($$)
                Filename => $wavfile);
   $msg->add('X-CPVoicemail' => $wavfile);
 
-  my $email_delivery = get_email_delivery($dbh,$extension);
-  my $store = get_voicemail_store($dbh, $extension);
-  my $vstore_email = get_vstore_email($dbh,$extension);
+  my $email_delivery = OpenUMS::IMAP::get_email_delivery($dbh,$extension);
+  my $store          = OpenUMS::IMAP::get_voicemail_store($dbh, $extension);
+  my $vstore_email   = OpenUMS::IMAP::get_vstore_email($dbh,$extension);
 
   my $success;
   if ( ($email_delivery eq 'S') || ($email_delivery eq 'F') ||($vstore_email eq 'C')  )
