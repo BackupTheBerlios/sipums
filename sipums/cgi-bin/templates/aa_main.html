@@ -1,0 +1,56 @@
+<center>
+
+   <B>Voicemail Auto Attendant Greeting Settings
+<table>
+  <tr>
+    <TD colspan=5> 
+     <B>Auto Attendant Menus:</b>
+    </td>
+  </tr>
+  <TMPL_IF name='msg'> 
+    <tr><Td colspan=5><font color='blue'><TMPL_VAR NAME='msg'></font> </Td></tr>
+  </TMPL_IF> 
+
+
+  <tr>
+    <Th>Week day</th>
+    <Th>&nbsp;</th>
+    <Th>Start Time</th>
+    <th>Menu </th> 
+    <Th>&nbsp;</th>
+    <Th>&nbsp;</th>
+    <Th>&nbsp;</th>
+  </tr>
+  <TMPL_LOOP name='AA_SETTINGS'> 
+  <tr>
+    <Td><TMPL_UNLESS name='hide_day'><TMPL_VAR name='aa_day'></tmpl_UNLESS></td>
+    <td><TMPL_UNLESS name='hide_day'><a href="admin.cgi?mod=AASetting&func=add_item&aa_dayofweek=<TMPL_VAR name='aa_dayofweek'>">Add</a></tmpl_UNLESS></td>
+
+    <Td><TMPL_VAR name='aa_start_hour_ampm'>:<TMPL_VAR name='aa_start_minute'> <TMPL_VAR name='aa_start_ampm'></td>
+    <td><TMPL_VAR name='menu_id'>  - <TMPL_VAR name='menu_title'>  </td> 
+<!--    <td><a href="admin.cgi?mod=AASetting&func=edit_item&aa_dayofweek=<TMPL_VAR name='aa_dayofweek'>&aa_start_hour=<TMPL_VAR name='aa_start_hour'>&aa_start_minute=<TMPL_VAR name='aa_start_minute'>">Edit</a></td> -->
+    <td><a href="send_wav.cgi?type=menu&id=<TMPL_VAR name='menu_id'>">Preview</a></td>
+    <td><a href="admin.cgi?mod=AASetting&func=edit_item&aa_dayofweek=<TMPL_VAR name='aa_dayofweek'>&aa_start_hour=<TMPL_VAR name='aa_start_hour'>&aa_start_minute=<TMPL_VAR name='aa_start_minute'>">Edit</a></td>
+    <td><TMPL_IF name='aa_start_hour'> <a href="admin.cgi?mod=AASetting&func=delete_item_conf&aa_dayofweek=<TMPL_VAR name='aa_dayofweek'>&aa_start_hour=<TMPL_VAR name='aa_start_hour'>&aa_start_minute=<TMPL_VAR name='aa_start_minute'>">Delete</a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
+  </tr>
+  </TMPL_LOOP>
+  <tr>
+    <TD colspan=5> 
+    <BR>
+    </td>
+  </tr>
+  <tr>
+    <TD colspan=5> 
+    <form METHOD=POST NAME="choose"> 
+     <SELECT Name='links'> 
+     <option value="admin.cgi?mod=AASetting&func=regen">Reset Weekday Greetings to Default Settings</option>
+     <option value="admin.cgi?mod=AASetting&func=regen_sat">Reset Saturday Greetings to Default Settings</option>
+     <option Value="admin.cgi?mod=AASetting&func=regen_sun">Reset Sunday Greetings to Default Settings</option>
+     <option Value="admin.cgi?mod=Holiday">Holiday Greetings</option>
+     </SELECT>
+     &nbsp;  &nbsp; <input TYPE=button VALUE="Edit" onClick="location.href = document.choose.links.options[document.choose.links.selectedIndex].value">
+    </form>
+    </td>
+  </tr>
+
+</table>

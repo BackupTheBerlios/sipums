@@ -1,0 +1,100 @@
+<center>
+<TMPL_IF NAME='edit_form'> <B>Edit Voicemail Menu Item</b></TMPL_IF> 
+<TMPL_IF NAME='add_form'>  <B>Add Voicemail Menu Item</b> </TMPL_IF> 
+
+<TMPL_IF name='error_message'>
+<BR>
+<FONT COlOR='red'><TMPL_VAR name='error_message'></font>
+</TMPL_IF>
+
+
+<FORM action='admin.cgi' method='Post'>
+  <INPut type="hidden" name="mod" value="<TMPL_VAR name='mod'>">
+  <INPut type="hidden" name="func" value="<TMPL_VAR name='func'>">
+  <INPut type="hidden" name="type" value="<TMPL_VAR name='type'>">
+
+<TMPL_IF NAME='edit_form'>
+  <!-- They are editing.... -->
+  <INPut type="hidden" name="menu_item_id" value="<TMPL_VAR name='menu_item_id'>">
+</TMPL_IF>
+  <INPut type="hidden" name="menu_id" value="<TMPL_VAR name='menu_id'>">
+
+
+<TABLE>
+<TR><TD> 
+
+  <table>
+     <TR> <Th>Menu Id</Th> 
+          <Th>Title</Th> 
+          <Th>Menu Type</Th> 
+         <TMPL_IF NAME=param1> 
+          <Th>Param1 </Th> 
+         </TMPL_IF> 
+         <TMPL_IF NAME=param2> 
+          <Th>Param2 </Th> 
+         </TMPL_IF> 
+         <TMPL_IF NAME=param3> 
+          <Th>Param3 </Th> 
+         </TMPL_IF> 
+     </tr>
+     <TR> <Td><a href="admin.cgi?mod=Menu&func=menu_items&menu_id=<TMPL_VAR NAME=menu_id>"><TMPL_VAR NAME='menu_id'></a></td>
+          <TD><TMPL_VAR NAME='title'></TD>
+          <TD><TMPL_VAR NAME='menu_type_code'>  </Td> 
+          <TMPL_IF NAME=param1> 
+             <TD><TMPL_VAR NAME='param1'>  </Td> 
+           </TMPL_IF> 
+          <TMPL_IF NAME=param2> 
+             <TD><TMPL_VAR NAME='param2'>  </Td> 
+           </TMPL_IF> 
+          <TMPL_IF NAME=param3> 
+             <TD><TMPL_VAR NAME=param3>  </Td> 
+           </TMPL_IF> 
+     </TR>
+  </TABLE>
+  <TABLE> 
+     <TR> <Td><B> Menu Option </b></TD>
+           <Td><SELECT NAME='menu_item_option'> 
+               <TMPL_LOOP NAME=menu_item_options> 
+                  <option value="<TMPL_VAR name='menu_item_option'>" <TMPL_IF name=sel>SELECTED</TMPL_IF>>  
+                   <TMPL_VAR name='menu_item_option'>
+                  </option>
+               </TMPL_LOOP> 
+               </select>
+               <INPUT TYPE="hidden" name="menu_item_option" value="<TMPL_VAR NAME='menu_item_option'>"> </Td> 
+      </tr>
+     <TR>
+        <td><B> Title </b></TD> 
+        <Td><INPUT TYPE="text" name="menu_item_title" value="<TMPL_VAR NAME='menu_item_title'>"> </Td>
+     </TR>
+     <TR> 
+        <TD><B> Destination Menu Id</b> </TD> 
+        <Td><SELECT NAME='dest_menu_id'> 
+             <TMPL_LOOP NAME=menu_opts>
+                <OPTION VALUE='<TMPL_VAR NAME=menu_id>' <TMPL_IF NAME=SEL>SELECTED</TMPL_IF>><TMPL_VAR NAME=menu_id> - <TMPL_VAR NAME=title></option> 
+             </TMPL_LOOP> 
+            </SELECT> 
+           </Td>
+     </TR>
+    <TMPL_IF NAME='dbnmres'> 
+     <TR>
+        <td><B> DBNM Action </B> </tH> 
+        <Td><SELECT NAME=menu_item_action> 
+             <OPTION Value=''></option>
+             <OPTION Value='NEXTNAME' <TMPL_IF Name='ACTION_NEXT_NAME'>SELECTED</TMPL_IF>>GO TO NEXT NAME</option>
+     </tr>
+    <TMPL_ELSE> 
+     <TR>
+        <td><B> Item Action </B> </tD> 
+        <Td> <INPUT TYPE="TEXT" name="menu_item_action" value="<TMPL_VAR NAME='menu_item_action'>"></td>
+     </tr>
+    </TMPL_IF>
+
+     <TR><td colspan=2>
+       <TMPL_IF NAME='edit_form'> <input type='submit' name='Save' Value='Apply Changes'> </TMPL_IF>
+       <TMPL_IF NAME='add_form'> <input type='submit' name='Save' Value='Create Menu Item'> </TMPL_IF>
+       <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+ </td></tr>
+  </table>
+  </td></tr> </table>
+</center> 
+</FORM>

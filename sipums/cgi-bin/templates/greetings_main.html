@@ -1,0 +1,56 @@
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+   <Td colspan=2 align=center><b>My Greeting</b> </Td> 
+</TR>
+
+<TMPL_IF name='msg'> 
+<TR>
+   <Td colspan=2 align=center><font color='blue'><TMPL_VAR NAME='msg'></font> </Td> 
+</TR>
+</TMPL_IF> 
+
+<TR>
+   <Td>Greeting File  </Td> 
+   <Td><B>
+    <TMPL_IF NAME=greeting_id> 
+    <a href="send_wav.cgi?type=greeting&id=<TMPL_VAR NAME='greeting_id'>"><TMPL_VAR NAME='greeting_wav_file'></a></B> </Td> 
+    <TMPL_ELSE>
+    You do not have a greeting recorded, <BR>callers will be told you are unavailable.
+    </TMPL_IF>
+</TR>
+<TR>
+   <Td>Last Updated</Td> 
+   <TD><B><TMPL_VAR name='last_updated_formatted'></B>  </TD>
+</TR><TR>
+   <Td>Professionally <BR>Recorded </Td>
+   <TD><B><TMPL_IF name='professional'>YES<TMPL_ELSE>NO</TMPL_IF></b></TD>
+</TR>
+<TR>
+   <Td colspan=2 ><b>Vacation Greeting</b> </Td> 
+</TR>
+
+
+<TMPL_IF name='on_vacation'> 
+<TR>
+   <Td colspan=2><i>Your settings indicate that you are currently on vacation<BR>
+    and will be back in the office on <TMPL_VAR Name='dayback_date'>  <BR>
+        <a href="user.cgi?mod=<TMPL_VAR Name='mod'>&func=edit_vacation">Click here to change your Vacation Settings</a> 
+   </Td> 
+</TR>
+<TMPL_ELSE> 
+   <TMPL_IF name='has_vacation'> 
+   <TR>
+      <Td colspan=2>
+         You have a vacation defined  from <TMPL_VAR name='begin_date'> to <TMPL_VAR name='dayback_date'><BR>
+        <a href="user.cgi?mod=<TMPL_VAR Name='mod'>&func=edit_vacation">Click here to change your Vacation Setting</a> 
+      </Td>
+     </TR>
+<TMPL_ELSE>
+<TR>
+   <Td colspan=2>Are you going to be out of the office?<BR>
+    <a href="user.cgi?mod=<TMPL_VAR Name='mod'>&func=edit_vacation">Click here to Setup a Vacation</a> </Td>
+</TR>
+</TMPL_IF>
+</TMPL_IF>
+</table>
+</form>

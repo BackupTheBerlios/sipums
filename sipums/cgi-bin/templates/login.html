@@ -1,0 +1,32 @@
+<HTML>
+<HEAD> <TITLE>ConvergePro Manager -- Login</TITLE> 
+
+<style type="text/css">@import url("/style/style.css"); </style>
+</TITLE></HEAD>
+<Body> 
+<TABLE> 
+<Tr> <Td colspan=2> 
+  <!-- top menu/ log --> 
+  <img height='79' src='/images/company_logo.jpg' border='0'> 
+</td> </tr>
+<Tr> <Td align='center' valign='top' width="300" > 
+  <FONT COlOR='red'><TMPL_VAR name='MSG'></font>
+  <!-- left column--> 
+  <TABLE> 
+    <form action='<TMPL_VAR NAME=ACTION>' method='POST'>
+    <tr>
+      <td> Voicemail Extension :</td> 
+      <td> <input name='ext' value='<TMPL_VAR NAME=EXT>' ></td> 
+    </tr><tr>
+      <td> Voicemail Password :</td> 
+      <td> <input name='password' type='password' ></td> 
+    </tr><tr>
+      <td colspan=2 align='center'> <input type='submit' value='login' >  </td>
+    </tr>
+    </form>
+  </table>
+</td> 
+
+</TABLE>
+</Body> 
+</HTML> 

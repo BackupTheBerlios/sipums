@@ -1,0 +1,37 @@
+<B>Delete Auto Attendant Greeting</b><BR>
+
+<TABLE>
+<FORM ACTION='admin.cgi' method='POST'> 
+<INPUT TYPE='hidden' name='mod' value="<TMPL_VAR NAME='mod'>">
+<INPUT TYPE='hidden' name='func' value="<TMPL_VAR NAME='func'>">
+<INPUT TYPE='hidden' name='aa_start_hour' value="<TMPL_VAR NAME='aa_start_hour'>">
+<INPUT TYPE='hidden' name='aa_start_minute' value="<TMPL_VAR NAME='aa_start_minute'>">
+<INPUT TYPE='hidden' name='aa_dayofweek' value="<TMPL_VAR NAME='aa_dayofweek'>">
+
+<TR> <TD colspan=2> You have requested to delete following Auto Attendent  Greeting
+</td></tr>
+<TR> <TD>
+Week day  
+</td><td>
+<TMPL_VAR NAME='aa_day'> 
+</td></tr>
+<TR> <TD>
+Start Time
+</td><td>
+<TMPL_VAR name='aa_start_hour_ampm'>:<TMPL_VAR name='aa_start_minute'> <TMPL_VAR name='aa_start_ampm'>
+</td></tr>
+<TR> <TD>
+Menu Id   
+</td><td>
+<TMPL_VAR name='menu_id'>
+</td></tr>
+<TR> <TD colspan=2>
+<Input type='submit' value='Delete'>
+<Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+</td></tr>
+
+</form>
+
+</table> 
+
+

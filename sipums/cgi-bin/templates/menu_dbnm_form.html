@@ -1,0 +1,51 @@
+<center>
+  <TMPL_IF NAME='edit_form'> <B>Edit Voicemail DBNM Menu </b></TMPL_IF> 
+  <TMPL_IF NAME='add_form'>  <B>Add Voicemail DBNM Menu </b> </TMPL_IF> 
+
+<TMPL_IF name='error_message'>
+  <BR>
+  <FONT COlOR='red'><TMPL_VAR name='error_message'></font>
+</TMPL_IF>
+
+
+  <FORM action='admin.cgi' method='Post'>
+    <INPut type="hidden" name="mod" value="<TMPL_VAR name='mod'>">
+    <INPut type="hidden" name="func" value="<TMPL_VAR name='func'>">
+    <INPut type="hidden" name="type" value="<TMPL_VAR name='type'>">
+
+  <!-- They are editing.... -->
+  <INPut type="hidden" name="menu_id" value="<TMPL_VAR name='menu_id'>">
+  <INPut type="hidden" name="max_attempts" value="<TMPL_VAR name='max_attempts'>">
+  <INPut type="hidden" name="title" value="<TMPL_VAR name='title'>">
+
+  <table>
+     <TR> <Td><B> Menu ID </b></TD>
+           <Td><TMPL_VAR NAME='menu_id'></Td> 
+      </tr>
+
+     <TR> 
+        <TD><B> Menu Type </b> </TD> 
+        <Td><TMPL_VAR NAME=menu_type_code>
+            <INPUT TYPE='hidden' name='menu_type_code' value="<TMPL_VAR NAME=menu_type_code>">
+            <INPUT TYPE='hidden' name='old_menu_type_code' value="<TMPL_VAR NAME=menu_type_code>">
+           </Td>
+     </TR>
+     <TR>
+        <td><B> Title </b></TD> 
+        <Td><TMPL_VAR NAME='title'></Td>
+     </TR>
+     <TR>
+        <td><B> Dial By Name Menu Type </b> </td>
+        <Td><SELECT Name='param1'>
+            <TMPL_LOOP NAME='dbnm_opts'>
+              <OPTION Value="<TMPL_VAR NAME='dbnm_type'>" <TMPL_IF name='SEL'> SELECTED</TMPL_IF> ><TMPL_VAR NAME='dbnm_type'></option>
+            </TMPL_LOOP>
+            </SELECT></Td>
+     </tr>
+     <TR>
+        <td colspan=2>
+        <INPUT TYPE="submit" name="submit" value="Save Changes"> 
+        <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' ></Td>
+     </tr>
+  </table>
+</center> 

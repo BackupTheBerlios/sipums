@@ -1,0 +1,82 @@
+<SCRIPT LANGUAGE='JAVASCRIPT'>
+       function preview_wav(opt_obj) {
+           var menu_id = opt_obj.options[opt_obj.selectedIndex].value ;
+           location.href = "send_wav.cgi?type=menu&id="  + menu_id;
+       }
+                                                                                                                                               
+</script>
+                                                                                                                                               
+
+<B>Edit Auto Attendant Greeting</b><BR>
+
+<TABLE>
+<FORM ACTION='admin.cgi' method='POST' name='form1'> 
+<INPUT TYPE='hidden' name='mod' value="<TMPL_VAR NAME='mod'>">
+<INPUT TYPE='hidden' name='func' value="<TMPL_VAR NAME='func'>">
+<INPUT TYPE='hidden' name='allow_edit_time' value="<TMPL_VAR NAME='allow_edit_time'>">
+
+<INPUT TYPE='hidden' name='old_aa_start_hour' value="<TMPL_VAR NAME='old_aa_start_hour'>">
+<INPUT TYPE='hidden' name='old_aa_start_minute' value="<TMPL_VAR NAME='old_aa_start_minute'>">
+<INPUT TYPE='hidden' name='old_menu_id' value="<TMPL_VAR NAME='old_menu_id'>">
+<INPUT TYPE='hidden' name='aa_dayofweek' value="<TMPL_VAR NAME='aa_dayofweek'>">
+
+<TR> <TD colspan=2> You have requested to edit following Auto Attendent  Greeting
+</td></tr>
+<TR> <TD>
+Week day  
+</td><td>
+<TMPL_VAR NAME='aa_day'> 
+</td></tr>
+<tr><td>Current Start Time </td>
+     <TD>
+        <TMPL_VAR name='aa_start_hour_ampm'>:<TMPL_VAR name='aa_start_minute'> <TMPL_VAR name='aa_start_ampm'> 
+     </TD>
+
+ <TMPL_IF  NAME='allow_edit_time'> 
+  <tr><td>New Start Time </td>
+     <TD>
+         <SELECT NAME='aa_start_hour'>
+        <TMPL_LOOP NAME='aa_start_hour'>
+         <OPTION  Value="<TMPL_VAR NAME='hour'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='hour'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+      <SELECT NAME='aa_start_minute'>
+        <TMPL_LOOP NAME='aa_start_min'>
+         <OPTION  Value="<TMPL_VAR NAME='min'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='min'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+        <SELECT NAME='aa_start_ampm'>
+         <OPTION  Value="AM" <TMPL_IF name='aa_start_am_sel'>SELECTED</tMPL_if>>  AM  </OPTION>
+         <OPTION  Value="PM" <TMPL_IF name='aa_start_pm_sel'>SELECTED</tMPL_if>>  PM  </OPTION>
+         </select>
+   </td> 
+  </tr>
+      </TMPL_IF>
+<TR> 
+   <TD> Current Menu Id   
+</td><td>
+<TMPL_VAR name='menu_id'>
+</td></tr>
+<tr>
+     <td>New Menu</td>
+      <td><SELECT NAME='menu_id'>
+      <TMPL_LOOP NAME='menus'>
+       <OPTION  Value="<TMPL_VAR NAME='menu_id'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='menu_id'>
+- <TMPL_VAR NAME='title'> </OPTION>
+      </TMPL_LOOP>
+       </SELECT> &nbsp;&nbsp;<a href="javascript:preview_wav(document.form1.menu_id)">Preview</a>
+      </td>
+</tr>
+                                                                                                                                               
+                                                                                                                                               
+
+<TR> <TD colspan=2>
+<Input type='submit' value='Save'>
+<Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+</td></tr>
+
+</form>
+
+</table> 
+
+

@@ -1,0 +1,37 @@
+<center>
+   <B>Voicemail Holiday Greeting Settings
+<table border=0 cellpadding=2>
+  <tr>
+    <TD colspan=5> 
+      <TMPL_IF NAME='MSG'><BR><BR><font color='blue'><TMPL_VAR NAME='MSG'></font></TMPL_IF>
+    </td>
+  </tr>
+  <tr>
+    <Th>Holiday Name</th>
+    <Th>Setting Description</th>
+    <Th>Next Date</th>
+    <Th>&nbsp;</th>
+    <Th>&nbsp;</th>
+  </tr>
+  <TMPL_LOOP name='HOLIDAYS'> 
+  <tr <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+    <Td><TMPL_VAR name='holiday_name'></td>
+    <td align='center'><TMPL_UNLESS name='menu_id'>Working
+          <TMPL_ELSE>
+           Holiday Greeting "<TMPL_VAR name='menu_id'> - <TMPL_VAR name='menu_title'>"  
+           <BR> will be played from 
+           <TMPL_VAR NAME='start_hour'>: <TMPL_VAR NAME='start_min'>  <TMPL_VAR NAME='start_ampm'> to
+           <TMPL_VAR NAME='end_hour'>: <TMPL_VAR NAME='end_min'>  <TMPL_VAR NAME='end_ampm'>
+          </TMPL_UNLESS>  </td>
+
+    <Td><TMPL_VAR name='next_holiday_date'></td>
+    <Td><a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=<TMPL_VAR NAME='edit_func'>&holiday_name=<TMPL_VAR name='holiday_name_enc'>">edit</a></td>
+    <Td><TMPL_IF name='menu_id'><a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=edit_sounds&holiday_name=<TMPL_VAR name='holiday_name_enc'>">Edit Greeting</a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
+  </tr>
+  </TMPL_LOOP>
+  <tr>
+    <Td colspan=3><i><BR> Don't forget to do something fun on your day off :) 
+    </td>
+  </tr>
+
+</table>

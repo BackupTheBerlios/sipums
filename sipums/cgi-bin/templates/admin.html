@@ -1,0 +1,42 @@
+<HTML>
+<HEAD> <TITLE>ConvergePro Administration Module </TITLE> 
+
+<style type="text/css">@import url("/style/style.css"); </style>
+</TITLE></HEAD>
+<Body> 
+<TABLE> 
+<Tr> <Td colspan=2> 
+  <!-- top menu/ log --> 
+  <a href='admin.cgi' border=0> <img  height='80'   src='/images/company_logo.jpg' border='0'>
+  </a>
+</td> </tr>
+<Tr> <Td align='center' valign='top' width="100" > 
+  <!-- left column--> 
+  <table> 
+     <TR> <td> <li><a href='admin.cgi?mod=UserAdmin'>Users</a></td> </TR>
+     <TR> <td> <li><a href='admin.cgi?mod=Menu'>Menu Summary</a></td> </TR>
+     <TR> <td> <li><a href='admin.cgi?mod=Holiday'>Holiday Settings</a></td> </TR>
+     <TMPL_IF NAME='SUPER'> 
+        <TR> <td> <li><a href='admin.cgi?mod=SuperMenu'>Super Menu </a></td> </TR>
+     </TMPL_IF>
+     <TMPL_IF NAME='SUPER'> 
+        <TR> <td> <li><a href='admin.cgi?mod=Sounds'>Sounds</a></td> </TR>
+     </TMPL_IF>
+     <TR> <td> <li><a href='admin.cgi?mod=Settings'>Global Settings</a></td> </TR>
+     <TR> <td> <li><a href='admin.cgi?mod=Server'>Server Control</a></td> </TR>
+     <TR> <td> <li><a href='admin.cgi?mod=Stations'>SMDR Groups</a></td> </TR>
+     <TR> <td> <li><a href='smdr_reports.cgi?mod=Reports'>SMDR Reports</a></td> </TR>
+     <TR> <td> <li><a href='user.cgi?mod=User'>My Information</a></td> </TR>
+     <TR> <td> <li><a href='logout.cgi'>Sign Out</a></td> </TR>
+   </table> 
+</td> 
+
+<Td align='center' valign='top'>
+  <TMPL_VAR NAME=RIGHT_COL>
+</td> </tr>
+
+
+
+</TABLE>
+</Body> 
+</HTML> 

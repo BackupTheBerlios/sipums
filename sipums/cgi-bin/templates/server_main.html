@@ -1,0 +1,72 @@
+<B>Server Information
+
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+
+<TMPL_IF name='error_msg'> 
+<TR>
+   <Td ><font color='RED'><B><TMPL_VAR NAME='error_msg'></b></font> </Td> 
+</TR>
+</TMPL_IF> 
+<TMPL_IF name='msg'> 
+<TR>
+   <Td ><font color='blue'><TMPL_VAR NAME='msg'></font> </Td> 
+</TR>
+</TMPL_IF> 
+
+<TR>
+   <Td >Kelepona Server Port States:<BR>
+      <TABLE>
+         <TMPL_LOOP NAME='kelepona_status'> 
+         <TR>
+              <TD><B><TMPL_VAR name='port'></B></td>
+              <TD><TMPL_VAR name='status'></td>
+         </tr>
+         </TMPL_LOOP>
+      </table>
+    </td>
+</TR>
+<TR>
+   <Td >OpenUMS Server Last Log Entry :<BR>
+      <TABLE>
+         <TMPL_LOOP NAME='openums_status'>
+         <TR>
+              <TD><B><TMPL_VAR name='port'></B></td>
+              <TD><TMPL_VAR name='status'></td>
+         </tr>
+         </TMPL_LOOP>
+      </table>
+    </td>
+</TR>
+
+
+
+<TR>
+   <Td align='center'><INPUT name='submit' type='button' 
+
+     value='Click Here to Refresh this Page' onClick="javascipt:do_refresh()" >  </Td> 
+</TR>
+<TR>
+   <Td align='center'><BR><BR></Td> 
+</TR>
+<TR>
+   <BR>
+   <BR>
+   <Td align='center'><INPUT name='submit' type='button' 
+     value='Click Here to Restart ConvergePro' onClick="javascipt:do_restart()" >  </Td> 
+</TR>
+<SCRIPT language='javascript'>
+function do_refresh() {
+   location.href =  "admin.cgi?mod=Server";
+}
+</script>
+
+<SCRIPT language='javascript'>
+function do_restart() {
+  var conf = confirm("You have choosen to restart CovergePro\nBy doing this, any caller currently logged into the system will be disconnected. Are you sure you want to do this? ") ;
+  if (conf) { 
+     location.href =  "nph-restart.cgi";
+  } 
+}       
+</script>
+</table>
+</form>

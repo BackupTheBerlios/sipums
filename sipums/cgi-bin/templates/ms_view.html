@@ -1,0 +1,22 @@
+<center>
+   <B>VOICEMAIL Sounds 
+<TMPL_IF NAME=msg>
+  <BR><BR>
+     <font color='red'> <TMPL_VAR NAME=msg></font>
+</TMPL_IF>
+
+<table>
+  <tr>
+    <TD colspan=2> 
+     <B>Available Sounds:</b>
+    </td>
+  <TMPL_LOOP NAME="SOUND_FILES">
+  <TMPL_IF NEW_ROW>  
+  </tr>
+  <TR<TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF>>
+  </TMPL_IF> 
+     <Td><TMPL_VAR NAME='COUNT'></TD>
+     <Td><TMPL_VAR NAME='file_name'></TD>
+  </TMPL_LOOP>
+</TABLE>
+

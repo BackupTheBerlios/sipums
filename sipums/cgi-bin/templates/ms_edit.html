@@ -1,0 +1,63 @@
+<center>
+   <B>Voicemail Menu Sound(s) </b><BR>
+<table>
+  <tr>
+    <Td><FONT COlOR='red'><TMPL_VAR name='msg'></font> <br>
+      <TABLE>
+        <FORM action='admin.cgi' METHOD=POST name='ms'> 
+        <input type=hidden name='mod' value="<TMPL_VAR name='mod'>" > 
+        <input type=hidden name='func' value="<TMPL_VAR name='func'>" > 
+        <input type=hidden name='menu_id' value="<TMPL_VAR name='menu_id'>" > 
+  <tr><td colspan=4 align=center>
+           <a href="admin.cgi?mod=<TMPL_VAR name=mod>&func=add&menu_id=<TMPL_VAR NAME=menu_id>">Add A Menu Sound</a>&nbsp;&nbsp;&nbsp;
+           <a href="admin.cgi?mod=<TMPL_VAR name=mod>&func=delete_view&menu_id=<TMPL_VAR NAME=menu_id>">Delete A Menu Sound</a>
+          </td></tr>                                                                                                                   
+
+        <tr>
+          <td>Menu Id</td>
+          <td><B><TMPL_VAR Name='menu_id'></b></td>
+        </tr>
+        <tr>
+          <td>Menu Title</td>
+          <td><B><TMPL_VAR Name='menu_title'></b></td>
+        </tr>
+
+       <TMPL_LOOP name='sound_opts'>  
+        <tr><td>Menu Sound <TMPL_VAR name='order_no'></td>
+         <td><TMPL_IF name=file_flag>
+         <SCRIPT Language='JAVASCRIPT'>
+            function preview_wav_<TMPL_VAR name='menu_sound_id'>() {
+                var id = document.ms.file_id_<TMPL_VAR name='menu_sound_id'>.options[document.ms.file_id_<TMPL_VAR name='menu_sound_id'>.selectedIndex].value ; 
+                location.href = "send_wav.cgi?type=prompt&id="  + id; 
+            }       
+         </SCRIPT>
+             <select name="file_id_<TMPL_VAR name='menu_sound_id'>"> 
+             <TMPL_LOOP NAME='sound_files'>
+             <OPTION value='<TMPL_VAR name=file_id>'<TMPL_IF NAME=sel> SELECTED</TMPL_IF>>  
+                  <TMPL_VAR name=sound_file>
+                  </option>
+             </TMPL_LOOP> 
+             </select>&nbsp;&nbsp;&nbsp;<a href="javascript:preview_wav_<TMPL_VAR name='menu_sound_id'>()">Preview</a>
+             <TMPL_ELSE> 
+               <B><i>PROGRAM VARIABLE</I>: <TMPL_VAR name=var_name> </b>
+             </TMPL_IF> 
+          </td>
+         </tr>
+
+        </TMPL_Loop>
+
+      <tr><td colspan=3><input type=submit name=submit value='Save'>&nbsp;&nbsp;
+       <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+      </td></tr>
+
+   <tr><td colspan=4 align=center>
+             <a href="admin.cgi?mod=<TMPL_VAR name=mod>&func=goto_prev_menu_item&src=<TMPL_VAR name=src>&menu_id=<TMPL_VAR NAME=menu_id>">Prev </a>&nbsp;&nbsp;&nbsp;
+                                                                                                                             
+                <a href='admin.cgi?mod=SuperMenu&func=menu_items&menu_id=<TMPL_VAR Name=menu_id>'>Menu Items</a>&nbsp;&nbsp;&nbsp;
+      <a href="admin.cgi?mod=<TMPL_VAR name=mod>&func=goto_next_menu_item&src=<TMPL_VAR name=src>&menu_id=<TMPL_VAR NAME=menu_id>">Next</a>
+                </td>
+            </tr>
+
+</table>
+</FORM>
+

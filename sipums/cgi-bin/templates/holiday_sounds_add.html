@@ -1,0 +1,58 @@
+<center>
+   <B>Voicemail Add Holiday Sound</b><BR>
+<table>
+  <tr>
+    <Td><FONT COlOR='red'><TMPL_VAR name='msg'></font> <br>
+      <TABLE>
+        <FORM action='admin.cgi' METHOD=POST name='ms'> 
+        <input type=hidden name='mod' value="<TMPL_VAR name='mod'>" > 
+        <input type=hidden name='func' value="<TMPL_VAR name='func'>" > 
+        <input type=hidden name='holiday_name' value="<TMPL_VAR name='holiday_name'>" > 
+
+        <tr>
+          <td>Holiday Name</td>
+          <td><B><TMPL_VAR Name='holiday_name'></b></td>
+        </tr>
+
+        <tr><td>Play Order Position </td> 
+            <TD><SELECT name='order_no'> 
+              <TMPL_LOOP NAME='order_nos'>
+               <OPTION value='<TMPL_VAR name=num>'<TMPL_IF NAME=sel> SELECTED</TMPL_IF>><TMPL_VAR name=num></option>
+         
+              </TMPL_LOOP>
+                </SELECT>
+            </td>
+        </tr>
+        <tr>
+          <td>Menu Sound</td> 
+         <td> 
+      
+         <SCRIPT Language='JAVASCRIPT'>
+            function preview_wav () {
+                var id = document.ms.file_id.options[document.ms.file_id.selectedIndex].value ; 
+                location.href = "send_wav.cgi?type=prompt&id="  + id; 
+            }       
+         </SCRIPT>
+             <select name="file_id"> 
+             <TMPL_LOOP NAME='sound_files'>
+             <OPTION value='<TMPL_VAR name=file_id>'<TMPL_IF NAME=sel> SELECTED</TMPL_IF>>  
+                  <TMPL_VAR name=sound_file>
+                  </option>
+             </TMPL_LOOP> 
+             </select>&nbsp;&nbsp;&nbsp;<a href="javascript:preview_wav()">Preview</a>
+          </td></tr>
+
+      <tr><td colspan=3><input type=submit name=submit value='Add'>&nbsp;&nbsp;
+       <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+      </td></tr>
+
+   <tr><td colspan=4 align=center>
+                                                                                                                             
+                <a href="admin.cgi?mod=Holiday"> Holiday Settings </a>&nbsp;&nbsp;&nbsp;
+                <a href="admin.cgi?mod=Holiday&func=edit_sounds&holiday_name=<TMPL_VAR Name=holiday_name_enc>"><TMPL_VAR name='holiday_name'> Sounds</a>&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+
+</table>
+</FORM>
+

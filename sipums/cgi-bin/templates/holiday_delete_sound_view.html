@@ -1,0 +1,38 @@
+<center>
+   <B>Delete a Holiday Sound </b><BR>
+<table>
+  <tr>
+    <Td><FONT COlOR='red'><TMPL_VAR name='msg'></font> <br>
+      <TABLE>
+        <tr>
+          <td>Holiday Menu</td>
+          <td><B><TMPL_VAR Name='holiday_name'></b></td>
+        </tr>
+
+       <TMPL_LOOP name='sound_opts'>  
+        <tr><td>Menu Sound <TMPL_VAR name='order_no'></td>
+         <td><TMPL_VAR name=sound_file></td>
+      
+         
+         <SCRIPT Language='JAVASCRIPT'>
+            function preview_wav_<TMPL_VAR name='order_no'>() {
+                var id = document.ms.file_id_<TMPL_VAR name='order_no'>.value ; 
+
+                location.href = "send_wav.cgi?type=prompt&id="  + id; 
+            }       
+         </SCRIPT>
+          </td>
+          <td><a href="admin.cgi?mod=<TMPL_VAR name='mod'>&func=delete_sound&order_no=<TMPL_VAR name='order_no'>&holiday_name=<TMPL_VAR name='holiday_name_enc'>">DELETE</a>
+         </tr>
+
+        </TMPL_Loop>
+
+
+   <tr><td colspan=4 align=center>
+
+                <a href="admin.cgi?mod=<TMPL_VAR name=mod>&func=edit_sounds&holiday_name=<TMPL_VAR NAME='holiday_name_enc'>">Back to <TMPL_VAR NAME='holiday_name'> Holiday Sounds</a>&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+
+</table>
+

@@ -1,0 +1,99 @@
+<center>
+
+   <B>VOICEMAIL USERS 
+      <TMPL_IF NAME='all'>(All: Active and Inactive)
+      <TMPL_ELSE>(Active Only)</TMPL_IF> </b>
+<TMPL_IF NAME=msg> 
+  <BR><BR>
+     <font color='red'> <TMPL_VAR NAME=msg></font>
+</TMPL_IF>
+<BR><BR>
+   <a href='admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=add_user'>Add a New User/Extension to Voicemail</a>
+<BR><BR>
+
+
+<TABLE border=0> <!-- celpadding=3 cellspacing=5 >  --> 
+<TR>
+   <Th>&nbsp;</Th> 
+   <Th>&nbsp;</Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=extension&sb2=<TMPL_VAR NAME=extension_sb>&all=<TMPL_VAR NAME=all>'>Ext</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=last_name&sb2=<TMPL_VAR NAME=last_name_sb>&all=<TMPL_VAR NAME=all>'>Name</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=email_address&sb2=<TMPL_VAR NAME=email_address_sb>&all=<TMPL_VAR NAME=all>'>Email</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=email_user_name&sb2=<TMPL_VAR NAME=email_user_name_sb>&all=<TMPL_VAR NAME=all>'>Email UserName</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=store_flag&sb2=<TMPL_VAR NAME=store_flag_sb>&all=<TMPL_VAR NAME=all>'>Storage</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=transfer&sb2=<TMPL_VAR NAME=transfer_sb>&all=<TMPL_VAR NAME=all>'>XFER</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=active&sb2=<TMPL_VAR NAME=active_sb>&all=<TMPL_VAR NAME=all>'>ACT</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=new_user_flag&sb2=<TMPL_VAR NAME=new_user_flag_sb>&all=<TMPL_VAR NAME=all>'>NU</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=mwi_flag&sb2=<TMPL_VAR NAME=mwi_flag_sb>&all=<TMPL_VAR NAME=all>'>MWI</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=auto_login_flag&sb2=<TMPL_VAR NAME=auto_login_flag_sb>&all=<TMPL_VAR NAME=all>'>AL</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=auto_new_messages_flag&sb2=<TMPL_VAR NAME=auto_new_messages_flag_sb>&all=<TMPL_VAR NAME=all>'>ANM</a></Th> 
+   <Th><a href='admin.cgi?mod=UserAdmin&sb1=permission_id&sb2=<TMPL_VAR NAME=permission_id_sb>&all=<TMPL_VAR NAME=all>'>Permission</a></Th> 
+   <Th>&nbsp;</Th> 
+   
+</tr>
+<TMPL_LOOP NAME="USER_DATA">
+
+<TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+   <Td><a href='admin.cgi?mod=UserAdmin&func=edit_user&ext=<TMPL_VAR NAME='extension'>'>edit</a> </td>
+   <Td><a href='admin.cgi?mod=UserAdmin&func=delete_user_conf&ext=<TMPL_VAR NAME='extension'>'>delete</a> </td>
+   <Td><TMPL_VAR NAME='extension'> </Td> 
+   <Td><TMPL_VAR NAME='full_name'> </Td> 
+   <Td><TMPL_VAR NAME='email_address'> </Td> 
+   <Td><TMPL_VAR NAME='email_user_name'> </Td> 
+   <TD><TMPL_VAR NAME='store_flag'> - <TMPL_VAR NAME=email_delivery><TMPL_VAR NAME=vstore_email></td>
+   <Td><TMPL_IF NAME='transfer'>Y<TMPL_ELSE>N</TMPL_IF></Td> 
+   <Td><TMPL_IF NAME='active'>Y<TMPL_ELSE>N</TMPL_IF></Td> 
+   <Td><TMPL_IF NAME='new_user_flag'>Y<TMPL_ELSE>N</TMPL_IF></Td> 
+   <Td><TMPL_IF NAME='mwi_flag'>Y<TMPL_ELSE>N</TMPL_IF></Td> 
+   <Td><TMPL_IF NAME='auto_login_flag'>Y<TMPL_ELSE>N</TMPL_IF></Td> 
+   <Td><TMPL_IF NAME='auto_new_messages_flag'>Y<TMPL_ELSE>N</TMPL_IF></Td> 
+   <Td><a href="admin.cgi?mod=UserAdmin&func=edit_permission&ext=<TMPL_VAR NAME='extension'>"><TMPL_VAR NAME='permission_id'></a></Td> 
+   <Td><a href="admin.cgi?mod=UserAdmin&func=password&ext=<TMPL_VAR NAME='extension'>">Change Password</a></Td> 
+<tr>
+</TMPL_LOOP>
+</table><BR>
+      <TMPL_IF NAME='all'><a href='admin.cgi?mod=UserAdmin'>View Active Users Only</a>
+      <TMPL_ELSE><a href='admin.cgi?mod=UserAdmin&all=1'>View All Users : Active and Inactive</a></TMPL_IF>
+<TABLE> <TR><TH align=center colspan=2> Flags Legend</tH></tr>
+<td valign=top align=right> Strorage: </td>
+<td valign=top> V - Voicemail Store <BR>
+     E - Email Store </td>
+</tr><tr>
+<td valign=top align=right> Email Store Flags: </td>
+<td valign=top> I - Deliver and store in IMAP folder 'INBOX Voicemail'<BR>
+     S - Deliver and store in Main Inbox</td>
+</tr><tr>
+<td valign=top align=right> Voicemail Store Flags: </td>
+<td valign=top> N - No Email<BR>
+     C - Send a copy of voicemail to Email<BR>
+     S - Send a copy of voicemail to Email<BR> and delete from voicemail store</td>
+</tr><tr>
+<td valign=top align=right> Transfer (XFER) : </td>
+<td valign=top> Y - Callers will be transfers to user's extension<BR>
+     N - Callers will be sent directly to users voicemail</td>
+</tr><tr>
+<td valign=top align=right> Active (ACT) : </td>
+<td valign=top> Y - User is Active<BR>
+     N - User's Account has been disabled</td>
+</tr><tr>
+<td valign=top align=right> New User (NU) : </td>
+<td valign=top> Y - User will be forced to complete the user <BR>setup tutorial next time they log in to <BR>their voicemail<BR>
+     N - User is not a New User</td>
+</tr><tr>
+<td valign=top align=right> Message Waiting Light (MWI) : </td>
+<td valign=top> Note: MWI only applies to users using voicemail store<BR>
+     Y - Message waiting light will be lit for new messages<BR>
+     N - No Message waiting light for this user</td>
+</tr><tr>
+<td valign=top align=right> Auto Login (AL) : </td>
+<td valign=top> Y - User WILL NOT be prompted for password when logging in from their station<BR>
+    N - User WILL prompted for password when logging in from their station<BR></td>
+</tr><tr>
+<td valign=top align=right> Auto New Messages (ANM) : </td>
+<td valign=top> Y - User WILL be sent directly to their new messages when they login<BR>
+    N - User will be played the intro and then the main menu<BR></td>
+</tr>
+
+
+</table>
+

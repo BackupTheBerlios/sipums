@@ -1,0 +1,38 @@
+<B>Edit Mobile Notification Settings <BR>
+
+<FORM Action='user.cgi' METHOD='POST'>
+
+<INPUT TYPE=hidden name="mod" VALUE="<TMPL_VAR name='mod'>">
+<INPUT TYPE=hidden name="func" VALUE="<TMPL_VAR name='func'>">
+
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+   <TD colspan=2>
+<TMPL_IF name='error_message'>
+     <FONT COlOR='red'><TMPL_VAR name='error_message'></font>
+</TMPL_IF> 
+   </Td> 
+</TR>
+
+<TR>
+   <Td>Extension </Td> 
+   <Td><B><TMPL_VAR NAME='extension'></B>
+   </Td> 
+</TR>
+<TR>
+   <Td>Mobile E-mail Flag </b></Td>
+   <TD><SELECT NAME='mobile_email_flag'>
+       <OPTION VALUE='1' <TMPL_IF name='mobile_email_flag'>SELECTED</TMPL_IF> >On</option>
+       <OPTION VALUE='0' <TMPL_UNLESS name='mobile_email_flag'>SELECTED</TMPL_UNLESS>>Off</option>
+       </SELECT></TD>
+</TR>
+<TR>
+   <Td>Mobile E-mail </b></Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="mobile_email" value="<TMPL_VAR name='mobile_email'>">  </TD>
+</TR>
+<TR>
+   <Td colspan=2><INPUT TYPE='submit' name='submit' value='Save'>&nbsp;&nbsp;<Input type='button' onClick='javascript:history.go(-1)' value='Cancel' ></Td>
+</TR>
+
+</TABLE>
+</FORM>

@@ -1,0 +1,47 @@
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+   <Td colspan=2 align=center><b>Converge-Pro Global Settings</b> </Td> 
+</TR>
+<!-- <TMPL_VAR name=mod> --> 
+<TMPL_IF name='msg'> 
+<TR>
+   <Td colspan=2 align=center><font color='blue'><TMPL_VAR NAME='msg'></font> </Td> 
+</TR>
+</TMPL_IF> 
+<TMPL_IF name='error_message'> 
+<TR>
+   <Td colspan=2 align=center><B><font color='RED'><TMPL_VAR NAME='error_message'></font></b> </Td> 
+</TR>
+</TMPL_IF> 
+<TR><TD><TABLE >
+<TR>
+   <TH>Setting Name</TH> 
+   <TH>Current Setting</TH> 
+   <TH>New Setting</TH> 
+   <TH>&nbsp;</TH> 
+</TR>
+<TMPL_LOOP name='settings'>
+<TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> > 
+   <FORM action="admin.cgi" METHOD=POST> 
+   <INPUT TYPE="hidden" name="var_name" value="<TMPL_VAR name='var_name'>">
+   <INPUT TYPE="hidden" name="var_type" value="<TMPL_VAR name='var_type'>">
+   <INPUT TYPE="hidden" name="var_min_value" value="<TMPL_VAR name='var_min_value'>">
+   <INPUT TYPE="hidden" name="var_max_value" value="<TMPL_VAR name='var_max_value'>">
+   <INPUT TYPE="hidden" name="var_display_name" value="<TMPL_VAR name='var_display_name'>">
+   <INPUT TYPE="hidden" name="old_var_value" value="<TMPL_VAR name='var_value'>">
+
+   <INPUT TYPE="hidden" name="mod" value="<TMPL_VAR name='mod'>">
+   <INPUT TYPE="hidden" name="func" value="<TMPL_VAR name='func'>">
+   <Td><TMPL_VAR name='var_display_name'></Td> 
+   <Td><TMPL_VAR name='var_value'></Td> 
+   <Td><INPUT name='var_value' value="<TMPL_VAR name='new_var_value'>"></Td> 
+   <Td><INPUT type="submit" name="submit" value="Apply New Setting"></Td> 
+   </form>
+</TR>
+</TMPL_LOOP>
+</table></td></tr>
+<tr><td>
+ Note: Settings are loaded once at the beginning of each call. <br>Saved settings
+ will be made active for the next call recieved by the Voicemail System.
+</td></tr>
+</table>

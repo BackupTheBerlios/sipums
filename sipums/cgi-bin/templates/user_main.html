@@ -1,0 +1,99 @@
+<B>User Information for <TMPL_VAR Name='FIRST_NAME'> <TMPL_VAR Name='LAST_NAME'></b> 
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+
+<TMPL_IF name='msg'> 
+<TR>
+   <Td colspan=2><font color='blue'><TMPL_VAR NAME='msg'></font> </Td> 
+</TR>
+</TMPL_IF> 
+
+<TR>
+   <Td>Extension </Td> 
+   <Td><B><TMPL_VAR NAME='extension'></B> </Td> 
+</TR>
+<TR>
+   <Td>First Name </Td> 
+   <TD><B><TMPL_VAR name='first_name'></B>  </TD>
+</TR><TR>
+   <Td>Last Name </Td>
+   <TD><B><TMPL_VAR name='last_name'></b></TD>
+</TR><TR>
+   <Td>Middle Initial</Td>
+   <TD><B><TMPL_VAR name='mi'></b></TD>
+</TR>
+<TR>
+   <Td>Transfer</Td>
+   <TD><B><TMPL_IF NAME=TRANSFER>YES<TMPL_ELSE>NO</TMPL_IF></b></TD> 
+</TR>
+<TR>
+   <Td colspan=2><a href="user.cgi?mod=<TMPL_VAR Name='mod'>&func=edit_basic">Edit User Information</a> </Td>
+</TR>
+<TR>
+   <Td colspan=2><b>EMAIL SETTINGS</b></Td>
+</TR>
+<TR>
+   <Td>E-mail Address</b></Td>
+   <TD><B><TMPL_VAR name='email_address'></b></TD>
+<TR>  
+    <TD>Storage Option</td>
+   <TD><B><TMPL_IF NAME=email_store>Email</TMPL_IF>
+       <TMPL_IF NAME=vm_store>Voicemail</TMPL_IF></b></td>
+</TR>
+<TMPL_IF  NAME=email_store> 
+<TR>
+    <TD>Email Interface Option</td>
+
+    <TD><b><TMPL_IF NAME='email_delivery_I'>
+Deliver and store in IMAP folder 'INBOX Voicemail'
+        </TMPL_IF>
+   <TMPL_IF NAME='email_delivery_S'>
+    Deliver and store in Main Inbox    
+        </TMPL_IF>
+       </b></td>
+</tr>
+</TMPL_IF>
+<TMPL_IF  NAME=vm_store>
+<TR>
+    <TD>Email Option</td>
+                                                                                                
+    <TD><b><TMPL_IF NAME='vstore_email_N'>
+          Do not send Voicemail over E-mail
+         </TMPL_IF>
+         <TMPL_IF NAME='vstore_email_C'>
+          Send a copy of voicemail over e-mail
+          </TMPL_IF>
+          <TMPL_IF NAME='vstore_email_S'>
+          Send a copy of voicemail over E-mail and delete it from the voicemail store
+          </TMPL_IF>
+       </b>
+</td>
+</tr>
+</TMPL_IF>
+
+
+</TR><TR>
+   <Td>E-mail Server Address</b></Td>
+   <TD><B><TMPL_VAR name='email_server_address'></B></TD>
+</TR><TR>
+   <Td>E-mail User Name</b></Td>
+   <TD><B><TMPL_VAR name='email_user_name'></b></TD>
+</TR>
+<TR>
+   <Td colspan=2><a href="user.cgi?mod=<TMPL_VAR Name='mod'>&func=edit_email">Edit Email Information</a> </Td>
+</TR>
+<TR>
+   <TD colspan=2><b>MOBILE NOTIFICATION SETTINGS</b></Td>
+</TR>
+<TR>
+   <Td>Mobile E-mail Flag </b></Td>
+   <TD><B><TMPL_IF name='mobile_email_flag'>ON<TMPL_ELSE>OFF</TMPL_IF></b></TD>
+</TR>
+<TR>
+   <Td>Mobile E-mail </b></Td>
+   <TD><B><TMPL_VAR name='mobile_email'></b></TD>
+</TR>
+<TR>
+   <Td colspan=2><a href="user.cgi?mod=<TMPL_VAR Name='mod'>&func=edit_mobile">Edit Mobile Notification</a> </Td>
+</TR>
+</table>
+</form>

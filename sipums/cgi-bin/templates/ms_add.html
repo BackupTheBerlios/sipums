@@ -1,0 +1,77 @@
+<center>
+   <B>Voicemail Menu Sound(s) </b><BR>
+<table>
+  <tr>
+    <Td><FONT COlOR='red'><TMPL_VAR name='msg'></font> <br>
+      <TABLE>
+        <FORM action='admin.cgi' METHOD=POST name='ms'> 
+        <input type=hidden name='mod' value="<TMPL_VAR name='mod'>" > 
+        <input type=hidden name='func' value="<TMPL_VAR name='func'>" > 
+        <input type=hidden name='menu_id' value="<TMPL_VAR name='menu_id'>" > 
+
+        <tr>
+          <td>Menu Id</td>
+          <td><B><TMPL_VAR Name='menu_id'></b></td>
+        </tr>
+        <tr>
+          <td>Menu Title</td>
+          <td><B><TMPL_VAR Name='menu_title'></b></td>
+        </tr>
+
+        <tr><td>Menu Number</td> 
+            <TD><SELECT name='order_no'> 
+              <TMPL_LOOP NAME='order_nos'>
+               <OPTION value='<TMPL_VAR name=num>'<TMPL_IF NAME=sel> SELECTED</TMPL_IF>><TMPL_VAR name=num></option>
+         
+              </TMPL_LOOP>
+                </SELECT>
+            </td>
+        </tr>
+        <tr>
+          <td>
+            <TMPL_IF name='show_variable'>
+            <INPUT TYPE=radio name='var_or_sound' value='sound' CHECKED> 
+            <TMPL_ELSE> <INPUT TYPE=hidden value='sound' name='var_or_sound'> </TMPL_IF>Menu Sound
+          </td> 
+          <td> 
+      
+         <SCRIPT Language='JAVASCRIPT'>
+            function preview_wav () {
+                var id = document.ms.file_id.options[document.ms.file_id.selectedIndex].value ; 
+                location.href = "send_wav.cgi?type=prompt&id="  + id; 
+            }       
+         </SCRIPT>
+             <select name="file_id"> 
+             <TMPL_LOOP NAME='sound_files'>
+             <OPTION value='<TMPL_VAR name=file_id>'<TMPL_IF NAME=sel> SELECTED</TMPL_IF>>  
+                  <TMPL_VAR name=sound_file>
+                  </option>
+             </TMPL_LOOP> 
+             </select>&nbsp;&nbsp;&nbsp;<a href="javascript:preview_wav()">Preview</a>
+    
+
+          </td></tr>
+          <TMPL_IF name='show_variable'>
+            <tr>
+                <td><INPUT TYPE=radio name='var_or_sound' value='var'> Program Variable</td> 
+                <td><INPUT TYPE=text name='var_name' value=''></td> 
+            </tr>
+          </TMPL_IF>
+
+        <tr><td>Description</td> 
+            <td><INPUT name='sound_title' size=50> </td> 
+      <tr><td colspan=3><input type=submit name=submit value='Add'>&nbsp;&nbsp;
+       <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+      </td></tr>
+
+   <tr><td colspan=4 align=center>
+             <a href="admin.cgi?mod=<TMPL_VAR name=mod>&func=goto_prev_menu_item&src=<TMPL_VAR name=src>&menu_id=<TMPL_VAR NAME=menu_id>">Prev </a>&nbsp;&nbsp;&nbsp;
+                                                                                                                             
+                <a href='admin.cgi?mod=SuperMenu&func=menu_items&menu_id=<TMPL_VAR Name=menu_id>'>Menu Items</a>&nbsp;&nbsp;&nbsp;
+      <a href="admin.cgi?mod=<TMPL_VAR name=mod>&func=goto_next_menu_item&src=<TMPL_VAR name=src>&menu_id=<TMPL_VAR NAME=menu_id>">Next</a>
+                </td>
+            </tr>
+
+</table>
+</FORM>
+

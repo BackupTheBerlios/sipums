@@ -1,0 +1,70 @@
+<center>
+   <B>Sounds </b>
+<TMPL_IF NAME=msg>
+  <BR><BR>
+     <font color='red'> <TMPL_VAR NAME=msg></font>
+</TMPL_IF>
+
+<SCRIPT Language='javascript'>
+  function checkAll()  { 
+     allCB = document.myForm.sound_file;
+     for(i=0;i<allCB.length;i++){
+           // if(allCB[i].checked==true){
+           //         do something with that checkbox
+           // } 
+           allCB[i].checked=true;
+      }
+  }
+  function clearAll()  {
+     allCB = document.myForm.sound_file;
+     for(i=0;i<allCB.length;i++){
+           // if(allCB[i].checked==true){
+           //         do something with that checkbox
+           // }
+           allCB[i].checked=false;
+      }
+  }
+ 
+</SCRIPT>
+
+<FORM action='admin.cgi' method='POST' name='myForm'>
+  <INPUT type="hidden" name="mod" value="<TMPL_VAR name=mod>">
+  <INPUT type="hidden" name="func" value="<TMPL_VAR name=func>">
+
+<table>
+  <tr>
+    <TD colspan=3> 
+     <B>New Sounds:</b><BR>
+      These are sounds that exist on disk but not in the database.
+    </td>
+
+  </tr>
+  <TMPL_LOOP NAME="NEW_FILES">
+  <TR<TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF>>
+     <Td><TMPL_VAR NAME='count'></TD>
+     <Td><a href="send_wav.cgi?type=new&file=<TMPL_VAR NAME='file_name'>"> <TMPL_VAR NAME='file_name'></a></TD>
+     <Td><input type='checkbox' name='sound_file' value="<TMPL_VAR NAME='file_name'>"><!-- <TMPL_VAR NAME=mod> --></TD>
+  </TMPL_LOOP>
+  <TMPL_IF NAME="NEW_FILES_SIZE"> 
+  <tr>
+    <TD colspan=3 align=right> 
+     <a href='javascript:checkAll()'>Check All</a> - <a href='javascript:clearAll()'>Clear All</a>
+    </td>
+  </tr>
+  <tr>
+    <TD colspan=3 align=right> 
+     <input type=submit value='Add Selected'>
+    </td>
+  </tr>
+  <TMPL_ELSE> 
+  <tr>
+    <TD colspan=3 align=center> 
+     <font color='red'>There are no sound files to add</font>
+    </td>
+  </tr>
+  
+  </TMPL_IF>
+  
+</TABLE>
+
+</FORM>

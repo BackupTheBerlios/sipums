@@ -1,0 +1,90 @@
+<center>
+   <B>Voicemail Auto Holiday Settings</b><BR>
+<table>
+  <tr>
+    <Td><b><TMPL_VAR Name='holiday_name'> Settings</b><BR><BR>
+      <TABLE>
+        <FORM action='admin.cgi' METHOD=POST> 
+        <input type=hidden name='mod' value="<TMPL_VAR name='mod'>" > 
+        <input type=hidden name='func' value="<TMPL_VAR name='func'>" > 
+        <input type=hidden name='holiday_name' value="<TMPL_VAR name='holiday_name'>" > 
+
+        <TR><td colspan=2>
+           <INPUT TYPE='radio' name='holiday_option' value='ALL' <TMPL_IF NAME='HOLIDAY_ALL_CHECKED'>CHECKED</TMPL_IF>> <B><i>
+             We are closed all day.  Play the holiday greeting to callers all day. <BR>  
+              </i></b>
+        </td> 
+        </tr>
+        <TR><td colspan=2>
+           <INPUT TYPE='radio' name='holiday_option' value='HD' <TMPL_IF NAME='HOLIDAY_HD_CHECKED'>CHECKED</TMPL_IF>> <B><i>
+             We are take a half day. Play holiday greeting  to callers that call after we close. <BR>
+             We maintain the following hours: <BR>  
+              </i></b>
+        </td> 
+        </tr>
+
+        <tr><td>We Close At</td>
+         <td><SELECT NAME='start_hour'>
+        <TMPL_LOOP NAME='start_hour'> 
+         <OPTION  Value="<TMPL_VAR NAME='hour'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='hour'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+      <SELECT NAME='start_minute'>
+        <TMPL_LOOP NAME='start_min'> 
+         <OPTION  Value="<TMPL_VAR NAME='min'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='min'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+        <SELECT NAME='start_ampm'>
+         <OPTION  Value="AM" <TMPL_IF name='start_am_sel'>SELECTED</tMPL_if>>  AM  </OPTION>
+         <OPTION  Value="PM" <TMPL_IF name='start_pm_sel'>SELECTED</tMPL_if>>  PM  </OPTION>
+         </select>
+      </td>
+</tr>
+
+<!--      <tr>
+       <td>Day Ends At</td> 
+       <td><SELECT NAME='end_hour'>
+        <TMPL_LOOP NAME='end_hour'> 
+         <OPTION  Value="<TMPL_VAR NAME='hour'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='hour'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+       <SELECT NAME='end_minute'>
+        <TMPL_LOOP NAME='end_min'> 
+         <OPTION  Value="<TMPL_VAR NAME='min'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='min'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+        <SELECT NAME='end_ampm'>
+         <OPTION  Value="AM" <TMPL_IF name='end_am_sel'>SELECTED</tMPL_if>>  AM  </OPTION>
+         <OPTION  Value="PM" <TMPL_IF name='end_pm_sel'>SELECTED</tMPL_if>>  PM  </OPTION>
+         </select>
+      </td>
+      </td></tr>
+
+      <tr>
+       <td>Holiday Greeting Menu</td>
+        <td colspan=4><SELECT NAME='menu_id'>
+        <TMPL_LOOP NAME='menus'>
+         <OPTION  Value="<TMPL_VAR NAME='menu_id'>" <TMPL_IF name='daytime_sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='menu_id'> - <TMPL_VAR NAME='title'> </OPTION>
+        </TMPL_LOOP>
+      </td></tr>
+-->
+
+      <TR><td colspan=2>
+           <INPUT TYPE='radio' name='holiday_option' value='OFF' <TMPL_IF NAME='HOLIDAY_OFF_CHECKED'>CHECKED</TMPL_IF>>
+           <B><i>We work on <TMPL_VAR NAME='holiday_name'>. Play the regular auto attendant greeting(s). </i></b>
+        </td> </tr>
+        
+       <TD><BR></td>
+      </tr>
+
+
+      <tr><td colspan=3><input type=submit name=submit value='Apply'>&nbsp;&nbsp;
+       <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+</table>
+</FORM>
+<!-------- 
+
+  That ends the weekday settings 
+
+------------!>
+

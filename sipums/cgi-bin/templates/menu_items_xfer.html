@@ -1,0 +1,38 @@
+<center>
+<B>VOICEMAIL Menu Items<B>
+
+<TABLE>
+<TR><TD> 
+
+  <table>
+     <TR> <Th>Menu Id</Th> <Th>Title</Th> 
+          <Th>Menu Type</Th> 
+         <TMPL_IF NAME=param1> 
+          <Th>Param1 </Th> 
+         </TMPL_IF> 
+         <TMPL_IF NAME=param2> 
+          <Th>Param2 </Th> 
+         </TMPL_IF> 
+         <TMPL_IF NAME=param3> 
+          <Th>Param3 </Th> 
+         </TMPL_IF> 
+     </tr>
+     <TR> <Td><TMPL_VAR NAME='menu_id'></td>
+          <TD><TMPL_VAR NAME='title'></TD>
+          <TD><TMPL_VAR NAME='menu_type_code'>  </Td> 
+          <TMPL_IF NAME=param1> 
+             <TD><TMPL_VAR NAME='param1'>  </Td> 
+           </TMPL_IF> 
+          <TMPL_IF NAME=param2> 
+             <TD><TMPL_VAR NAME='param2'>  </Td> 
+           </TMPL_IF> 
+          <TMPL_IF NAME=param3> 
+             <TD><TMPL_VAR NAME=param3>  </Td> 
+           </TMPL_IF> 
+     </TR>
+  </TABLE>
+  <a href='admin.cgi?mod=Menu'>Back to Menu Summary</a>
+  </td></tr> </table>
+
+</center> 
+

@@ -1,0 +1,82 @@
+<B> Editting User </b>
+<FORM action='admin.cgi' method='Post'>
+<INPut type="hidden" name="mod" value="<TMPL_VAR name='mod'>">
+<INPut type="hidden" name="func" value="<TMPL_VAR name='func'>">
+<INPut type="hidden" name="type" value="<TMPL_VAR name='type'>">
+<INPut type="hidden" name="extension" value="<TMPL_VAR name='extension'>">
+
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+   <Td>Extension </Td> 
+   <Td><TMPL_VAR NAME='extension'> </Td> 
+</tr><tr>
+   <Td>Active </Td> 
+   <TD><select name='active'> 
+          <option value='1' <TMPL_IF NAME='active'>SELECTED</TMPL_IF>>Yes</option>
+          <option value='0' <TMPL_UNLESS NAME='active'>SELECTED</TMPL_UNLESS>>No</option> 
+        </select>
+   </TD> 
+</tr><tr>
+   <Td>First Name </Td> 
+   <TD><INPUT TYPE='TEXT' NAME="first_name" value="<TMPL_VAR name='first_name'>" size=30>  </TD>
+</tr><TR>
+   <Td>Last Name </Td>
+   <TD><INPUT TYPE='TEXT' NAME="last_name" value="<TMPL_VAR name='last_name'>" size=30>  </TD>
+</tr><tr>
+   <Td>Middle Initial</Td>
+   <TD><INPUT TYPE='TEXT' NAME="mi" value="<TMPL_VAR name='mi'>"  size=30>  </TD>
+</tr><tr>
+   <Td>Transfer</Td>
+   <TD><select name='transfer'> 
+          <option value='1' <TMPL_IF NAME='transfer'>SELECTED</TMPL_IF>>Yes</option>
+          <option value='0' <TMPL_UNLESS NAME='transfer'>SELECTED</TMPL_UNLESS>>No</option> 
+        </select>
+   </TD> 
+</tr><tr>
+   <Td colspan=2><b>EMAIL SETTINGS</b></Td>
+</tr><tr>
+   <Td>Storage Option</b></Td>
+   <TD><select name='store_flag'>
+          <option value='E' <TMPL_IF NAME='email_store'>SELECTED</TMPL_IF>>E-mail Store</option>
+          <option value='V' <TMPL_IF NAME='vm_store'>SELECTED</TMPL_IF>>Voicemail Store</option>
+        </select>
+    </TD>
+
+
+
+</tr><tr>
+   <Td>E-mail</b></Td>
+   <TD><INPUT TYPE='TEXT' NAME="email_address" value="<TMPL_VAR name='email_address'>"  size=30>  </TD>
+</tr><tr>
+   <Td>E-mail Server Address</b></Td>
+   <TD><INPUT TYPE='TEXT'  size=30 NAME="email_server_address" value="<TMPL_VAR name='email_server_address'>">  </TD>
+</tr><tr>
+   <Td>E-mail User Name</b></Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="email_user_name" value="<TMPL_VAR name='email_user_name'>">  </TD>
+</tr><tr>
+   <Td>E-mail Password </b></Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="email_password" value="<TMPL_VAR name='email_password'>">  </TD>
+</tr><tr>
+   <Td>Mobile E-mail </b></Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="mobile_email" value="<TMPL_VAR name='mobile_email'>">  </TD>
+</tr><tr>
+   <Td>New User? </b></Td>
+   <TD><select name='new_user_flag'> 
+          <option value='1' <TMPL_IF NAME='new_user_flag'>SELECTED</TMPL_IF>>Yes</option>
+          <option value='0' <TMPL_UNLESS NAME='new_user_flag'>SELECTED</TMPL_UNLESS>>No</option> 
+        </select>
+   </TD> 
+</tr><tr>
+   <Td>Admin?</b></Td>
+   <TD><select name='admin_flag'> 
+          <option value='1' <TMPL_IF NAME='admin_flag'>SELECTED</TMPL_IF>>Yes</option>
+          <option value='0' <TMPL_UNLESS NAME='admin_flag'>SELECTED</TMPL_UNLESS>>No</option> 
+        </select>
+   </TD> 
+</tr>
+<tr><td colspan=2> 
+   <input type='submit' name='Save' Value='Save'> 
+</td>
+</tr>
+</table>
+</form>

@@ -1,0 +1,45 @@
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+   <Td colspan=2 align=center><b>Converge-Pro Sounds</b> </Td> 
+</TR>
+<!-- <TMPL_VAR name=mod> --> 
+<TMPL_IF name='msg'> 
+<TR>
+   <Td colspan=2 align=center><font color='blue'><TMPL_VAR NAME='msg'></font> </Td> 
+</TR>
+</TMPL_IF> 
+<TR>
+   <TD colspan=2 align='center'>
+       <a href="admin.cgi?mod=<TMPL_VAR name=mod>&func=view_new_sounds">New Sounds</a>
+    </td>
+</tr>
+<TR>
+   <TD colspan=2 >
+   <FORM action=admin.cgi method=get>
+   <INPUT TYPE='hidden' name='mod' value='<TMPL_VAR name=mod>'>
+   <INPUT TYPE='hidden' name='func' value='<TMPL_VAR name=func>'>
+       Search :<BR><Input name='filter' value='<TMPL_VAR name=filter>'><input type=submit value='Go'>
+    </form>
+    </td>
+</tr>
+
+<TR>
+   <Td><TABLE>
+      <TR>
+          <TD><a href='admin.cgi?mod=Sounds&func=<TMPL_VAR NAME=func>&sb1=file_id&sb2=<TMPL_VAR NAME=file_id_sb>'>File Id</a></TD>
+          <TD><a href='admin.cgi?mod=Sounds&func=<TMPL_VAR NAME=func>&sb1=sound_file&sb2=<TMPL_VAR NAME=sound_file_sb>'>File Name</a></TD>
+          <TD>Custom </TD>
+      </TR>
+      <TMPL_LOOP NAME='sound_files'>  
+      <TR>   
+          <Td><TMPL_VAR name='file_id'></tD>
+          <Td><a href="send_wav.cgi?type=prompt&id=<TMPL_VAR NAME='file_id'>"><TMPL_VAR Name='SOUND_FILE'></a></tD>
+          <Td><TMPL_IF name='professional'>N<TMPL_ELSE>Y</TMPL_IF></tD>
+          <Td>
+    <!-- <TMPL_UNLESS name='professional'><a href="admin.cgi?mod=<TMPL_VAR Name=mod>&func=rename&file_id=<TMPL_VAR NAME='file_id'>">Rename File</a></TMPL_UNLESS>--> <a href="admin.cgi?mod=<TMPL_VAR Name=mod>&func=rename&file_id=<TMPL_VAR NAME='file_id'>">Rename</a>&nbsp;&nbsp;&nbsp;</tD>
+      </TR>
+      </TMPL_LOOP>  
+      </TABLE>
+   </Td>
+</TR>
+</table>

@@ -1,0 +1,52 @@
+<center>
+  <TMPL_IF NAME='edit_form'> <B>Edit Auto Attendant Menu </b></TMPL_IF> 
+  <TMPL_IF NAME='add_form'>  <B>Add Auto Attendant Menu </b> </TMPL_IF> 
+
+<TMPL_IF name='error_message'>
+  <BR>
+  <FONT COlOR='red'><TMPL_VAR name='error_message'></font>
+</TMPL_IF>
+
+
+  <FORM action='admin.cgi' method='Post'>
+    <INPut type="hidden" name="mod" value="<TMPL_VAR name='mod'>">
+    <INPut type="hidden" name="func" value="<TMPL_VAR name='func'>">
+    <INPut type="hidden" name="type" value="<TMPL_VAR name='type'>">
+
+  <!-- They are editing.... -->
+  <INPut type="hidden" name="menu_id" value="<TMPL_VAR name='menu_id'>">
+
+  <table>
+     <TR> <Td><B> Menu ID </b></TD>
+           <Td><TMPL_VAR NAME='menu_id'></Td> 
+      </tr>
+
+     <TR> 
+        <TD><B> Menu Type </b> </TD> 
+        <Td>
+            <INPUT TYPE='hidden' name='old_menu_type_code' value="<TMPL_VAR NAME=menu_type_code>">
+        <SELECT NAME='menu_type_code'>
+             <TMPL_LOOP NAME=menu_type_opts>
+                <OPTION VALUE='<TMPL_VAR NAME=menu_type_code>' <TMPL_IF NAME=SEL>SELECTED</TMPL_IF>><TMPL_VAR NAME=menu_type_code> - <TMPL_VAR NAME=menu_type_code_descr></option>
+             </TMPL_LOOP>
+
+            
+           </Td>
+     </TR>
+     <TR>
+        <td><B> Title </b></TD> 
+        <Td><INPUT TYPE="text" name="title" value="<TMPL_VAR NAME='title'>"> </Td>
+     </TR>
+     <TR>
+        <td><B> Max Attempts </b> </td>
+        <Td><INPUT TYPE="text" name="max_attempts" value="<TMPL_VAR NAME='max_attempts'>"> </Td>
+     </tr>
+
+     <TR>
+        <td colspan=2>
+           <TMPL_IF NAME='edit_form'> <INPUT TYPE="submit" name="submit" value="Save Changes"></TMPL_IF> 
+           <TMPL_IF NAME='add_form'>  <INPUT TYPE="submit" name="submit" value="Create Menu"></TMPL_IF> 
+           <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+     </tr>
+  </table>
+</center> 

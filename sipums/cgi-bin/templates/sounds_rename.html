@@ -1,0 +1,31 @@
+<center>
+   <B>Rename a Sound File </b><BR>
+<table>
+  <tr>
+    <Td><FONT COlOR='red'><TMPL_VAR name='msg'></font> <br>
+      <TABLE>
+        <FORM action='admin.cgi' METHOD=POST name='ms'> 
+        <input type=hidden name='mod' value="<TMPL_VAR name='mod'>" > 
+        <input type=hidden name='func' value="<TMPL_VAR name='func'>" > 
+        <input type=hidden name='file_id' value="<TMPL_VAR name='file_id'>" > 
+        <input type=hidden name='old_sound_file' value="<TMPL_VAR name='old_sound_file'>" > 
+
+        <tr>
+          <td>File Id</td>
+          <td><B><TMPL_VAR Name='file_id'></b></td>
+        </tr>
+        <tr>
+          <td>Old File Name</td>
+          <td><B><TMPL_VAR Name='old_sound_file'></b></td>
+        </tr>
+
+        <tr><td>New File Name</td> 
+            <TD> <INPUT TYPE=text name='sound_file' value="<TMPL_VAR name=sound_file>"></td> 
+            </td>
+        </tr>
+      <tr><td colspan=3><input type=submit name=submit value='Rename'>&nbsp;&nbsp;
+       <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+      </td></tr>
+</table>
+</FORM>
+

@@ -1,0 +1,49 @@
+<center>
+   <B>VOICEMAIL Menus 
+<TMPL_IF NAME=msg>
+  <BR><BR>
+     <font color='red'> <TMPL_VAR NAME=msg></font>
+</TMPL_IF>
+
+<table>
+  <tr>
+    <TD colspan=5> 
+     <B>Super Menu (for those who know what they do....) :</b>
+    </td>
+  </tr>
+   <TR><td colspan=5>
+     <BR>
+      <a href="admin.cgi?mod=SuperMenu&func=add_menu">Add a Menu</a>
+   </td></tr>
+  <TR>
+     <Th>Menu Id</Th> 
+     <Th>Title</Th> 
+     <Th>Menu Type</Th> 
+<!--     <Th>Menu Sound</Th> -->
+     <Th>Params</Th> 
+     <Th>&nbsp;</Th> 
+     <Th>&nbsp;</Th> 
+  </tr>
+  <TMPL_LOOP NAME="MENU_DATA">
+  <TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+
+     <Td><a href="admin.cgi?mod=SuperMenu&func=menu_items&menu_id=<TMPL_VAR NAME='menu_id'>"><TMPL_VAR NAME=MENU_ID></a> </Td> 
+     <Td><TMPL_VAR NAME='title'> </Td>
+     <Td><TMPL_VAR NAME='menu_type_code'> </Td>
+<!--     <Td><TMPL_LOOP NAME='MENU_SOUNDS'><a href="send_wav.cgi?type=msound&id=<TMPL_VAR NAME='menu_sound_id'>"><TMPL_VAR Name='SOUND_FILE'></a>,</TMPL_LOOP></td>        -->
+     <Td><TMPL_VAR NAME='param1'><TMPL_IF NAME='param2'>,</TMPL_IF><TMPL_VAR NAME='param2'></td>
+     <Td><a href='admin.cgi?mod=SuperMenu&func=edit_menu&menu_id=<TMPL_VAR NAME='menu_id'>'>edit</a> </td>
+     <Td><a href='admin.cgi?mod=SuperMenu&func=delete_menu_conf&menu_id=<TMPL_VAR NAME='menu_id'>'>delete</a> </td>
+     <Td><a href='admin.cgi?mod=MenuSounds&func=edit&menu_id=<TMPL_VAR NAME='menu_id'>'>edit sound</a> </td>
+  </TR>
+  </TMPL_LOOP>
+   <TR><td colspan=5>
+     <BR>
+      <a href="admin.cgi?mod=SuperMenu&func=add_menu">Add a Menu</a>
+   </td></tr>
+</TABLE>
+<BR>
+
+</table>
+<BR>
+</table>

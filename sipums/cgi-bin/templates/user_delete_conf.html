@@ -1,0 +1,24 @@
+<B>Delete VOICEMAIL USERS <b><BR>
+
+<TABLE>
+<FORM ACTION='admin.cgi' method='POST'> 
+<INPUT TYPE='hidden' name='mod' value="<TMPL_VAR NAME='mod'>">
+<INPUT TYPE='hidden' name='func' value="<TMPL_VAR NAME='func'>">
+<INPUT TYPE='hidden' name='extension' value="<TMPL_VAR NAME='extension'>">
+
+<TR> <TD> You have requested to delete the account information for extension <TMPL_VAR NAME='extension'>. <BR>
+Please select from one of the following. 
+</td></tr>
+<TR> <TD><input type='radio' name='delete_opt' value='I' checked>Set Account to Inactive (Recommended)
+</td></tr>
+<TR> <TD><input type='radio' name='delete_opt' value='D'>Delete Account (<FONT color='red'>WARNING: This is irreversible, all voicemail messages and setting for this user will be lost</font>) 
+</td></tr>
+<TR> <TD>
+<Input type='submit' value='Submit'>
+<Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+
+</form>
+
+</table> 
+
+

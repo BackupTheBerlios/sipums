@@ -1,0 +1,107 @@
+<B>Delete Menu </b><BR>
+
+<TMPL_IF name='error_message'>
+  <BR>
+  <FONT COlOR='red'><TMPL_VAR name='error_message'></font>
+</TMPL_IF>
+
+
+
+<FORM ACTION='admin.cgi' method='POST'> 
+  <INPUT TYPE='hidden' name='mod' value="<TMPL_VAR NAME='mod'>">
+  <INPUT TYPE='hidden' name='func' value="<TMPL_VAR NAME='func'>">
+  <INPUT TYPE='hidden' name='menu_id' value="<TMPL_VAR NAME='menu_id'>">
+<TABLE>
+<TR><TD> 
+
+  <TABLE>
+     <TR>
+         <TD><b>Menu Id</b></TD> 
+         <TD><TMPL_VAR NAME='menu_id'></TD>
+     </TR>
+     <TR>
+         <TD><b>Title</b></TD> 
+         <TD><TMPL_VAR NAME='title'></TD>
+     </TR>
+     <TR>
+         <TD><b>Type</b></TD> 
+         <TD><TMPL_VAR NAME='menu_type_code'></TD>
+     </TR>
+     <TR> 
+         <TMPL_IF NAME=param1> 
+          <Td><b>Param1</b> </Td> 
+          <Td><TMPL_VAR NAME=param1></Td> 
+         </TMPL_IF> 
+     </tr>
+     <TR> 
+         <TMPL_IF NAME=param2> 
+          <Td><b>Param2</b> </Td> 
+          <Td><TMPL_VAR NAME=param2></Td> 
+         </TMPL_IF> 
+     </tr>
+     <TR> 
+         <TMPL_IF NAME=param3> 
+          <Td><b>Param3</b> </Td> 
+          <Td><TMPL_VAR NAME=param3></Td> 
+         </TMPL_IF> 
+     </tr>
+     <TR> 
+         <TMPL_IF NAME=param4> 
+          <Td><b>Param4 </b></Td> 
+          <Td><TMPL_VAR NAME=param4></Td> 
+         </TMPL_IF> 
+     </tr>
+  </TABLE>
+  <TMPL_IF NAME='deps_exist'>
+  <TABLE>
+   <TR> <TD> <FONT Color='red'><blink>Dependencies Exist</blink></font>
+      <TMPL_IF NAME=error> 
+      </TMPL_IF>
+      </td></tr>
+  </table> 
+  <TABLE>
+   <TR> <TD> Before you delete this menu, must remove any references <BR>
+             to it in outher menus. Below is a list of menus that have <BR>
+             links to the menu you are trying to delete.
+      <TMPL_IF NAME=error>
+      </TMPL_IF>
+      </td></tr>
+      <TR> <TD><TABLE>
+        <TR><TH>
+         Menu ID
+        </TH><TH>
+         Title
+        </TH><TH>
+         Option
+        </TH></tr>
+       <TMPL_LOOP NAME=deps>
+        <TR><TD>
+       <a href="admin.cgi?mod=Menu&func=menu_items&menu_id=<TMPL_VAR NAME='menu_id'>">
+          <TMPL_VAR NAME='menu_id'>
+       </a>
+        </Td><Td>
+         <TMPL_VAR NAME='title'>
+        </Td><Td align=center>
+         <TMPL_VAR NAME='menu_item_option'>
+        </Td>
+        </tr>
+       </TMPL_LOOP>
+        </table>
+
+      </td></tr>
+                                                                                                                             
+  </table>
+
+  <TMPL_ELSE> 
+  <TR><TD colspan=2> 
+     <Input type='submit' value='Confirm Delete'>
+     <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+  </td></tr>
+  </tMPL_IF>
+
+  </td></tr>
+  </TABLE>
+
+</form>
+
+</center> 

@@ -1,0 +1,68 @@
+<center>
+<B>VOICEMAIL Menu Items<B>
+
+<TABLE>
+<TR><TD> 
+
+  <table>
+     <TR> <Th>Menu Id</Th> <Th>Title</Th> 
+          <Th>Menu Type</Th> 
+         <TMPL_IF NAME=param1> 
+          <Th>Param1 </Th> 
+         </TMPL_IF> 
+         <TMPL_IF NAME=param2> 
+          <Th>Param2 </Th> 
+         </TMPL_IF> 
+         <TMPL_IF NAME=param3> 
+          <Th>Param3 </Th> 
+         </TMPL_IF> 
+     </tr>
+     <TR> <Td><TMPL_VAR NAME='menu_id'></td>
+          <TD><TMPL_VAR NAME='title'></TD>
+          <TD><TMPL_VAR NAME='menu_type_code'>  </Td> 
+          <TMPL_IF NAME=param1> 
+             <TD><TMPL_VAR NAME='param1'>  </Td> 
+           </TMPL_IF> 
+          <TMPL_IF NAME=param2> 
+             <TD><TMPL_VAR NAME='param2'>  </Td> 
+           </TMPL_IF> 
+          <TMPL_IF NAME=param3> 
+             <TD><TMPL_VAR NAME=param3>  </Td> 
+           </TMPL_IF> 
+     </TR>
+  </TABLE>
+  <TABLE> 
+     <TR>
+        <TH>&nbsp;</TH>
+        <TH>&nbsp;</TH>
+        <TH> Menu Item Id </TH>
+        <tH> Menu Options</TH>
+        <TH> Title </TH> 
+        <tH> Destination Menu Id </tH> 
+        <tH> Action (optional) </tH> 
+        </TR>
+        <TMPL_LOOP NAME="MENU_ITEM_DATA">
+        <TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+           <Td><a href="admin.cgi?mod=Menu&func=edit_menu_item&menu_item_id=<TMPL_VAR NAME=menu_item_id>&menu_id=<TMPL_VAR NAME=menu_id>">edit</a> </Td> 
+           <Td><a href="admin.cgi?mod=Menu&func=delete_menu_item_conf&menu_item_id=<TMPL_VAR NAME=menu_item_id>&menu_id=<TMPL_VAR NAME=menu_id>">delete</a> </Td> 
+           <Td><TMPL_VAR NAME='menu_item_id'> </Td> 
+           <Td><TMPL_VAR NAME='menu_item_option'> </Td> 
+           <td><TMPL_VAR NAME=menu_item_title> </td>
+           <Td> <TMPL_IF NAME=dest_menu_id> 
+              <a href="admin.cgi?mod=Menu&func=menu_items&menu_id=<TMPL_VAR NAME=dest_menu_id>"><TMPL_VAR NAME=dest_menu_id></a></Td> 
+                <TMPL_ELSE>
+                   <TMPL_VAR NAME=dest_menu_id>
+                </TMPL_IF>
+               
+           <Td><TMPL_VAR NAME='menu_item_action'> </Td> 
+        </TR>
+      </TMPL_LOOP>
+
+      <TR><Td colspan=5> &nbsp;&nbsp; <a href="admin.cgi?mod=Menu&func=add_menu_item&menu_id=<TMPL_VAR NAME='menu_id'>">Add a Menu Item to this Menu</a>
+     </td><td>
+          
+  </table>
+  </td></tr> </table>
+
+</center> 
+

@@ -1,0 +1,78 @@
+<B>Delete Menu Item <b><BR>
+
+
+<FORM ACTION='admin.cgi' method='POST'> 
+
+  <INPUT TYPE='hidden' name='mod' value="<TMPL_VAR NAME='mod'>">
+  <INPUT TYPE='hidden' name='func' value="<TMPL_VAR NAME='func'>">
+  <INPUT TYPE='hidden' name='type' value="<TMPL_VAR NAME='type'>">
+  <INPUT TYPE='hidden' name='menu_item_id' value="<TMPL_VAR NAME='menu_item_id'>">
+  <INPUT TYPE='hidden' name='menu_id' value="<TMPL_VAR NAME='menu_id'>">
+
+<TABLE>
+<TR> <TD> You have requested to delete the following Menu Item
+
+
+</td></tr>
+
+
+</table> 
+
+<TABLE>
+<TR><TD> 
+
+  <table>
+     <TR> <Th>Menu Id</Th> 
+          <Th>Title</Th> 
+          <Th>Menu Type</Th> 
+         <TMPL_IF NAME=param1> 
+          <Th>Param1 </Th> 
+         </TMPL_IF> 
+         <TMPL_IF NAME=param2> 
+          <Th>Param2 </Th> 
+         </TMPL_IF> 
+         <TMPL_IF NAME=param3> 
+          <Th>Param3 </Th> 
+         </TMPL_IF> 
+     </tr>
+     <TR> <Td><TMPL_VAR NAME='menu_id'></td>
+          <TD><TMPL_VAR NAME='title'></TD>
+          <TD><TMPL_VAR NAME='menu_type_code'>  </Td> 
+          <TMPL_IF NAME=param1> 
+             <TD><TMPL_VAR NAME='param1'>  </Td> 
+           </TMPL_IF> 
+          <TMPL_IF NAME=param2> 
+             <TD><TMPL_VAR NAME='param2'>  </Td> 
+           </TMPL_IF> 
+          <TMPL_IF NAME=param3> 
+             <TD><TMPL_VAR NAME=param3>  </Td> 
+           </TMPL_IF> 
+     </TR>
+  </TABLE>
+  <TABLE> 
+     <TR> <Td><B> Menu Option </b></TD>
+           <Td><TMPL_VAR NAME='menu_item_option'> </Td> 
+      </tr>
+     <TR>
+        <td> <B>Title</b> </TD> 
+        <Td><TMPL_VAR NAME='menu_item_title'> </Td>
+     </TR>
+     <TR> 
+        <TD><B> Destination Menu Id</b> </TD> 
+        <Td><TMPL_VAR NAME='dest_menu_id'> </td> 
+     </TR>
+     <TR>
+        <td><B> Action (optional)</b> </tH> 
+        <Td><TMPL_VAR NAME='menu_item_action'> </Td>
+     </tr>
+     <TR><td colspan=2>
+   </td></tr>
+  </table>
+  </td></tr>
+  <TR><TD> 
+     <Input type='submit' value='Confirm Delete'>
+     <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+  </td></tr>
+  </table>
+</form>
+</center> 

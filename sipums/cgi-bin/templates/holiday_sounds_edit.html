@@ -1,0 +1,66 @@
+<center>
+   <B>Voicemail Holiday Sound(s) </b><BR>
+<table>
+  <tr>
+    <Td><FONT COlOR='red'><TMPL_VAR name='msg'></font> <br>
+      <TABLE>
+        <FORM action='admin.cgi' METHOD=POST name='ms'> 
+        <input type=hidden name='mod' value="<TMPL_VAR name='mod'>" > 
+        <input type=hidden name='func' value="<TMPL_VAR name='func'>" > 
+        <input type=hidden name='holiday_name' value="<TMPL_VAR name='holiday_name'>" > 
+  <tr><td colspan=4 align=center>
+           <a href="admin.cgi?mod=<TMPL_VAR name=mod>&func=add_sound&holiday_name=<TMPL_VAR NAME=holiday_name_enc>">Add A Holiday Sound</a>&nbsp;&nbsp;&nbsp;
+           <a href="admin.cgi?mod=<TMPL_VAR name=mod>&func=delete_sound_view&holiday_name=<TMPL_VAR NAME=holiday_name_enc>">Delete A Holiday Sound</a>
+          </td></tr>                                                                                                                   
+
+        <tr>
+          <td>Holiday Name</td>
+          <td><B><TMPL_VAR Name='holiday_name'></b></td>
+        </tr>
+
+       <TMPL_LOOP name='sound_opts'>  
+        <tr valign='top'><td valign='top'>Holiday Sound <TMPL_VAR name='order_no'></td>
+         <td>
+         <SCRIPT Language='JAVASCRIPT'>
+            function preview_wav_<TMPL_VAR name='order_no'>() {
+                var id = document.ms.file_id_<TMPL_VAR name='order_no'>.options[document.ms.file_id_<TMPL_VAR name='order_no'>.selectedIndex].value ; 
+                location.href = "send_wav.cgi?type=prompt&id="  + id; 
+            }       
+         </SCRIPT>
+             <select name="file_id_<TMPL_VAR name='order_no'>"> 
+
+             <TMPL_LOOP NAME='sound_files'>
+             <OPTION value='<TMPL_VAR name=file_id>'<TMPL_IF NAME=sel> SELECTED</TMPL_IF>>  
+                  <TMPL_VAR name=sound_file>
+                  </option>
+             </TMPL_LOOP> 
+             </select>&nbsp;&nbsp;&nbsp;<a href="javascript:preview_wav_<TMPL_VAR name='order_no'>()">Preview</a>
+
+          </td>
+         </tr>
+
+        </TMPL_Loop>
+        <TMPL_UNLESS NAME='sound_opts'>
+         <tr><td  valign='top'>Holiday Sound </td>
+         <td><B>You do not have a custom sound for this holiday. <BR>
+         Callers will here your default holiday greeting:<BR><BR>
+         </b> 
+         <TMPL_LOOP NAME='default_MENU_SOUNDS'>
+         <a href="send_wav.cgi?type=msound&id=<TMPL_VAR NAME='menu_sound_id'>"><TMPL_VAR Name='SOUND_FILE'></a>,
+         </TMPL_LOOP><BR><BR>
+
+
+        </TMPL_UNLESS>
+
+      <tr><td colspan=3><input type=submit name=submit value='Save'>&nbsp;&nbsp;
+       <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+      </td></tr>
+
+   <tr><td colspan=4 align=center>
+       <a href="admin.cgi?mod=<TMPL_VAR name='mod'>">Back to Holiday Settings</a>&nbsp;&nbsp;&nbsp;
+       </td>
+   </tr>
+
+</table>
+</FORM>
+

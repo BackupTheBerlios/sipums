@@ -1,0 +1,58 @@
+<B>Delete Auto Attendant Greeting</b><BR>
+
+<TABLE>
+<FORM ACTION='admin.cgi' method='POST'> 
+<INPUT TYPE='hidden' name='mod' value="<TMPL_VAR NAME='mod'>">
+<INPUT TYPE='hidden' name='func' value="<TMPL_VAR NAME='func'>">
+<INPUT TYPE='hidden' name='aa_dayofweek' value="<TMPL_VAR NAME='aa_dayofweek'>">
+<INPUT TYPE='hidden' name='aa_day' value="<TMPL_VAR NAME='aa_dayofweek'>">
+
+<TR> <TD colspan=2> Please select the paramater for the menu that you wish to add.<BR>
+This menu will be active from the Start time you enter until <BR>
+the start time of the next menu for that day. If  you do not<BR> 
+have another menu defined for this day, it will be active<BR>
+until 12:00am the next day. At that point the menu for the <BR>
+next day will become active. 
+</td></tr>
+<TR> <TD>
+Week day  
+</td><td>
+<B><TMPL_VAR NAME='aa_day'> </b>
+</td></tr>
+<TR> <TD>
+Start Time
+</td>
+ <td><SELECT NAME='aa_start_hour'>
+        <TMPL_LOOP NAME='aa_start_hour_opts'>
+         <OPTION  Value="<TMPL_VAR NAME='hour'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='hour'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+      <SELECT NAME='aa_start_minute'>
+        <TMPL_LOOP NAME='aa_start_min_opts'>
+         <OPTION  Value="<TMPL_VAR NAME='min'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='min'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+        <SELECT NAME='aa_start_ampm'>
+         <OPTION  Value="AM" <TMPL_IF name='aa_am_sel'>SELECTED</tMPL_if>>  AM  </OPTION>
+         <OPTION  Value="PM" <TMPL_IF name='aa_pm_sel'>SELECTED</tMPL_if>>  PM  </OPTION>
+         </select>
+      </td>
+</tr>
+<tr>
+       <td>Menu </td>
+        <td colspan=4><SELECT NAME='menu_id'>
+        <TMPL_LOOP NAME='menu_opts'>
+         <OPTION  Value="<TMPL_VAR NAME='menu_id'>" <TMPL_IF name='daytime_sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='menu_id'>
+- <TMPL_VAR NAME='title'> </OPTION>
+        </TMPL_LOOP>
+      </td></tr>
+<TR> <TD colspan=2>
+<Input type='submit' value='Add'>
+<Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+</td></tr>
+
+</form>
+
+</table> 
+
+

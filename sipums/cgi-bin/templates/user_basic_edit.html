@@ -1,0 +1,51 @@
+<B>Edit User Information </b>
+
+<FORM Action='user.cgi' METHOD='POST'>
+
+<INPUT TYPE=hidden name="mod" VALUE="<TMPL_VAR name='mod'>">
+<INPUT TYPE=hidden name="func" VALUE="<TMPL_VAR name='func'>">
+
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+   <TD colspan=2>
+     <TMPL_IF name='error_message'>
+     <FONT COlOR='red'><TMPL_VAR name='error_message'></font>
+     </TMPL_IF> 
+   </Td> 
+</TR>
+<TR>
+   <Td>Extension </Td> 
+   <Td><B><TMPL_VAR NAME='extension'></B>
+   </Td> 
+</TR>
+<TR>
+   <Td>First Name </Td> 
+   <TD><INPUT TYPE='TEXT' size=30 NAME="first_name" value="<TMPL_VAR name='first_name'>">  </TD>
+</TR>
+<TR>
+   <Td>Last Name </Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="last_name" value="<TMPL_VAR name='last_name'>">  </TD>
+</TR>
+<TR>
+   <Td>Middle Initial</Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="mi" value="<TMPL_VAR name='mi'>">  </TD>
+</TR>
+<TR>
+   <Td colspan=2><font color='green'>Setting Transfer to 'NO' will make all calls go directly to Voicemail.<BR>
+   <font color='green'>Whereas by setting transfer to 'YES', the phone on your desk will ring first,<BR>
+    if you do not answer it will go to voicemail. </Td>
+</TR>
+<TR>
+   <Td>Transfer</Td>
+   <TD><select name='transfer'> 
+          <option value='1' <TMPL_IF NAME='TRansfer'>SELECTED</TMPL_IF>>Yes</option>
+          <option value='0' <TMPL_UNLESS NAME='TRansfer'>SELECTED</TMPL_UNLESS>>No</option> 
+        </select>
+   </TD> 
+</TR>
+<TR>
+   <Td colspan=2><INPUT TYPE='submit' name='submit' value='Save'>&nbsp;&nbsp;
+    <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' ></Td>
+</tr>
+</TABLE>
+</FORM>

@@ -1,0 +1,32 @@
+<HTML>
+<HEAD> <TITLE>ConvergePro User Module </TITLE> 
+
+<style type="text/css">@import url("/style/style.css"); </style>
+</TITLE></HEAD>
+<Body> 
+<TABLE> 
+<Tr> <Td colspan=2> 
+  <!-- top menu/ log --> 
+  <a href='user.cgi' border=0> <img  height='80'   src='/images/company_logo.jpg' border='0'>
+  </a>
+</td> </tr>
+<Tr> <Td align='center' valign='top' width="100" > 
+  <!-- left column--> 
+  <table> 
+     <TR> <td> <li><a href='user.cgi?mod=User'>My Information</a></td> </TR>
+     <TR> <td> <li><a href='user.cgi?mod=Greetings'>My Greetings</a></td> </TR>
+     <TMPL_IF NAME=ADMIN><TR> <td> <li><a href='admin.cgi'>Administration </a></td> </TR></TMPL_IF>
+     <TR> <td> <li><a href='user.cgi?mod=UserReports'>My Call Details</a></td> </TR>
+     <TR> <td> <li><a href='logout.cgi'>Sign Out</a></td> </TR>
+   </table> 
+</td> 
+
+<Td align='center' valign='top'>
+  <TMPL_VAR NAME=RIGHT_COL>
+</td> </tr>
+
+
+
+</TABLE>
+</Body> 
+</HTML> 

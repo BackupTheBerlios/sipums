@@ -1,0 +1,38 @@
+<TABLE>
+<TR><TD> 
+  User Menu Sounds 
+
+<table>
+   <TR> <Th>Order No</Th> 
+        <Th>Title</Th> 
+        <Th>F/V</Th> 
+        <Th>File</Th> 
+        <Th>Variable Name</Th> 
+   </tr>
+   <TMPL_LOOP NAME='MENU_SOUNDS'> 
+    <TR><Td><TMPL_VAR name='order_no'> </td>
+        <Td><TMPL_VAR name='sound_title'> </td>
+        <TD><TMPL_IF NAME='sound_file'>F<TMPL_ELSE>V</TMPL_IF></TD>
+   <TD><TMPL_IF NAME='sound_file'><a href="send_wav.cgi?type=msound&id=<TMPL_VAR NAME='menu_sound_id'>"><TMPL_VAR Name='SOUND_FILE'></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
+        <TD><TMPL_VAR NAME='var_name'>  </Td> 
+        <!-- <TMPL_VAR NAME='menu_id'> --> 
+        <!-- <TMPL_VAR NAME='menu_sound_id'> --> 
+       </TR>
+   </TMPL_LOOP> 
+    </TABLE>
+<BR>
+Invalid Sounds
+<TMPL_UNLESS name='invalid_sounds'>
+<BR> The Default invalid sound will play.
+<TMPL_ELSE>
+   <TR> <Th>Title</Th>
+        <Th>File</Th>
+   </tr>
+   <TMPL_LOOP NAME='INVALID_SOUNDS'>
+      <Td><TMPL_VAR name='sound_title'> </td>
+      <TD><TMPL_IF NAME='sound_file'><a href="send_wav.cgi?type=msound&id=<TMPL_VAR NAME='menu_sound_id'>"><TMPL_VAR Name='SOUND_FILE'></a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
+   </TMPL_LOOP>
+
+</TMPL_UNLESS>
+<TABLE>
+</td></tr></table>

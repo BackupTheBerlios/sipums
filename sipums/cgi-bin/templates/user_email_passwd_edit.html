@@ -1,0 +1,60 @@
+<FONT COLOR='red'><B>INVALID EMAIL PASSWORD</b><BR>
+Converge-Pro can not deliver voicemail to your e-mail account.<BR>
+Please update your update your e-mail password so that it <BR>
+corresponds to your active e-mail password. 
+
+
+<FORM Action='user.cgi' METHOD='POST'>
+
+<INPUT TYPE=hidden name="mod" VALUE="<TMPL_VAR name='mod'>">
+<INPUT TYPE=hidden name="func" VALUE="<TMPL_VAR name='func'>">
+<INPUT TYPE='hidden' NAME='store_flag' value='<TMPL_VAR name=store_flag>'> 
+<INPUT TYPE='hidden' NAME='email_address' value='<TMPL_VAR name=email_address>'> 
+<INPUT TYPE='hidden' NAME='email_server_address' value='<TMPL_VAR name=email_server_address>'> 
+<INPUT TYPE='hidden' NAME='email_user_name' value='<TMPL_VAR name=email_user_name>'> 
+
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+   <TD colspan=2>
+<TMPL_IF name='error_message'>
+     <FONT COlOR='red'><TMPL_VAR name='error_message'></font>
+</TMPL_IF> 
+   </Td> 
+</TR>
+
+<TR>
+   <Td>Extension </Td> 
+   <Td><B><TMPL_VAR NAME='extension'></B>
+   </Td> 
+</TR>
+
+<tr>
+   <Td>E-mail</b></Td>
+   <TD><TMPL_VAR name='email_address'></TD>
+</tr>
+<tr>
+   <Td>E-mail Server Address</b></Td>
+   <TD><TMPL_VAR name='email_server_address'></TD>
+</tr><tr>
+   <Td>E-mail User Name</b></Td>
+   <TD><TMPL_VAR name='email_user_name'>  </TD>
+</tr>
+<tr>
+   <Td colspan=2><b><i>Type your new password twice to change it.</i></b></Td>
+</tr>
+
+<tr>
+   <Td>E-mail Password </b></Td>
+   <TD><INPUT TYPE='PASSWORD' NAME="email_password" value="">  </TD>
+</tr>
+<tr>
+   <Td>E-mail Password </b></Td>
+   <TD><INPUT TYPE='PASSWORD' NAME="email_password_confirm" value="">  </TD>
+</tr>
+<TR>
+   <Td colspan=2><INPUT TYPE='submit' name='submit' value='Save'>&nbsp;&nbsp;<Input type='button' onClick='javascript:history.go(-1)' value='Cancel' ></Td>
+</TR>
+
+</TABLE>
+</FORM>
+

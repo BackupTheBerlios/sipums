@@ -1,0 +1,54 @@
+<B>Change User's Permissions </b>
+
+  <TMPL_IF name='edit_allowed'>
+<FORM action='admin.cgi' method='Post'>
+  </TMPL_IF >
+
+<INPut type="hidden" name="mod" value="<TMPL_VAR name='mod'>">
+<INPut type="hidden" name="func" value="<TMPL_VAR name='func'>">
+<INPut type="hidden" name="ext" value="<TMPL_VAR name='ext'>">
+
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+ <TMPL_IF name='error_message'>
+     <tr><td colspan=2>
+         <FONT COlOR='red'><TMPL_VAR name='error_message'></font>
+     </td></tr>
+ </TMPL_IF>
+  <TR>
+     <Td>Extension </Td> 
+     <Td> <TMPL_VAR name='ext'>
+     </Td> 
+  </tr><tr>
+     <Td>Name </Td> 
+     <Td> <TMPL_VAR name='full_name'> </Td> 
+  </tr><tr>
+     <td colspan=2> <TMPL_IF name='edit_allowed'><i>Select a new permission below</i>
+     <TMPL_ELSE>You do not have the proper authority to edit this user's permissions</TMPL_IF></td>
+  </tr><tr>
+     <Td>Old Permission </Td> 
+      <TD>
+           <TMPL_VAR name='permission_id'> 
+  </tr>
+    <TMPL_IF name='edit_allowed'> 
+    <TR>
+      <Td>New Permission </Td> 
+      <TD>
+          <SELECT Name='permission_id'> 
+          <TMPL_LOOP NAME='permission_opts'>
+           <OPTION VALUE="<TMPL_VAR name='permission_id'>" <TMPL_IF NAME=sel>SELECTED</TMPL_IF>><TMPL_VAR name='permission_id'></OPTION>
+          </TMPL_LOOP>
+          </SELECT> 
+      </TD>
+    </tr>
+    </TMPL_IF>
+  <tr><td colspan=2> 
+  <TMPL_IF name='edit_allowed'>
+  <input type='submit' name='Save' Value='Apply Changes'> 
+  </TMPL_IF>
+  
+  </td>
+  </tr>
+</table>
+  <TMPL_IF name='edit_allowed'>
+</form>
+  </TMPL_IF>

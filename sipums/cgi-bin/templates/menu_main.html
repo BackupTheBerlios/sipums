@@ -1,0 +1,145 @@
+<center>
+
+   <B>VOICEMAIL Menus 
+<TMPL_IF NAME=msg>
+  <BR><BR>
+     <font color='red'> <TMPL_VAR NAME=msg></font>
+</TMPL_IF>
+
+<TABLE>
+  <TR>
+    <TD colspan=5> 
+     <B>Auto Attendant Menus:</b>
+    </td>
+  </TR>
+  <TR>
+     <Th>Menu Id</Th> 
+     <Th>Title</Th> 
+     <Th>Menu Type</Th> 
+     <Th>Menu Sound(s)</Th> 
+     <Th>&nbsp;</Th> 
+     <Th>&nbsp;</Th> 
+  </TR>
+  <TMPL_LOOP NAME="AA_MENU_DATA">
+  <TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+
+     <Td><a href="admin.cgi?mod=Menu&func=menu_items&menu_id=<TMPL_VAR NAME='menu_id'>"><TMPL_VAR NAME=MENU_ID></a> </Td> 
+     <Td><TMPL_VAR NAME='title'> </Td>
+     <Td><TMPL_VAR NAME='menu_type_code'> </Td>
+     <TMPL_UNLESS NAME='holiday_menu'> 
+        <Td><TMPL_LOOP NAME='MENU_SOUNDS'>
+            <a href="send_wav.cgi?type=msound&id=<TMPL_VAR NAME='menu_sound_id'>"><TMPL_VAR Name='SOUND_FILE'></a>, 
+            </TMPL_LOOP>
+            </td>
+        <Td><a href="admin.cgi?mod=MenuSounds&func=edit&menu_id=<TMPL_VAR NAME=menu_id>">Edit Sounds</a></td>
+     <TMPL_ELSE>
+        <Td colspan=2> To edit holiday sounds, <a href='admin.cgi?mod=Holiday'>click here</a></td>
+     </TMPL_UNLESS>
+
+      <Td><a href="admin.cgi?mod=Menu&func=edit_menu&menu_id=<TMPL_VAR NAME=menu_id>">Edit Menu</a></td>
+     <TMPL_IF name='current_aa'>
+     <Td><B>***</b></td>
+     </TMPL_IF>
+
+  </TR>
+  </TMPL_LOOP>
+   <TR><td colspan=5 align='center'>
+      *** <i>CALLERS PRESENTLY HEAR THIS GREETING</i>
+     <BR>
+     <BR>
+      <a href="admin.cgi?mod=Menu&func=add_aam">Add an Auto Attendant Menu</a>
+      &nbsp;&nbsp;&nbsp;&nbsp;<a href="admin.cgi?mod=AASetting">Configure Auto Attendant Greetings</a>
+    <BR><a href="admin.cgi?mod=Holiday">Configure Holiday Settings</a><BR>
+   </td></TR>
+</TABLE>
+<TABLE>
+<TR>
+  <TD colspan=5> 
+   <B>Transfers: Transfers callers to designated extension</b>
+  </td>
+</TR>
+
+<TR>
+   <Th>Menu Id</Th> 
+   <Th>Title</Th> 
+   <Th>Menu Type</Th> 
+   <Th>Extension</Th> 
+   <Th>&nbsp;</Th> 
+   <Th>&nbsp;</Th> 
+</TR>
+    <TMPL_LOOP NAME="XFER_MENU_DATA">
+       <TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+        <Td><TMPL_VAR NAME=MENU_ID></Td> 
+       <!-- <Td><a href="admin.cgi?mod=Menu&func=menu_items&menu_id=<TMPL_VAR NAME='menu_id'>"><TMPL_VAR NAME=MENU_ID></a> </Td> -->
+       <Td><TMPL_VAR NAME='title'> </Td>
+       <Td><TMPL_VAR NAME='menu_type_code'> </Td>
+       <Td><TMPL_VAR NAME='extension'> </Td>
+       <Td><a href='admin.cgi?mod=Menu&func=edit_xfer&menu_id=<TMPL_VAR NAME='menu_id'>'>edit</a> </td>
+       <Td><a href='admin.cgi?mod=Menu&func=delete_menu_conf&menu_id=<TMPL_VAR NAME='menu_id'>'>delete</a> </td>
+    </TR>
+    </TMPL_LOOP>
+   <TR><td colspan=5>
+     <BR>
+      <a href="admin.cgi?mod=Menu&func=add_xfer">Add a Transfer Menu</a>
+   </td></TR>
+</TABLE>
+<TABLE>
+<TR>
+  <TD colspan=5> 
+   <B>Voicemail Direct : Sends caller directly to extension's Voicemail</b>
+  </td>
+</TR>
+
+<TMPL_IF NAME="RECMSG_MENU_DATA">
+<TR>
+   <Th>Menu Id</Th> 
+   <Th>Title</Th> 
+   <Th>Menu Type</Th> 
+   <Th>Extension</Th> 
+   <Th>&nbsp;</Th> 
+   <Th>&nbsp;</Th> 
+</TR>
+    <TMPL_LOOP NAME="RECMSG_MENU_DATA">
+       <TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+        <Td><TMPL_VAR NAME=MENU_ID></Td> 
+       <!-- <Td><a href="admin.cgi?mod=Menu&func=menu_items&menu_id=<TMPL_VAR NAME='menu_id'>"><TMPL_VAR NAME=MENU_ID></a> </Td> -->
+       <Td><TMPL_VAR NAME='title'> </Td>
+       <Td><TMPL_VAR NAME='menu_type_code'> </Td>
+       <Td><TMPL_VAR NAME='extension'> </Td>
+       <Td><a href='admin.cgi?mod=Menu&func=edit_xfer&menu_id=<TMPL_VAR NAME='menu_id'>'>edit</a> </td>
+       <Td><a href='admin.cgi?mod=Menu&func=delete_menu_conf&menu_id=<TMPL_VAR NAME='menu_id'>'>delete</a> </td>
+    </TR>
+    </TMPL_LOOP>
+</TMPL_IF>
+   <TR><td colspan=5>
+     <BR>
+      <a href="admin.cgi?mod=Menu&func=add_recmsg">Add a Voicemail Direct Menu</a>
+   </td></TR>
+<BR>
+<TABLE>
+  <TR>
+    <TD colspan=5> 
+     <B>Dial By Name Menus:</b>
+    </td>
+  </TR>
+  <TR>
+     <Th>Menu Id</Th> 
+     <Th>Title</Th> 
+     <Th>Menu Type</Th> 
+     <Th>&nbsp;</Th> 
+  </TR>
+  <TMPL_LOOP NAME="DBNM_MENU_DATA">
+  <TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+
+     <Td><TMPL_IF NAME='ITEMS_EDIT'><a href="admin.cgi?mod=Menu&func=menu_items&menu_id=<TMPL_VAR NAME='menu_id'>">
+           <TMPL_VAR NAME=MENU_ID></a>
+           <TMPL_ELSE>
+               <TMPL_VAR NAME=MENU_ID>
+           </TMPL_IF></Td> 
+     <Td><TMPL_VAR NAME='title'> </Td>
+     <Td><TMPL_VAR NAME='menu_type_code'> </Td>
+     <Td><a href='admin.cgi?mod=Menu&func=edit_dbnm&menu_id=<TMPL_VAR NAME='menu_id'>'>edit</a> </td>
+  </TR>
+  </TMPL_LOOP>
+</TABLE>
+</TABLE>

@@ -1,0 +1,71 @@
+<B>Edit Email Settings </b>
+
+<FORM Action='user.cgi' METHOD='POST'>
+
+<INPUT TYPE=hidden name="mod" VALUE="<TMPL_VAR name='mod'>">
+<INPUT TYPE=hidden name="func" VALUE="<TMPL_VAR name='func'>">
+
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+   <TD colspan=2>
+<TMPL_IF name='error_message'>
+     <FONT COlOR='red'><TMPL_VAR name='error_message'></font>
+</TMPL_IF> 
+   </Td> 
+</TR>
+
+<TR>
+   <Td>Extension </Td> 
+   <Td><B><TMPL_VAR NAME='extension'></B>
+   </Td> 
+</TR><tr>
+   <Td>E-mail Address</b></Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="email_address" value="<TMPL_VAR name='email_address'>">  </TD>
+</tr><tr>
+   <Td colspan=2><i><input type='radio' name='store_flag' value='V'<TMPL_IF NAME='vm_store'>CHECKED</TMPL_IF>>
+      Use Voicemail Store.  </I></Td>
+</tr><tr>
+   <Td class='former'>E-mail Options</b></Td>
+   <TD class='former'><select name='vstore_email'>
+          <option value='N' <TMPL_IF NAME='vstore_email_N'>SELECTED</TMPL_IF>>Do not send Voicemail over E-mail </option>
+          <option value='C' <TMPL_IF NAME='vstore_email_C'>SELECTED</TMPL_IF>>Send a copy of voicemail over e-mail</option>
+          <option value='S' <TMPL_IF NAME='vstore_email_S'>SELECTED</TMPL_IF>>Send a copy of voicemail over E-mail and delete it from the voicemail store</option>
+        </select>
+    </TD>
+</tr><tr>
+   <Td colspan=2><i><input type='radio' name='store_flag' value='E'<TMPL_IF NAME='email_store'>CHECKED</TMPL_IF>>
+      Use E-mail Store.  </I></Td>
+</tr><tr>
+   <Td>Email Interface Option</b></Td>
+   <TD><select name='email_delivery'>
+          <option value='I' <TMPL_IF NAME='email_delivery_I'>SELECTED</TMPL_IF>>Deliver and store in IMAP folder 'INBOX Voicemail'</option>
+          <option value='S' <TMPL_IF NAME='email_delivery_S'>SELECTED</TMPL_IF>>Deliver and store in Main Inbox</option>
+        </select>
+      <!-- <TMPL_var name='email_delivery'> -->
+    </TD>
+</tr><tr>
+   <Td>E-mail Server Address</b></Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="email_server_address" value="<TMPL_VAR name='email_server_address'>">  </TD>
+</tr><tr>
+   <Td>E-mail User Name</b></Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="email_user_name" value="<TMPL_VAR name='email_user_name'>">  </TD>
+</tr>
+<tr>
+   <Td colspan=2><b><i>Type a new password twice to change it.</i></b></Td>
+</tr>
+
+<tr>
+   <Td>E-mail Password </b></Td>
+   <TD><INPUT TYPE='PASSWORD' NAME="email_password" value="">  </TD>
+</tr>
+<tr>
+   <Td>E-mail Password </b></Td>
+   <TD><INPUT TYPE='PASSWORD' NAME="email_password_confirm" value="">  </TD>
+</tr>
+<TR>
+   <Td colspan=2><INPUT TYPE='submit' name='submit' value='Save'>&nbsp;&nbsp;<Input type='button' onClick='javascript:history.go(-1)' value='Cancel' ></Td>
+</TR>
+
+</TABLE>
+</FORM>
+

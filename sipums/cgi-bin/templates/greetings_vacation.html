@@ -1,0 +1,79 @@
+<script language="JavaScript1.2" src="/js-lib/tjmlib.js"></script>
+<script language="JavaScript1.2" src="/js-lib/calendar.js"></script>
+
+<script language="JavaScript1.2">
+<!--
+// fixPosition() attaches the element named eltname
+// to an image named eltname+'Pos'
+//
+function fixPosition(divname) {
+ divstyle = getDivStyle(divname);
+ positionerImgName = divname + 'Pos';
+ // hint: try setting isPlacedUnder to false
+ isPlacedUnder = false;
+ if (isPlacedUnder) {
+  setPosition(divstyle,positionerImgName,true);
+ } else {
+  setPosition(divstyle,positionerImgName)
+ }
+}
+
+function toggleDatePicker(eltName,formElt) {
+  var x = formElt.indexOf('.');
+  var formName = formElt.substring(0,x);
+  var formEltName = formElt.substring(x+1);
+  newCalendar(eltName,document.forms[formName].elements[formEltName]);
+  toggleVisible(eltName);
+}
+
+// fixPositions() puts everything back in the right place after a resize.
+function fixPositions()
+{
+ // add a fixPosition call here for every element
+ // you think might get stranded in a resize/reflow.
+ fixPosition('daysOfMonth');
+ fixPosition('daysOfMonth2');
+}
+
+// -->
+</script>
+
+
+<B>Vacation Settings</b>
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+
+<TMPL_IF name='msg'> 
+</TMPL_IF> 
+
+
+
+
+<form name="date" Action='user.cgi' method="POST" >
+<INPUT TYpe='hidden' name='mod' value="<TMPL_VAR NAME='mod'>" >
+<INPUT TYpe='hidden' name='func' value="<TMPL_VAR NAME='func'>" >
+<TMPL_IF name='error_message'> 
+<TR>
+   <Td colspan=2><CENTER><FONT COLOR=red><TMPL_VAR name='error_message'></CENTER></font></Td>
+</tr>
+</TMPL_IF>
+<tr>
+   <td>First day you will be gone:&nbsp;</td>
+   <td><input name='begin_date' size="10" value="<TMPL_VAR name='begin_date'>"> <img onmouseup="toggleDatePicker('daysOfMonth','date.begin_date')" id=daysOfMonthPos name=daysOfMonthPos width=19 height=19 src="/images/calendaricon.gif" align=absmiddle border=0 alt="date picker"><div id="daysOfMonth" style="position:absolute;"></div></td>
+</tr>
+<tr>
+   <td>First day you will be back:&nbsp;</td>
+   <td><input name=dayback_date size="10" value="<TMPL_VAR name='dayback_date'>"> <img onmouseup="toggleDatePicker('daysOfMonth2','date.dayback_date')" id=daysOfMonth2Pos name=daysOfMonth2Pos width=19 height=19 src="/images/calendaricon.gif" align=absmiddle border=0 alt="date picker"><div id="daysOfMonth2" style="position:absolute;"></div></td>
+</tr>
+<TR>
+   <Td colspan=2><INPUT TYPE='submit' name='save' value='Save'>&nbsp;&nbsp;
+   <INPUT TYPE='submit' name='delete' value='Delete Vacation'>&nbsp;&nbsp;
+   <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' ></form>
+ <form Action='user.cgi' method="POST"><!--<INPUT TYpe='hidden' name='mod' value="<TMPL_VAR NAME='mod'>" >
+   </Td>
+</tr>
+
+
+</table>
+</center>
+
+</form>

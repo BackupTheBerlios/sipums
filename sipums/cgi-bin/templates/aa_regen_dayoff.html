@@ -1,0 +1,107 @@
+<center>
+   <B>Voicemail Auto Attendant Greeting Settings</b><BR>
+   <font color='red'> Warning:  These reset  will overwrite all of your existing aa setting</font>
+<SCRIPT LANGUAGE='JAVASCRIPT'>
+       function preview_wav(opt_obj) {
+           var menu_id = opt_obj.options[opt_obj.selectedIndex].value ; 
+           location.href = "send_wav.cgi?type=menu&id="  + menu_id; 
+       }   
+
+</script>
+<table>
+
+  <tr>
+    <Td><b><TMPL_VAR Name='aa_setting_name'></b><BR><BR>
+      <TABLE>
+        <FORM action='admin.cgi' name='form1' method='POST'> 
+        <input type=hidden name='mod' value="<TMPL_VAR name='mod'>" > 
+        <input type=hidden name='func' value="<TMPL_VAR name='func'>" > 
+        <input type=hidden name='setting_days' value="<TMPL_VAR name='setting_days'>" > 
+
+        <TR><td colspan=2>
+           <INPUT TYPE='radio' name='offday_setting' value='HALF_DAY' <TMPL_IF NAME='HALF_DAY_CHECKED'>CHECKED</TMPL_IF>> <B><i>We are open and maintain the 
+             following operating hours.  </i></b>
+        </td> 
+        <tr><td>Office Opens</td>
+         <td><SELECT NAME='aa_open_hour'>
+        <TMPL_LOOP NAME='aa_open_hour'> 
+         <OPTION  Value="<TMPL_VAR NAME='hour'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='hour'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+      <SELECT NAME='aa_open_minute'>
+        <TMPL_LOOP NAME='aa_open_min'> 
+         <OPTION  Value="<TMPL_VAR NAME='min'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='min'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+        <SELECT NAME='aa_open_ampm'>
+         <OPTION  Value="AM" <TMPL_IF name='aa_open_am_sel'>SELECTED</tMPL_if>>  AM  </OPTION>
+         <OPTION  Value="PM" <TMPL_IF name='aa_open_pm_sel'>SELECTED</tMPL_if>>  PM  </OPTION>
+         </select>
+      </td>
+</tr>
+
+      <tr>
+       <td>Office Closes</td> 
+       <td><SELECT NAME='aa_close_hour'>
+        <TMPL_LOOP NAME='aa_close_hour'> 
+         <OPTION  Value="<TMPL_VAR NAME='hour'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='hour'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+       <SELECT NAME='aa_close_minute'>
+        <TMPL_LOOP NAME='aa_close_min'> 
+         <OPTION  Value="<TMPL_VAR NAME='min'>" <TMPL_IF name='sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='min'> </OPTION>
+        </TMPL_LOOP>
+         </select>
+        <SELECT NAME='aa_close_ampm'>
+         <OPTION  Value="AM" <TMPL_IF name='aa_close_am_sel'>SELECTED</tMPL_if>>  AM  </OPTION>
+         <OPTION  Value="PM" <TMPL_IF name='aa_close_pm_sel'>SELECTED</tMPL_if>>  PM  </OPTION>
+         </select>
+      </td>
+      </td></tr>
+      <tr>
+       <td>Daytime Menu</td>
+        <td colspan=4><SELECT NAME='daytime_menu_id'>
+        <TMPL_LOOP NAME='daytime_menus'>
+         <OPTION  Value="<TMPL_VAR NAME='menu_id'>" <TMPL_IF name='daytime_sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='menu_id'> - <TMPL_VAR NAME='title'> </OPTION>
+        </TMPL_LOOP>
+        </SELECT> &nbsp;&nbsp;<a href="javascript:preview_wav(document.form1.daytime_menu_id)">Preview</a> 
+      </td></tr>
+      <tr>
+       <td>Nighttime Menu</td>
+        <td><SELECT NAME='nighttime_menu_id'>
+        <TMPL_LOOP NAME='nighttime_menus'>
+         <OPTION  Value="<TMPL_VAR NAME='menu_id'>" <TMPL_IF name='daytime_sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='menu_id'> - <TMPL_VAR NAME='title'> </OPTION>
+         
+        </TMPL_LOOP>
+        </SELECT> &nbsp;&nbsp;<a href="javascript:preview_wav(document.form1.nighttime_menu_id)">Preview</a> 
+       
+      </td></tr>
+        <TR><td colspan=2>
+           <INPUT TYPE='radio' name='offday_setting' value='ALL_DAY' <TMPL_IF NAME='ALL_DAY_CHECKED'>CHECKED</TMPL_IF>>
+           <B><i>We are Not open on this day.  Play the following greeting all day. </i></b>
+        </td> </tr>
+        
+      <tr>
+       <td>All Day Menu</td>
+        <td><SELECT NAME='allday_menu_id'>
+        <TMPL_LOOP NAME='allday_menus'>
+         <OPTION  Value="<TMPL_VAR NAME='menu_id'>" <TMPL_IF name='daytime_sel'>SELECTED</tMPL_if>><TMPL_VAR NAME='menu_id'>
+- <TMPL_VAR NAME='title'> </OPTION>
+        </TMPL_LOOP>
+         </SELECT> &nbsp;&nbsp;<a href="javascript:preview_wav(document.form1.allday_menu_id)">Preview</a>
+      </td></tr>
+      <tr>
+       <TD><BR></td>
+      </tr>
+
+
+      <tr><td colspan=3><input type=submit name=submit value='Reset Now!'>&nbsp;&nbsp;
+       <Input type='button' onClick='javascript:history.go(-1)' value='Cancel' >
+</table>
+</FORM>
+<!-------- 
+
+  That ends the weekday settings 
+
+------------!>
+
