@@ -2,44 +2,36 @@
 
 class CDL_common{
 
-	var $container_type;			//Type of data container 'sql' or 'ldap'
-	var $db;						//PEAR DB object
-	var $act_row=0, $num_rows=0;		//used when result returns too many rows
-	var $showed_rows;					//how many rows from result display
+  var $container_type;			//Type of data container 'sql' or 'ldap'
+  var $db;						//PEAR DB object
+  var $act_row=0, $num_rows=0;		//used when result returns too many rows
+  var $showed_rows;					//how many rows from result display
 
-	function CDL_common(){
-		global $config;
-		$this->container_type = &$config->data_container_type;
-		$this->showed_rows = &$config->num_of_showed_items;
-	}
+  function CDL_common(){
+    global $config;
+    $this->container_type = &$config->data_container_type;
+    $this->showed_rows = &$config->num_of_showed_items;
+  }
 
-    /*
-	 * static function
-     * Create a new DataLayer object and connect to the specified database.
-	 */
+/*
+* static function
+* Create a new DataLayer object and connect to the specified database.
+*/
 	
-	function &create(&$errors){
-		global $config;
-	
-		$obj = &new CData_Layer();
+  function &create(&$errors){
+     global $config;
+     $obj = &new CData_Layer();
 
-		switch ($config->data_container_type){
-		case 'sql':
-			if (!$db = $obj->connect_to_db($config->data_sql, $errors)) return false;
-			$obj->db=$db;
-			return $obj;
-			
-		case 'ldap':
-			die('NOT IMPLEMENTED: '.__FILE__.":".__LINE__);
-		}
-	
-	}
-	
-	
-	function connect_to_db($cfg, &$errors){
-		global $config;
+     if (!$db = $obj->connect_to_db($config->data_sql, $errors) ) { 
+        return false;
+     }
+     $obj->db=$db;
+     return $obj;
+  }
+  function connect_to_db($cfg, &$errors){
+    global $config;
 
-		$dsn = 	$cfg->db_type."://".
+    $dsn = $cfg->db_type."://".
 				$cfg->db_user.":".
 				$cfg->db_pass."@".
 				$cfg->db_host.
@@ -47,45 +39,45 @@ class CDL_common{
 						"":
 						":".$cfg->db_port)."/".
 				$cfg->db_name;
-	
-		$db = DB::connect($dsn,true);
-	
-		if (DB::isError($db)) {	log_errors($db, $errors); return false; }
-		
-		return $db;
-	}
+     $db = DB::connect($dsn,true);
+     if (DB::isError($db)) {	
+          do_debug($errors); 
+         return false; 
+     }
+     return $db;
+   }
 
 	
-	function set_num_rows($num_rows){
-		$this->num_rows=$num_rows;
-	}
+   function set_num_rows($num_rows){
+      $this->num_rows=$num_rows;
+   }
 
-	function get_num_rows(){
-		return $this->num_rows;
-	}
+   function get_num_rows(){
+     return $this->num_rows;
+   }
 
-	function set_act_row($act_row){
-		$this->act_row=$act_row;
-	}
+  function set_act_row($act_row){
+     $this->act_row=$act_row;
+  }
 
-	function get_act_row(){
-		return $this->act_row;
-	}
+  function get_act_row(){
+    return $this->act_row;
+  }
 
-	function get_showed_rows(){
-		return $this->showed_rows;
-	}
+  function get_showed_rows(){
+    return $this->showed_rows;
+  }
 
-	function get_res_from(){
-		return $this->get_act_row()+1;
-	}
+  function get_res_from(){
+    return $this->get_act_row()+1;
+  }
 	
-	function get_res_to(){
-		global $config;
-		return ((($this->get_act_row()+$this->get_showed_rows())<$this->get_num_rows())?
-				($this->get_act_row()+$this->get_showed_rows()):
-				$this->get_num_rows());
-	}
+  function get_res_to(){
+    global $config;
+    return ((($this->get_act_row()+$this->get_showed_rows())<$this->get_num_rows())?
+    ($this->get_act_row()+$this->get_showed_rows()):
+    $this->get_num_rows());
+  }
 	
 /***************************************************************************
  *
@@ -357,59 +349,68 @@ class CDL_common{
 	}
 	
 
-	function check_passw_of_user($user, $domain, $passw, &$errors){
-		global $config;
-		
-		switch($this->container_type){
-		case 'sql':
-			if ($config->clear_text_pw) {
-				$q="select phplib_id from ". $config->data_sql->table_subscriber.
-					" where username='".addslashes($user)."' and password='".addslashes($passw)."' and domain='".addslashes($domain)."'";
-			} else {
-				$ha1=md5($uname.":".$config->realm.":".$passw);
-				$q="select phplib_id from ". $config->data_sql->table_subscriber.
-					" where username='".addslashes($user)."' and domain='".addslashes($domain)."' and ha1='".$ha1."'";
-			}
-			$res=$this->db->query($q);
-			if (DB::isError($res)) {log_errors($res, $errors); return false;}
-	
-			if (!$res->numRows()) {$errors[]="Bad username or password"; return false;}
-			$row = $res->fetchRow(DB_FETCHMODE_OBJECT);
-			$res->free();
-			
-			return $row->phplib_id;
-		case 'ldap':
-		default:
-			die('NOT IMPLEMENTED: '.__FUNCTION__."; container type: ".$this->container_type);
-		}
-	}
+  function check_passw_of_user($user, $domain, $passw, &$errors){
+    global $config;
+    $q="SELECT phplib_id FROM ". $config->data_sql->table_subscriber.
+       " WHERE username='".addslashes($user)."' AND web_password=PASSWORD('".addslashes($passw)."')" ;
+    $res=$this->db->query($q);
+    if (DB::isError($res)) {
+      do_debug("LOGIN QUERY FAILED" . $res->getMessage()); 
+      $errors[]="SYSTEM LOGIN FAILED"; 
+      return false;
+    }
+    if (!$res->numRows()) {
+      $errors[]="Bad username or password"; 
+      return false;
+    }
+    $row = $res->fetchRow(DB_FETCHMODE_OBJECT);
+    $res->free();
+    return $row->phplib_id;
+  }
 
-	function get_privileges_of_user($user, $domain, $only_privileges, &$errors){
-		global $config;
-		
-		switch($this->container_type){
-		case 'sql':
-			// if $only_privileges is array, generate where phrase which select only this privileges
-		
-			$q="select perm 
-				from ".$config->data_sql->table_subscriber ." 
-				where username = '".$user."' 
-					and domain = '".$domain."'"; 
-                        do_debug("privileg query $q");
-			$res=$this->db->query($q);
-			if (DB::isError($res)) {log_errors($res, $errors); return false;}
-	
-			$out=array();
-			$row=$res->fetchRow(DB_FETCHMODE_OBJECT);
-                        $priv=$row->perm;
-			$res->free();
-			return $priv;
+  function get_user_domain($uname) { 
+     $q = "SELECT domain FROM " .  $config->data_sql->table_subscriber . 
+        " WHERE username='".addslashes($user)."'";
+     $res=$this->db->query($q);
+     if (DB::isError($res)) {
+       do_debug("get_user_domain query $q: " . $res->getMessage());
+       return false;
+     } 
 
-		case 'ldap':
-		default:
-			die('NOT IMPLEMENTED: '.__FUNCTION__."; container type: ".$this->container_type);
-		}
-	}
+     if (!$res->numRows()) {
+       do_debug("No domain found for $uname query=$q"); 
+       return false;
+     }
+     if ($res->numRows() !=1 ) {
+       do_debug("NOOOOOOOOOOOOOOO, bad, more than one domain for user $uname "); 
+       return false;
+     }
+     $row = $res->fetchRow(DB_FETCHMODE_ORDERED);
+     $domain = $row[0];
+     $res->free();
+     return $domain;
+  } 
+
+  function get_privileges_of_user($user, $domain, $only_privileges, &$errors){
+    global $config;
+
+    // if $only_privileges is array, generate where phrase which select only this privileges
+
+     $q="select perm 
+         from ".$config->data_sql->table_subscriber ." 
+         where username = '".$user."' 
+         and domain = '".$domain."'"; 
+      do_debug("privileg query $q");
+      $res=$this->db->query($q);
+      if (DB::isError($res)) {
+         do_debug("error getting privs" . $res->getMessage() ); return false;
+      }
+      $out=array();
+      $row=$res->fetchRow(DB_FETCHMODE_ORDERED);
+      $priv=$row[0];
+      $res->free();
+      return $priv;
+  }
 	
 	function get_username_from_uid($uid, &$errors){
 		global $config;

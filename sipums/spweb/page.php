@@ -1,12 +1,12 @@
 <?
 /*
- * $Id: page.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: page.php,v 1.2 2004/08/03 08:06:27 kenglish Exp $
  */
 
 function put_headers(){
-	Header("Pragma:  no-cache");
-	Header("Cache-Control: no-cache");
-	Header("Expires: ".GMDate("D, d M Y H:i:s")." GMT");
+//	Header("Pragma:  no-cache");
+//	Header("Cache-Control: no-cache");
+//	Header("Expires: ".GMDate("D, d M Y H:i:s")." GMT");
 }
 	
 function print_html_head($title=""){

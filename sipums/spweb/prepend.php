@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: prepend.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: prepend.php,v 1.2 2004/08/03 08:06:27 kenglish Exp $
  */ 
 
 $_SERWEB = array();
@@ -19,8 +19,8 @@ require($_SERWEB["serwebdir"] . "load_phplib.php");
 
 require("page_attributes.php");
 if ($config->debug) { 
-  $FDEBUG = fopen("/tmp/sp_web_debug.log","a+");
-  do_debug("-----------------------\nbegin\n"); 
+  $FDEBUG = fopen("/tmp/sp_web_debug2.log","a+");
+  do_debug("!!!+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-!!!");
 }
 global $FORM_VARS ;
 $FORM_VARS = array_merge($_POST,$_GET);

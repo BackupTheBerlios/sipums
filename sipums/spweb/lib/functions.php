@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: functions.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: functions.php,v 1.2 2004/08/03 08:06:27 kenglish Exp $
  */
 
 
@@ -598,8 +598,8 @@ function extract_user_domain ($email){
 }
 function do_debug($msg) {
   global $config; global $FDEBUG; 
+  
   if ($config->debug) { 
-
     $me = basename($_SERVER['PHP_SELF']) ;
     fwrite($FDEBUG, "$me: $msg\n");  
   } 

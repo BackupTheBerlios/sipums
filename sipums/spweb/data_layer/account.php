@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: account.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: account.php,v 1.2 2004/08/03 08:06:27 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -82,8 +82,11 @@ class CData_Layer extends CDL_common{
           . " SET first_name =$first_name,  "
           . " last_name = $last_name , "
           . " email_address = $email_address, "
-          . " mailbox = $mailbox "
-          . " WHERE username ='$this->uname' AND domain = '$this->udomain'  ";
+          . " mailbox = $mailbox "; 
+      if ($this->user_info[spweb_password] ) {
+        $q .= ", web_password = PASSWORD('" . $this->user_info[spweb_password] ."') " ; 
+      } 
+      $q .= " WHERE username ='$this->uname' AND domain = '$this->udomain'  ";
       do_debug("update is $q");
       $res = $this->db->query($q);  
       if (DB::isError($res)) {
@@ -313,6 +316,7 @@ class CData_Layer extends CDL_common{
    }
 
   } 
+  
 /**  function update_voicemail($user_info) {
     do_debug("called update_voicemail");  
   

@@ -123,9 +123,13 @@
 <input type='hidden' name='func' value='update_user_vm'> 
 <b>User Information </b><br />
   <TABLE>
-  <!--{if $user_info_msg}-->
+  <!--{if $user_info_msgs}-->
   <TR>
-    <TD colspan=2 ><font style="color: red"><!--{$user_info_msg}--> </font></td>
+    <TD colspan=2 align=center><font style="color: red">
+     <!--{foreach from=$user_info_msgs item=msg}--> 
+         <!--{$msg}--><BR>
+     <!--{/foreach}-->
+      </font></td>
   </tr>
   <!--{/if}-->
   <TR>
@@ -143,19 +147,38 @@
   </tr>
   <TR>
     <TD>Voicemail Mailbox &nbsp;&nbsp; </td>
-    <TD><INPUT name='mailbox' value='<!--{$mailbox}-->' ></TD>
+    <TD><!--{if $edit_mailbox}-->
+       <INPUT name='mailbox' value='<!--{$mailbox}-->' >
+        <!--{else}-->
+           <b><!--{$mailbox}--></b>
+        <!--{/if}-->
+     </TD>
+    
   </tr>
   <TR>
     <TD colspan=2><b>Reset Voicemail Password (Numbers only)</b> </td>
   </tr>
   <TR>
-    <TD>New Password&nbsp;&nbsp; </td>
-    <TD><INPUT type='password' name='password' value='' ></TD>
+    <TD>New VM Password&nbsp;&nbsp; </td>
+    <TD><INPUT type='password' name='vm_password' value='' ></TD>
   </tr>
   <TR>
-    <TD>Re-type Password&nbsp;&nbsp; </td>
-    <TD><INPUT type='password' name='password_re' value='' ></TD>
+    <TD>Re-type VM Password&nbsp;&nbsp; </td>
+    <TD><INPUT type='password' name='vm_password_re' value='' ></TD>
   </tr>
+  <TR>
+    <TD colspan=2><b>Reset SpWeb Password (Numbers only)</b> </td>
+  </tr>
+  <TR>
+    <TD>New SpWeb Password&nbsp;&nbsp; </td>
+    <TD><INPUT type='password' name='spweb_password' value='' ></TD>
+  </tr>
+  <TR>
+    <TD>Re-type SpWeb Password&nbsp;&nbsp; </td>
+    <TD><INPUT type='password' name='spweb_password_re' value='' ></TD>
+  </tr>
+
+
 <!--  <TR>
     <TD colspan=2 valign='top' align=center>
     <BR>

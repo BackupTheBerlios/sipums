@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Servpac :: SIP Controller 1.0 </title>
+<title>SpWeb :: Servpac's VoIP Configuration Manager</title>
 	<LINK REL="StyleSheet" HREF="style/styles.css" TYPE="text/css">
 
 <script language="javascript">

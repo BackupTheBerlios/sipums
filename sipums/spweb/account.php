@@ -31,6 +31,7 @@ $edit_udomain = $auth->auth[udomain];
 if ($perm->have_perm('ADMIN')){ 
   // for admins and above
   $account_smarty->assign('show_admin_row',1);  
+  $account_smarty->assign('edit_mailbox',1);  
   $qdomains = array();
   if ($perm->have_perm('SUPER')) {
     $qdomains[] = "ALL"; 
@@ -155,31 +156,49 @@ if ($FORM_VARS[func] == 'update_user_vm') {
   $user_info[last_name] = $FORM_VARS[last_name];
   $user_info[email_address] = $FORM_VARS[email_address];
   $user_info[mailbox] = $FORM_VARS[mailbox];
+  $user_info_msgs =array(); 
+  $do_update = 1; 
 
-
-  do_debug("passwords do not match\n\n "); 
-  if ($FORM_VARS[password] ) { 
-    if ($FORM_VARS[password]  == $FORM_VARS[password_re] ) { 
-      if (is_numeric($FORM_VARS[password] )  ) { 
-          $user_info[vm_password] =  $FORM_VARS[password_re] ;     
-          foreach ($user_info as $key => $value){
-             do_debug("user_info $key;$value");
-           }
-
-          $data->update_user_info($user_info); 
-
-          $account_smarty->assign('user_info_msg', "User Info & Voicemail Password updated." ); 
+  // check vm_password
+  if ($FORM_VARS[vm_password] ) { 
+    if ($FORM_VARS[vm_password]  == $FORM_VARS[vm_password_re] ) { 
+      if (is_numeric($FORM_VARS[vm_password] )  ) { 
+          $user_info[vm_password] =  $FORM_VARS[vm_password_re] ;     
+          $user_info_msgs[] = "Voicemail Password updated." ; 
        } else {
-         $account_smarty->assign('user_info_msg', "Voicemail password must be numeric." ); 
+         $user_info_msgs[] = "Voicemail password must be numeric." ;
        } 
      }  else {
-       $account_smarty->assign('user_info_msg', "Voicemail passwords do not match." ); 
+       $user_info_msgs[] = "Voicemail passwords do not match." ; 
        do_debug("passwords do not match\n\n "); 
     } 
-  } else { 
-     $data->update_user_info($user_info); 
-     $account_smarty->assign('user_info_msg', "User Info updated." ); 
+  } 
+  // same check for spweb_password
+  if ($FORM_VARS[spweb_password] ) {
+    if ($FORM_VARS[spweb_password] == $edit_uname){
+         $user_info_msgs[] = "SpWeb Password can not be the same as your username/number." ;
+    }  else  {
+      if ($FORM_VARS[spweb_password]  == $FORM_VARS[spweb_password_re] ) {
+         $user_info[spweb_password] =  $FORM_VARS[spweb_password_re] ;
+         $user_info_msgs[] = "SpWeb Password updated." ;
+      }  else {
+         $user_info_msgs[] = "SpWeb passwords do not match." ;
+         do_debug("passwords do not match\n\n ");
+      }
+    }
+
+
   }
+
+  if ($do_update) { 
+    foreach ($user_info as $key => $value){
+      do_debug("user_info $key;$value");
+     }
+     $data->update_user_info($user_info); 
+     $user_info_msgs[] = "User Info updated." ;
+  }
+
+  $account_smarty->assign('user_info_msgs', $user_info_msgs ); 
   
 } else {
   $user_info = $data->get_user_info(); 

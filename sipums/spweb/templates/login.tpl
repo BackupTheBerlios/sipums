@@ -55,7 +55,7 @@
 					<td align="left" width="*">
 						<input name='passw' id='passw' value="" type='password' maxlength='25' size='20'> </Td>
 				</tr>
-				<tr>
+<!--				<tr>
 
 					<td>
 						&nbsp;
@@ -63,7 +63,9 @@
 					<td align="right" width="30%" nowrap>
 						<input type="checkbox" name="remember">Remember me
 					</td>
+
 				</tr>
+-->
 			</table>
 		</td>
 
@@ -72,8 +74,10 @@
 		<td align="center">
                         <input type='hidden' name='do_login' value='1'>                        <input name='okey' value='Login' type='submit'>		</td>
 	</tr>
+<!--
 	<tr>
 		<td align="center">
+
 			<table align="center" border="0" width="100%" class="imain">
 
 				<tr>
@@ -87,6 +91,7 @@
 
 		</td>
 	</tr>
+-->
 	</table>
 </td></tr></table>
 <input type='hidden' name='do_login' value='1'></form><script language='javascript'>
