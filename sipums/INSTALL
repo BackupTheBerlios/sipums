@@ -1,0 +1,108 @@
+
+Requirements:
+
+  MySQL: mysql 4.0 or mysql 3.2.3. Mysql 4.0 is recommended if you are using 
+  Perl : Latest version ok
+  Perl DBI: DBI and DBD::mysql are required.
+
+CPAN Modules:
+
+Before you install openums, install all of the following perl modules. Otherwise Openums will not compile. You can install them via the cpan tool or download the packages directly from the cpan site. These are the packages I downloaded during my latest installation of openums. To see what packages you are miss, you may simply do 'perl -wc OpenUMS/tools/useall' from the cvs directory. While the version numbers may not be important, the following versions have been tested and deployed.
+
+Audio::Wav
+  http://search.cpan.org/CPAN/authors/id/K/KG/KGJERDE/Audio-Wav-0.03.tar.gz
+
+
+Bit Vector
+  http://search.cpan.org/CPAN/authors/id/S/ST/STBEY/Bit-Vector-6.3.tar.gz
+
+Date::Calc 
+  http://search.cpan.org/CPAN/authors/id/S/ST/STBEY/Date-Calc-5.3.tar.gz
+
+Mail::IMAPClient
+  http://search.cpan.org/CPAN/authors/id/D/DJ/DJKERNEN/Mail-IMAPClient-2.2.9.tar.gz
+
+TimeDate-1.16 (includes Date::Format)
+  http://search.cpan.org/CPAN/authors/id/G/GB/GBARR/TimeDate-1.16.tar.gz
+
+MIME-Lite-3.01 
+  http://search.cpan.org/CPAN/authors/id/Y/YV/YVES/MIME-Lite-3.01.tar.gz
+
+MIME-tools-5.411 
+  http://search.cpan.org/CPAN/authors/id/E/ER/ERYQ/MIME-tools-5.411a.tar.gz
+
+IO-stringy-2.109
+  http://search.cpan.org/CPAN/authors/id/E/ER/ERYQ/IO-stringy-2.109.tar.gz
+
+MailTools-1.62
+  http://search.cpan.org/CPAN/authors/id/M/MA/MARKOV/MailTools-1.62.tar.gz
+
+Net-IP-1.20
+  http://search.cpan.org/CPAN/authors/id/M/MA/MANU/Net-IP-1.20.tar.gz
+
+URI-1.31
+  http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/URI-1.31.tar.gz
+
+HTML-Parser-3.36
+  http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/HTML-Parser-3.36.tar.gz
+
+libwww-perl-5.800 (includes LWP::UserAgent)
+  http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/libwww-perl-5.800.tar.gz
+
+INSTALLATION:
+
+  Warning: Don't skip anything. OpenUMS is a new project and we haven't perfected installing it yet. For the Dialogic version, we used a cd image to install openums on a new box. For the SER/Sems installation, you will have to follow each step carefully. 
+  
+  1) Create the database. 
+    mysql -user -p voicemail < OpenUMS/db/voicemaildb.sql
+
+You may need root password to do this. The best way is to install the voicemail database under the same user that is using the ser database. In our case this is the 'ser' user. The best way is to allow the ser user to create databases and run create script as ser. If you do not have root access, you should ask your sysadmin to create a database for you. Openums is intended to run in a seperate database from ser. If you are running ser with multiple domains, each domain should have it's own OpenUMS database. This will be supported in the next version.  
+  
+  2) Install OpenUMS
+  
+   cd OpenUMS
+   make install
+
+  By Default openums will install in /usr/local/openums. You will need to create this directory before trying to install. 
+  Once you have done this, you should test that delivermail will work by making sure it compiles.
+
+  perl -wc /usr/local/openums/delivermail
+
+  If you get errors, the something is not installed
+
+  4) Configure OpenUMS & Create media directories
+
+   Most configuration can found in OpenUMS/Config.pm. Also look at the global_settings table. Do not delete any variables from that table without first seeing where they are being used.
+   The Media directories are in the Config.pm
+  
+   BASE_PATH          => "/var/spool/openums/";
+   
+   All media follows a simple directory structure:
+
+   /var/spool/openums/prompts/  -- Voicemail prompts, included in this package under 'prompts'
+   /var/spool/openums/spool/temp -- Temp directory where messages are put
+                                    while they are being recorded
+
+   /var/spool/openums/spool/temp -- Temp directory where messages are put
+                                    while they are being recorded
+
+   /var/spool/openums/users   -- where user messages are put
+   
+   In order for the default accounts to work 799 and 798, you must create the directory stucture for them. Every additional user will have his own directory too and it will follow the same structure. For now, make the default account directories. You can add users later with the TUI or  the web interface if you have persmissions set right. 
+
+  /var/spool/openums/users/799
+  /var/spool/openums/users/799/messages
+  /var/spool/openums/users/799/greetings
+   
+  4) Add Sems Media scripts
+
+   These scripts are written to use OpenUMS unders SEMS. They are still in development. WE will answer any question you have on the mailing list.
+
+
+Kevin English
+kevin@x5dev.com
+
+
+   
+  
+
