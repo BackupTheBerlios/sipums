@@ -1,0 +1,34 @@
+*		{ font-size: 11px; font-family: tahoma,sans-serif; color: #333333 }
+.main		{ font-size: 11px; font-family: Verdana,Arial,Helvetica; color: #000000 }
+a		{ text-decoration: none }
+a:link		{ text-decoration: none }
+a:hover		{ color: #006699; text-decoration: underline }
+a.noch		{ text-decoration: none }
+a.noch:link	{ text-decoration: none }
+a.noch:hover    { text-decoration: none }
+
+table.imain	{ font-size: 11px; font-family: Verdana,Arial,Helvetica; color: #000000 }
+table.main	{ border: 1px #666666 solid; border-collapse: collapse }
+table.mainnb	{ border: 0px; border-collapse: collapse }
+table.mainnbpad	{ border: 0px; border-collapse: collapse }
+table.mainnbpad	TD { border: 0px; border-collapse: collapse; padding-right: 7px; }
+
+.highlightOn	{ background-color: #C7D5EB }
+.highlightOff	{ background-color: #eeeeee }
+.TDQuarantineS	{ background-color: #f6f6f6; overflow: hidden; cursor: finger; text-overflow: ellipsis; border-bottom: 1px solid; }
+.TDQuarantine	{ overflow: hidden; cursor: finger; text-overflow: ellipsis; border-bottom: 1px solid; }
+
+TABLE.MTable	{ font-size:11px; font-family:tahoma,sans-serif }
+TABLE.MTable TR { cursor:default; }
+TABLE.MTable TH	{ border-bottom:1px solid #666666; padding-top:4px; padding-bottom:4px; padding-right:4px;padding-left:4px; }
+TABLE.MTable TD	{ border-bottom:1px solid #cccccc;padding-right:4px;padding-left:4px; }
+
+TABLE.FTable	{ font-size:11px; font-family:tahoma,sans-serif; borderColor:#cccccc }
+TABLE.FTable TR { cursor:default; }
+TABLE.FTable TH	{ border-bottom:1px solid #666666; padding-top:4px; padding-bottom:4px; padding-right:4px;padding-left:4px; }
+TABLE.FTable TD	{ border-bottom:1px solid #cccccc;padding-right:4px;padding-left:4px; }
+
+TABLE.QTable	{ font-size:11px; font-family:tahoma,sans-serif }
+TABLE.QTable TR	{ cursor:pointer;cursor:hand; }
+TABLE.QTable TH	{ border-top: 1px solid #666666; border-bottom:1px solid #666666; padding-top:2px; padding-bottom:2px; padding-right:4px; }
+TABLE.QTable TD	{ border-bottom:1px solid #cccccc;padding-right:4px; }

@@ -103,14 +103,17 @@ sub init() {
 ###   Initialize the IVR, set call backs, initialize variables, etc
 #########################
 #
-sub cleanup {
+sub cleanup() {
 ## empty the array, clear the flag
 #  @Telephony::SemsIvr::keys = ();
 ## Turn on the DTMF Detection and set the onDTMF callback sub
 
-  ivr::setCallback("Telephony::SemsIvr::get_key", undef);
-  ivr::setCallback("Telephony::SemsIvr::play_done", undef);
-  ivr::setCallback("Telephony::SemsIvr::hang_up", undef);
+  ivr::setCallback(undef, "onDTMF");
+  ivr::setCallback(undef, "onMediaQueueEmpty");
+  ivr::setCallback(undef, "onBye");
+
+#  ivr::setCallback("Telephony::SemsIvr::play_done", undef);
+#  ivr::setCallback("Telephony::SemsIvr::hang_up", undef);
 
   ivr::wakeUp(); 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.3 2004/07/31 20:27:05 kenglish Exp $
+### $Id: delivermail,v 1.4 2004/08/01 20:06:13 kenglish Exp $
 #
 # delivermail
 #
@@ -140,7 +140,7 @@ while(1)
       $dbh->do("use " . SER_DB_NAME);
 
       ## get all the mailbox, user conbinations 
-      my $users_mailboxes = get_user_mailboxes($dbh,$DB_NAME); 
+      my $users_mailboxes = OpenUMS::SipUmsMwi::get_user_mailboxes($dbh,$DB_NAME); 
       $dbh->do("use $DB_NAME");
 
       $log->debug("OpenUMS::SipUmsMwi::update_mwis  for $DB_NAME, " );
@@ -585,7 +585,7 @@ sub deliver_email($$)
     }
 
   ### Get the voicemail timestamp from the filename.
-  unless ($file =~ /^\d.*(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2}).*vox$/)
+  unless ($file =~ /^\d.*(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2}).*wav$/)
     {
       $log->err("Delivermail received file with bad timestamp : $file");
       return(undef);
@@ -614,8 +614,10 @@ sub deliver_email($$)
       return(undef);
     }
   $log->debug("Found email=$email_address");
+  $log->debug("Found email=$email_address");
+  $log->debug("Found email=$email_address");
 
-  $log->info("Building message for $email_address");
+  $log->debug("Building message for $email_address");
   my $subject = subject_string($caller_id, 0) . " - ($wavduration seconds)";
 
   ## &OpenUMS::Common::vox_to_wav("$path$file");
@@ -649,12 +651,16 @@ sub deliver_email($$)
   if ( ($email_delivery eq 'S') || ($email_delivery eq 'F') )
     {
       $log->debug("Sending message to $email_address");
-      $success = &fire_email($email_address, $msg);
+      if ($email_address) { 
+        $success = &fire_email($email_address, $msg);
+      } 
     }
   else ### ($email_delivery eq 'I')
     {
       $log->debug("Appending $wavfile to $email_address");
-      $success = &append_email($dbh,$extension, $email_address, $msg);
+      if ($email_address) {
+        $success = &append_email($dbh,$extension, $email_address, $msg);
+      }
     }
 
   if ( ($success) || ($vstore_email eq 'C') )
@@ -1151,31 +1157,29 @@ sub get_voicemail_dbs($) {
   return $ary_ref;  
 }
 
-sub get_user_mailboxes($$) {
-  my ($dbh,$db_name) = @_; ##  = OpenUMS::Common::get_dbh("ser") ; 
-
-  my $sql = qq{SELECT s.mailbox, s.username, d.domain, d.voicemail_db 
-      FROM subscriber s, domain d 
-      WHERE d.domain = s.domain 
-        AND d.voicemail_db = '$db_name' 
-        AND mailbox IS NOT NULL 
-        AND mailbox <> 0 }; 
-  
-  $log->debug("get_user_mailboxes( sql= "  . $sql . ") ");  
-
-  my $sth = $dbh->prepare($sql);
-  $sth->execute();
-  my %hash; 
-  while (my ($mailbox, $username,$domain) = $sth->fetchrow_array() ) {
-    $log->debug("mailbox $mailbox "); 
-    $hash{maibox} = "$username\@$domain"; 
-  } 
-
-  return \%hash; ## $ary_ref;  
-}
-
-
-1;
+#sub get_user_mailboxes($$) {
+#  my ($dbh,$db_name) = @_; ##  = OpenUMS::Common::get_dbh("ser") ; 
+#
+#  my $sql = qq{SELECT s.mailbox, s.username, d.domain, d.voicemail_db 
+#      FROM subscriber s, domain d 
+#      WHERE d.domain = s.domain 
+#        AND d.voicemail_db = '$db_name' 
+#        AND mailbox IS NOT NULL 
+#        AND mailbox <> 0 }; 
+#  
+#  $log->debug("get_user_mailboxes( sql= "  . $sql . ") ");  
+#
+#  my $sth = $dbh->prepare($sql);
+#  $sth->execute();
+#  my %hash; 
+#  while (my ($mailbox, $username,$domain) = $sth->fetchrow_array() ) {
+#    $log->debug("mailbox $mailbox "); 
+#    $hash{$maibox} = "$username\@$domain"; 
+#  } 
+#
+#  return \%hash; ## $ary_ref;  
+#}
 
 
 1;
+

@@ -30,18 +30,24 @@ use OpenUMS::CallRecorder ;
 
 use DBI; 
 
+my $PORT = $$;  ## use pid as uniqure port identifier
+$log = new OpenUMS::Log($PORT);
+
 ## open the syslog 
 
 ## get the user and domain
 
 my $ser_to = ivr::getTo; 
 my $ser_from = ivr::getFrom; 
-my ($uname,$domain) = &get_user_domain($ser_to); 
-my ($caller,$caller_domain) = &get_user_domain($ser_from); 
 
-syslog('info', "-----------------------------------");
-syslog('info', "uname=$uname domain=$domain");
-syslog('info', "caller_id=$caller");
+my ($uname,$domain) = &get_user_domain($ser_to); 
+my ($caller,$caller_domain); ## = &get_caller_id($ser_from); 
+$caller = &get_caller_id($ser_from); 
+
+$log->debug("-----------------------------------");
+$log->debug("NEW CALL");
+$log->debug("-- -- CALL TO $uname,$domain ");
+$log->debug("-- -- CALL FROM $caller");
 
 ## get the dbh, get extension and change to the voicemail database to use
 #my $dbh = OpenUMS::Common::get_dbh();
@@ -50,7 +56,6 @@ my $dbh = OpenUMS::Common::get_dbh("ser");
 my $extension  = &get_user_extention($dbh,$uname,$domain); 
 my $domain_vm_db =  &change_domain_db($dbh,$domain); 
 
-my $PORT = $$;  ## use pid as uniqure port identifier
 
 ## create a ctport, a phonesys and load global settings
 my $ctport    = new Telephony::CTPortJr($PORT);
@@ -59,7 +64,6 @@ $GLOBAL_SETTINGS->load_settings($domain_vm_db);
 
   syslog('info', "NEW CALL ON IS $PORT"); 
 
-  $log = new OpenUMS::Log($PORT);
 
   $log->debug("User $ser_to is extension $extension ");
 
@@ -157,6 +161,28 @@ sub change_domain_db {
   return $db;
 
 }
+sub get_caller_id {
+  my $sip_from = shift;
+  if ($sip_from =~ /unknown/){ 
+     return "unknown";
+  } 
+
+  if ($sip_from =~ /^<sip:/) {
+    $sip_from =~ s/^<sip://g;
+    $sip_from =~ s/>$//g;
+    my ($num,$d) = split(/\@/,$sip_from);
+    return $num;
+  } elsif ($sip_from =~ /"/) {
+    $sip_from =~ s/>$//g;
+    my ($name,$sip_from) = split(/\<sip:/,$sip_from);
+    my ($num,$d) = split(/\@/,$sip_from);
+    $name =~ s/\"//g;
+    chop($name);
+    return "$name $num";
+  }
+                                                                                                                                               
+}
+
 sub get_user_extention {
   my ($dbh,$uname,$domain) = @_; 
   my $sql = qq{SELECT mailbox FROM subscriber WHERE username ='$uname' AND domain = '$domain'};

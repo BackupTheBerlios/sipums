@@ -5,7 +5,7 @@ INSTALL=/usr/bin/install
 OPENUMS_LIBS= OpenUMS/CallOut.pm OpenUMS/Common.pm OpenUMS/DbQuery.pm OpenUMS/GlobalSettings.pm \
               OpenUMS/Holidays.pm OpenUMS/Log.pm OpenUMS/PhoneSystem.pm \
               OpenUMS/CallRecorder.pm OpenUMS/Config.pm OpenUMS/DbUtils.pm OpenUMS/Greeting.pm \
-              OpenUMS/IMAP.pm OpenUMS/SipUmsMwi.pm OpenUMS/Permissions.pm
+              OpenUMS/IMAP.pm OpenUMS/SipUmsMwi.pm OpenUMS/Permissions.pm 
                                                                                                                                                
 MENU_LIBS =  OpenUMS/Menu/AAGMP.pm OpenUMS/Menu/AdminMP.pm OpenUMS/Menu/AppendMsgMP.pm \
              OpenUMS/Menu/AutoAttendantMP.pm OpenUMS/Menu/DbnmMP.pm OpenUMS/Menu/DbnmResultMP.pm \

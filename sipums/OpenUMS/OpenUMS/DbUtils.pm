@@ -1,5 +1,5 @@
 package OpenUMS::DbUtils;
-### $Id: DbUtils.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: DbUtils.pm,v 1.2 2004/08/01 20:06:13 kenglish Exp $
 #
 # DbUtils.pm
 #
@@ -199,21 +199,23 @@ sub change_message_status {
 #################################
 sub create_message {
   my ($dbh, $ext, $filename, $message_path,$ext_from,$record_call_flag,$forward_msg_flag) = @_;
-  if ($ext_from !~ /[0-9]/) {
-     $ext_from = 'NULL'
-  } 
+  ## if ($ext_from !~ /[0-9]/) {
+  ##    $ext_from = 'NULL'
+  ## } 
   if ($record_call_flag ne '1') {
     $record_call_flag = '0' ;   
   } 
   if ($forward_msg_flag ne '1') {
     $forward_msg_flag = '0' ;   
   } 
+  $log->debug("ext_from $ext_from");
+  $ext_from= $dbh->quote($ext_from); 
 
   my $sql = qq{INSERT INTO VM_Messages
                  (message_created, message_status_id,
                   extension_to,extension_from, message_wav_path, message_wav_file, record_call_flag, forward_message_flag )
-               VALUES (now(), 'V', $ext,$ext_from, '$message_path', '$filename', $record_call_flag,$forward_msg_flag  ) };
-
+               VALUES (now(), 'V', $ext, $ext_from , '$message_path', '$filename', $record_call_flag,$forward_msg_flag  ) };
+  $log->debug("doing $sql");
   $dbh->do($sql);
   my $msg_id =  $dbh->{'mysql_insertid'};
   return $msg_id;

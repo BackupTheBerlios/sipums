@@ -1,5 +1,5 @@
 package OpenUMS::Log;
-### $Id: Log.pm,v 1.2 2004/07/31 21:51:15 kenglish Exp $
+### $Id: Log.pm,v 1.3 2004/08/01 20:06:13 kenglish Exp $
 #
 # Log.pm
 #
@@ -49,7 +49,12 @@ sub new {
   my $port  = shift;
 
   my $program = 'ivr';
-  openlog($program, 'cons,pid', 'local6');
+  if (!$port) { 
+    openlog($program, 'cons,pid', 'local1');
+    $port="00";
+  }  else { 
+    openlog($program, 'cons,pid', 'local6');
+  } 
 
 
   $class = ref($class) || $class;

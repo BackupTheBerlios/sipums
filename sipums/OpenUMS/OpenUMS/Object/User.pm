@@ -1,5 +1,5 @@
 package OpenUMS::Object::User;
-### $Id: User.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
+### $Id: User.pm,v 1.3 2004/08/01 20:06:13 kenglish Exp $
 #
 # User.pm
 #
@@ -778,9 +778,10 @@ sub save_message {
   if ( $message_path && $message_file ) {
     my ($valid, $msg) = OpenUMS::Common::validate_message($message_file);  
     if ($valid) { 
-       $log->debug("[User.pm] Message created for " . $extension_to . ", file = " . $message_file);
+       $log->debug("[User.pm] Message created for " . $extension_to . ", file = " . $message_file . ", FROM " . $self->{EXTENSION_FROM});
        my $msg_id = OpenUMS::DbUtils::create_message( $dbh, $extension_to, $message_file, $message_path,
                $self->{EXTENSION_FROM} );
+       $log->debug("Message ID = $msg_id ");
        $return_flag= 1; 
      }  else {
        $return_flag= 0; 

@@ -50,3 +50,4 @@ use OpenUMS::Object::MessageObj;
 use OpenUMS::Object::MessageSpool; 
 use OpenUMS::CallOut; 
 use OpenUMS::IMAP;
+use OpenUMS::SipUmsMwi;

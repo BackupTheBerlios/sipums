@@ -1,4 +1,4 @@
-### $Id: SipUmsMwi.pm,v 1.2 2004/07/31 20:27:05 kenglish Exp $
+### $Id: SipUmsMwi.pm,v 1.3 2004/08/01 20:06:13 kenglish Exp $
 #
 # Copyright (C) 2003 Comtel
 #
@@ -65,9 +65,11 @@ sub update_mwis($$)
   my $data = get_data($dbh) ; 
   my @exts = sort keys %{$data} ; 
   foreach my $ext (@exts ) { 
+     $log->debug("$ext, doing send mwi  " . $data->{$ext}->{action}  ); 
      send_mwi($user_mailboxes->{$ext}, $data->{$ext}->{action} );
      save($dbh,$ext,$data->{$ext}->{new_message_count});
   } 
+
   if (scalar(@exts ) ) { 
      $log->debug(scalar(@exts )  . " Mwis processed\n"); 
   }  else {
@@ -82,9 +84,19 @@ sub update_mwis($$)
 sub get_data {
   my $dbh = shift;
   ## everyone with new messages....
-   my @to_light ;
+  my @to_light ;
   
-   my $sql = qq{select q.extension , last_new_message_count, unix_timestamp(last_sent) last_sent, 
+#  my $sql = qq{SELECT u.extension, count(*) FROM VM_Users u INNER JOIN VM_Messages m on (u.extension = m.extension_to) 
+#     WHERE u.mwi_flag = 1 GROUP BY u.extension} ; 
+#
+#  my $sth = $dbh->prepare($sql ); ##"SELECT count(*) FROM VM_Messages WHERE extension_to = ? AND message_status_id = 'N'");
+#  $sth->execute();
+#  while (my ($ext,$count) = , $last_visit_uts) = $sth->fetchrow_array() ) {
+#   
+#   
+#  return ; 
+  ### old way
+  my $sql = qq{select q.extension , last_new_message_count, unix_timestamp(last_sent) last_sent, 
            unix_timestamp(u.last_visit) last_visit
             FROM VM_Users u INNER JOIN mwi_status q on (u.extension = q.extension) 
             WHERE u.mwi_flag = 1 AND u.store_flag ='V' AND NOT u.vstore_email = 'S'};
@@ -98,11 +110,13 @@ sub get_data {
    my $data;
                                                                                                                                                
    while (my ($ext,$last_new_msg_count, $last_sent_uts, $last_visit_uts) = $sth->fetchrow_array() ) {
+
                                                                                                                                                
       $sth2->execute($ext);
       my $new_msg_count = $sth2->fetchrow();
       $sth2->finish();
-                                                                                                                                               
+      $log->debug("$ext $last_new_msg_count $new_msg_count"); 
+
       ## if they have no new messages and they had new messages before, we turn it off...
       if (!$new_msg_count && $last_new_msg_count) {
           $data->{$ext}->{new_message_count} = $new_msg_count ; 
@@ -123,6 +137,23 @@ sub get_data {
       }
 
    }
+   $sql = qq{ select extension, unix_timestamp(last_visit) last_visit ,
+              max(unix_timestamp(m.message_created)) last_message,count(*) count
+               FROM VM_Users u INNER JOIN  VM_Messages m on (u.extension = m.extension_to)
+               WHERE m.message_status_id ='N'
+               GROUP BY extension, unix_timestamp(last_visit) };
+
+   $sth  = $dbh->prepare($sql);
+   $sth->execute();
+   while (my ($ext,$last_visit_uts, $last_msg_uts,$new_message_count) = $sth->fetchrow_array() ) {
+      $log->debug("$ext--> $new_message_count");
+      if ($last_msg_uts > $last_visit_uts) { 
+          $data->{$ext}->{new_message_count} = $new_message_count; 
+          $data->{$ext}->{action} = 'A'; ## activate
+      } 
+   } 
+   
+
    return $data ;
 }
 
@@ -201,17 +232,17 @@ sub send_mwi {
   }
 
   $log->debug("send_mwi :: ser_user = $ser_user flash = $flash action=$mwi_action ");
-  return ;
 
-  my $resp = (int(rand(10000)) + 1) .  ".fifo";
-  my $FIFO = "/tmp/$resp";
 
-  my $val = `mkfifo -m 666 $FIFO`;
+  # my $resp = (int(rand(10000)) + 1) .  ".fifo";
+  # my $FIFO = "/tmp/$resp";
+
+  # my $val = `mkfifo -m 666 $FIFO`;
                                                                                                                                                
   my $handle = new File::Temp(UNLINK => 1, SUFFIX => '.fifo');
   my $cmd_file = $handle->filename;
                                                                                                                                                
-  my $mwi_fifo_cmd = qq(:t_uac_dlg:$resp
+  my $mwi_fifo_cmd = qq(:t_uac_dlg:hh
 NOTIFY
 sip:$ser_user
 .
@@ -220,14 +251,49 @@ To:$ser_user
 Event: message-summary
 Content-Type: application/simple-message-summary
                                                                                                                                                
-Messages-Waiting: $mwi_action
+Messages-Waiting: $flash
 Voicemail: 2/5
 .
                                                                                                                                                
 );
-  ## my $val = `cat $cmd_file >/tmp/ser_fifo`;
+   $log->debug("cmd=\n$mwi_fifo_cmd ");
+
+   $log->debug("cmd_file=\n$cmd_file ");
+
+   print $handle "$mwi_fifo_cmd";
+   autoflush $handle 1; 
+   my $cmd = "cat $cmd_file > /tmp/ser_fifo "; 
+   $log->debug("cmd =$cmd");
+
+   my $ret = `$cmd`; 
+   $log->debug("cat returned $ret");
+
+   close($handle); 
   
 
 }
 
+sub get_user_mailboxes($$) {
+  my ($dbh,$db_name) = @_; ##  = OpenUMS::Common::get_dbh("ser") ;
+                                                                                                                                               
+  my $sql = qq{SELECT s.mailbox, s.username, d.domain, d.voicemail_db
+      FROM subscriber s, domain d
+      WHERE d.domain = s.domain
+        AND d.voicemail_db = '$db_name'
+        AND mailbox IS NOT NULL
+        AND mailbox <> 0 };
+                                                                                                                                               
+  $log->debug("get_user_mailboxes( sql= "  . $sql . ") ");
+                                                                                                                                               
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+  my %hash;
+
+  while (my ($mailbox, $username,$domain) = $sth->fetchrow_array() ) {
+    $log->debug("mailbox $mailbox ");
+    $hash{$mailbox} = "$username\@$domain";
+  }
+                                                                                                                                               
+  return \%hash; ## $ary_ref;
+}
 1; 
