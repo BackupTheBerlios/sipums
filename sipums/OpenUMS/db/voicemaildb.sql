@@ -26,9 +26,6 @@ CREATE TABLE VM_Greetings (
 -- Dumping data for table `VM_Greetings`
 --
 
-INSERT INTO VM_Greetings VALUES (1,901,1,1,0,'users/901/greetings/','901_greeting_20041204093341.wav',20041204093341);
-INSERT INTO VM_Greetings VALUES (2,909,1,1,0,'users/909/greetings/','909_greeting_20041206094150.wav',20041206094150);
-
 --
 -- Table structure for table `VM_Message_Status`
 --
@@ -73,22 +70,6 @@ CREATE TABLE VM_Messages (
 -- Dumping data for table `VM_Messages`
 --
 
-INSERT INTO VM_Messages VALUES (1,'2004-11-19 14:38:24',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041119143653_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (2,'2004-11-19 14:39:39',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041119143837_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (3,'2004-11-20 11:34:03',NULL,NULL,'N',902,'COMTEL 8083560034','users/902/messages/','902_20041120113317_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (4,'2004-11-20 13:06:46',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041120130615_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (5,'2004-11-20 13:12:56',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041120131241_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (6,'2004-11-20 13:20:20',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041120131949_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (7,'2004-11-20 13:21:00',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041120132040_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (8,'2004-11-20 13:22:47',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041120132212_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (9,'2004-11-20 13:47:24',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041120134705_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (10,'2004-11-20 13:58:59',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041120135810_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (11,'2004-11-24 13:31:25',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041124133118_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (12,'2004-11-24 13:32:02',NULL,NULL,'N',901,'COMTEL 8083560034','users/901/messages/','901_20041124133142_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (13,'2004-11-27 02:20:07',NULL,NULL,'N',901,'ALCANTRA JOVITO 8088420099','users/901/messages/','901_20041127022002_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (14,'2004-11-27 19:40:58',NULL,NULL,'N',901,'2375900 2375900','users/901/messages/','901_20041127194051_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (15,'2004-11-27 19:41:45',NULL,NULL,'N',901,'2375900 2375900','users/901/messages/','901_20041127194046_00.wav',0,0,0);
-INSERT INTO VM_Messages VALUES (16,'2004-12-06 09:09:34',NULL,NULL,'N',909,'COMTEL 8083560034','users/909/messages/','909_20041206090910_00.wav',0,0,0);
 
 --
 -- Table structure for table `VM_Permissions`
@@ -159,11 +140,6 @@ CREATE TABLE VM_Users (
 INSERT INTO VM_Users VALUES (0,'77eecc750f0e0c90','USER',1,'Outside','Caller','','V',0,1,NULL,0,688,225,0,'S','','','','','H','\'\'',NULL,NULL,0,'2001-01-01 00:00:00','C',1,0);
 INSERT INTO VM_Users VALUES (799,'6dddeb0074689d69','SUPER',1,'Supervisor','','','V',1,0,NULL,0,787,NULL,0,'I','','','','','T',NULL,NULL,'',0,'2004-11-20 12:07:56','N',0,0);
 INSERT INTO VM_Users VALUES (798,'6dddeb0074689d69','ADMIN',1,'Administrator','',NULL,'V',0,0,NULL,0,236,NULL,0,'I','','','','','T',NULL,NULL,'',0,'2001-01-01 00:00:00','N',0,0);
-INSERT INTO VM_Users VALUES (900,'751b9b6924a3971c','USER',1,'test','user',NULL,'V',1,0,NULL,1,0,0,0,'I','','','','','H',NULL,NULL,NULL,0,'2004-11-16 19:56:58','N',0,0);
-INSERT INTO VM_Users VALUES (901,'446a12100c856ce9','USER',0,'Kevin','English',NULL,'V',0,0,NULL,0,0,0,0,'S','','kenglish@servpac.com','','','H','users/901/greetings/','901_name_20041204093305.wav','',0,'2004-12-04 09:32:40','C',0,0);
-INSERT INTO VM_Users VALUES (902,'751b9a1b24a397ce','USER',1,'','',NULL,'V',1,0,NULL,1,0,0,0,'I','','','','','H',NULL,NULL,NULL,0,'2004-11-20 11:33:10','N',0,0);
-INSERT INTO VM_Users VALUES (903,'751b9d9224a39d45','USER',1,'Kevin','English',NULL,'V',1,1,NULL,1,0,0,0,'S','','','','','H',NULL,NULL,'',1,'2001-01-01 00:00:00','S',0,0);
-INSERT INTO VM_Users VALUES (909,'751b9e5824a39c0b','USER',1,'','',NULL,'V',1,1,NULL,0,0,0,0,'S','','kenglish@servpac.com','','','H','users/909/greetings/','909_name_20041206094131.wav','',0,'2004-12-06 09:40:48','C',0,0);
 
 --
 -- Table structure for table `auto_attendant`
