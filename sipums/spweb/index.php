@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: index.php,v 1.3 2004/08/03 09:14:40 kenglish Exp $
+ * $Id: index.php,v 1.4 2004/08/03 21:12:52 kenglish Exp $
  */
 
 require "prepend.php";
@@ -33,8 +33,17 @@ do {
        break;
     }
     $temp_udomain = $data->get_user_domain($temp_uname); 
+    if (!$phplib_id && $temp_udomain && $temp_uname) { 
+       do_debug("they do not have a phplib id, let's make them one");  
+       $phplib_id = $data->create_php_lib_id($temp_uname, $temp_udomain); 
+    }  elseif ($phplib_id && $temp_udomain && $temp_uname) {
+       do_debug("good login boy");  
+    }  else {
+       $msg = "Could not login";
+       break;
+    } 
                                                                                                                                                
-    do_debug( " register session variables");
+    do_debug( " register session variables phplib_id = $phplib_id ");
     $sess->register('pre_uid');
     $sess->register('uname');
     $sess->register('udomain');

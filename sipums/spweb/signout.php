@@ -2,6 +2,8 @@
 
 require "prepend.php";
 
+$data = CData_Layer::create($errors) ;
+
 page_open (array("sess" => "phplib_Session_Pre_Auth",
    "auth" => "phplib_Pre_Auth",
    "perm" => "phplib_Perm"));

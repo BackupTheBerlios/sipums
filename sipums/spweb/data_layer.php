@@ -367,8 +367,22 @@ class CDL_common{
     $res->free();
     return $row->phplib_id;
   }
+  function create_php_lib_id ($user, $domain) {
+     $new_phplib_id = md5(uniqid('fvkiore')); 
+     $q = "UPDATE subscriber SET phplib_id = '$new_phplib_id' "
+          . " WHERE username='$user' AND domain='$domain' "; 
+     do_debug("Creating phplib_id $new_phplib_id  $q"); 
+     $res=$this->db->query($q);
+     if (DB::isError($res)) {
+       do_debug("get_user_domain query $q: " . $res->getMessage());
+       return false;
+     } else {
+       return $new_phplib_id ; 
+     } 
+  } 
 
-  function get_user_domain($uname) { 
+  function get_user_domain($user) { 
+     global $config;
      $q = "SELECT domain FROM " .  $config->data_sql->table_subscriber . 
         " WHERE username='".addslashes($user)."'";
      $res=$this->db->query($q);
