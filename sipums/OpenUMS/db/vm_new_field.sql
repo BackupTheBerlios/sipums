@@ -3,7 +3,7 @@ update sound_files set custom_sound_flag = !(professional);
 
 -- 1/15/2005
  ALTER TABLE VM_Messages ADD COLUMN purged_flag BOOL default 0;
-
+-- done
 
 CREATE TABLE aa_action_types (
   action_type varchar(10) NOT NULL default '',
@@ -24,3 +24,5 @@ DELETE FROM menu_items WHERE menu_id = 602 ;
 DELETE FROM menu WHERE menu_id = 603;
 DELETE FROM menu_sounds WHERE menu_id = 603 ;
 DELETE FROM menu_items WHERE menu_id = 603 ;
+-- done 1/25/2004
+
