@@ -1,20 +1,13 @@
 #!/usr/bin/perl
 
-
-##############################################33
-## conference.pl: this prompts them for their password and
-# then redirects them to the conference room
-##############################################33
-
 #main.pl
-#open STDERR, ">>/var/log/openums/script.err";
+close STDERR; 
+open STDERR, ">>/var/log/ser/script.err";
 
 use strict; 
-sub get_conference_code($$$);
 
 use Sys::Syslog qw(:DEFAULT setlogsock);
 my $program = 'ivr';
-## Richard, let's make a separate syslog for conferences
 openlog($program, 'cons,pid', 'local6');
 
 use lib '/usr/local/openums/lib';
@@ -26,15 +19,14 @@ use Telephony::CTPortJr;
 
 use OpenUMS::CallOut;
 use OpenUMS::Config;
+my $path = BASE_PATH . PROMPT_PATH;
+$log->debug("path = $path"); 
 use OpenUMS::Log;
 use OpenUMS::GlobalSettings;
 use OpenUMS::PhoneSystem::SIP ;
 
 use OpenUMS::Common;
 use OpenUMS::DbQuery;
-use OpenUMS::IMAP;
-use OpenUMS::Menu::Menu ;
-use OpenUMS::CallRecorder ;
 
 use DBI; 
 
@@ -65,128 +57,56 @@ $log->debug("-- -- CALL FROM --$caller--");
 ## get the dbh, get extension and change to the voicemail database to use
 #my $dbh = OpenUMS::Common::get_dbh();
 my $dbh = OpenUMS::Common::get_dbh("conference");
-my $conference_code = get_conference_code($dbh, $ctport); 
-exit ;
-my $main_number_flag = &is_domain_main_number($dbh, $uname,$domain); 
-
-my $extension  = &get_user_extention($dbh,$uname,$domain); 
-my $domain_vm_db =  &change_domain_db($dbh,$domain); 
-
 
 ## create a ctport, a phonesys and load global settings
 my $ctport    = new Telephony::CTPortJr($PORT);
 my $phone_sys = new OpenUMS::PhoneSystem::SIP;
-$CONF->load_settings($domain_vm_db);
 
-  syslog('info', "NEW CALL ON IS $PORT"); 
+syslog('info', "NEW CALL ON IS $PORT"); 
+my $i=0;
+my $valid_code=0;
+my $conference_room; 
 
+while ($i < 5 && !$valid_code) { 
+  $ctport->play($path . "conference_code.wav"); 
+  $log->debug("calling collect ");
+  my $conference_code = $ctport->collect(7,10); 
+  $log->debug("collect got  $conference_code ");
 
-  $log->debug("User $ser_to is extension $extension ");
+  if (length($conference_code) == 7 ) {
+     ($valid_code,$conference_room) = &validate_code($dbh, $conference_code); 
+     if (!$valid_code) {    
+       $log->debug("invalid code");
+       $ctport->play($path . "invalid.wav");
+     } 
 
-  my $TEST = 0 ; 
-   if ($TEST){ 
-
-      $ctport->play("/var/spool/openums/prompts/7.wav /var/spool/openums/prompts/2.wav /var/spool/openums/prompts/3.wav /var/spool/openums/prompts/3.wav /var/spool/openums/prompts/4.wav /var/spool/openums/prompts/5.wav /var/spool/openums/prompts/6.wav /var/spool/openums/prompts/7.wav /var/spool/openums/prompts/8.wav /var/spool/openums/prompts/9.wav /var/spool/openums/prompts/1000.wav");
-
-      my $keys = $ctport->collect(5,10); 
-      $ctport->play("/var/spool/openums/prompts/goodbye.wav"); 
-      $log->debug("GOT BACK $keys ");
-
-     sleep(10);
-     exit ;
   } 
- ## this figures out what menu to play
- my $action = 'auto_attendant';  ## default is always auto_attendant
- if  (!$extension || $main_number_flag) {
-   $action = 'auto_attendant';  
- }  elsif ($caller eq $uname){
-   ## if the phone called from is the same as the number, they are checking voicemail
-   $action = 'station_login'; 
- } else {
-   ## default, take a message for that extension
-   $action = 'take_message';
- }  
- # $action = 'auto_attendant';
 
- my $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, $action);
+  $log->debug("collected $conference_code");
+  if ($valid_code) { 
+    $log->debug("There code is valid, let's redirect them");
+  }
+  $i++;
 
-## force them to leave a mesasge...
+}
 
-my ($data1,$data2)= ($extension,$caller);
+$log->debug("sending them to conference_room $conference_room");
 
-my $menu = new OpenUMS::Menu::Menu($dbh, $ctport, $phone_sys, $data1, $data2);
+$phone_sys->send_to_conference_room($conference_room); 
 
-$log->debug("CALLING CREATE MENU");
-$menu->create_menu(); 
+sleep (4);
 
-## dupe the shit!
-$menu->run_menu($menu_id, $data1, $data2); 
-$log->debug("Signalling delivermail");
-&OpenUMS::Common::signal_delivermail;
-
-$log->debug("finalize");
-$ctport->finalize();
-$log->debug("exit");
-ivr::sleep(3); 
+$dbh->disconnect(); 
 exit; 
 
-## open the sys log
-#  
-#
-#
-#Telephony::SemsIvr::init();
-#Telephony::SemsIvr::record("/tmp/kevin.wav",4);
-#
-#ivr::sleep(2); 
-#
-#Telephony::SemsIvr::play("/tmp/kevin.wav");
-## Telephony::SemsIvr::play("/var/spool/openums/prompts/goodbye.wav");
-#playrec();                       
-sub get_conference_code($$$){
-  my ($dbh, $ctport,$max_attempts) = @_;
 
-}
 
-sub get_dbh() {
- 
-  my $dsn = 'DBI:mysql:database=ser;host=localhost';
-  my $user = "ser";
-  my $password = "olseh";
-  syslog('info', "conneting to ser db...");
-  my $dbh = DBI->connect($dsn, $user, $password) || die "Database connection not made: $DBI::errstr";
- 
-}
-sub get_user_domain {
-  my $ser_from  = shift ; 
-  $ser_from =~ s/^<sip://g;
-  $ser_from =~ s/>$//g;
-  print "$ser_from\n";
-
-  my ($user,$domain) = split('@',$ser_from);
-  return ($user,$domain) ; 
-
-}
-sub change_domain_db {
-  my ($dbh,$domain) = @_;
-
-  my $sql = "SELECT voicemail_db FROM domain WHERE domain = '$domain'"; 
-  my $arr = $dbh->selectrow_arrayref($sql);
-  my $db = $arr->[0];
-  if (!$db) {
-    die "FATAL ERROR: No voicemail_db found for $domain";
-  } 
-  $log->debug("Domain DB is $db");
-
-  $dbh->do("use $db") || die "Could not use $db " . $dbh->errstr;
-  return $db;
-
-}
-sub get_caller_id {
+sub get_caller_id  {
   my $sip_from = shift;
-  if ($sip_from =~ /unknown/){ 
+  if ($sip_from =~ /unknown/){
      return "unknown";
-  } 
-
+  }
+                                                                                                                                               
   if ($sip_from =~ /^<sip:/) {
     $sip_from =~ s/^<sip://g;
     $sip_from =~ s/>$//g;
@@ -203,27 +123,48 @@ sub get_caller_id {
                                                                                                                                                
 }
 
-sub get_user_extention {
-  my ($dbh,$uname,$domain) = @_; 
-  my $sql = qq{SELECT mailbox FROM subscriber WHERE username ='$uname' AND domain = '$domain'};
-  my $arr = $dbh->selectrow_arrayref($sql);
-  my $ext = $arr->[0];
-  $log->debug("$sql-----\n$ext"); 
-  if (!$ext ) {
-    return undef;
-  } else { 
-    return $ext ;
+sub validate_code {
+  my ($dbh,$code_input) = @_; 
+  my $sql = qq{select c.conference_id, i.invitee_username, i.invitee_name  from invitees i, conferences  c
+     WHERE i.conference_id = c.conference_id
+     AND i.invitee_code = $code_input};
+  $log->debug("sql = $sql");
+
+  my @row = $dbh->selectrow_array($sql);
+  if (!$row[0] ) {
+    $log->debug("code is not valid");
+    return (0,0); 
+  }  else { 
+    my $conference_room =  $row[0]; 
+    $log->debug("code is valid '$conference_room' ");
+    return (1, $conference_room); 
   }
 
 }
-sub is_domain_main_number {
-  my ($dbh, $number,$domain) = @_;
-  my $sql = qq{SELECT count(*) FROM domain 
-     WHERE company_number = '$number' 
-        AND domain ='$domain' } ; 
-  my $arr = $dbh->selectrow_arrayref($sql);
-  my $count = $arr->[0];
-  return $count ; 
+
+
+sub validate_time {
+  ## this will return 0,  and the sound if it is the wrong time
+  ## this will return 1,  if it's ok for them to enter
+  my ($dbh,$conference_id) = @_; 
+  my $sql = qq(select conference_number, invitee_username, invitee_name  
+     FROM  invitees i, conferences  c
+     WHERE conference_id = $conference_id );
+
+  $log->debug("sql = $sql");
+
+  my @row = $dbh->selectrow_array($sql);
+  if (!$row[0] ) {
+    $log->debug("code is not valid");
+    return (0,0); 
+  }  else { 
+    my $conference_room =  $row[0]; 
+    $log->debug("code is valid '$conference_room' ");
+    return (1, $conference_room); 
+  }
+
 }
+
+
 
 
