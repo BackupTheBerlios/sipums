@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.2 2004/07/20 03:41:25 richardz Exp $
+### $Id: Common.pm,v 1.3 2004/07/27 01:43:27 kenglish Exp $
 #
 # Common.pm
 #
@@ -325,8 +325,11 @@ sub sweep_old($$)
 #################################
 sub get_dbh 
 {
+  my $db_name = shift; 
   use DBI;
-  my $dsn = "DBI:mysql:database=" . DB_NAME . ";host=localhost";
+  $db_name = DB_NAME if (!$db_name); 
+
+  my $dsn = "DBI:mysql:database=$db_name;host=localhost";
   my $user = DB_USER; 
   my $password = DB_PASS; 
   my $dbh = DBI->connect($dsn, $user, $password);
@@ -1060,5 +1063,25 @@ sub REAPER
   1 until (waitpid(-1, &WNOHANG) == -1);
   $SIG{CHLD} = \&REAPER;
 }
+
+sub ser_to_extension {
+  my ($dbh, $ser_from ) =@_;
+                                                                                                                                               
+  $ser_from =~ s/^<sip://g;
+  $ser_from =~ s/>$//g;
+  print "$ser_from\n";
+                                                                                                                                               
+  my ($user,$domain) = split('@',$ser_from);
+  print "$user $domain\n";
+  $dbh->do(" use ser");
+  my $sql = qq{SELECT extension FROM subscriber WHERE username ='$user' AND domain = '$domain'};
+  my $arr = $dbh->selectrow_arrayref($sql);
+  my $ext = $arr->[0];
+  print "$sql\n";
+  $dbh->do("use voicemail");
+
+  return  $ext;
+}
+
 
 1; 
