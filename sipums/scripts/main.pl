@@ -40,7 +40,12 @@ $log = new OpenUMS::Log($PORT);
 my $ser_to = ivr::getTo; 
 my $ser_from = ivr::getFrom; 
 
-my ($uname,$domain) = &get_user_domain($ser_to); 
+my ($uname,$domain) ;  # = &get_user_domain($ser_to); 
+$uname = ivr::getUser();
+$domain = ivr::getDomain();
+
+
+#my ($uname,$domain) = &get_user_domain($ser_to); 
 my ($caller,$caller_domain); ## = &get_caller_id($ser_from); 
 $caller = &get_caller_id($ser_from); 
 
