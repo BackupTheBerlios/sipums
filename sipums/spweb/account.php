@@ -150,16 +150,18 @@ do_debug("func is $FORM_VARS[func]");
 if ($FORM_VARS[func] == 'update_user_vm') {
 
   do_debug("func is update_user_vm\n\n "); 
+  // first we get the parameters form the form
   $user_info = array();  
 
   $user_info[first_name] = $FORM_VARS[first_name];
   $user_info[last_name] = $FORM_VARS[last_name];
   $user_info[email_address] = $FORM_VARS[email_address];
   $user_info[mailbox] = $FORM_VARS[mailbox];
+  // create a message array and an update flag 
   $user_info_msgs =array(); 
   $do_update = 1; 
 
-  // check vm_password
+  // Are they changing the  vm_password?
   if ($FORM_VARS[vm_password] ) { 
     if ($FORM_VARS[vm_password]  == $FORM_VARS[vm_password_re] ) { 
       if (is_numeric($FORM_VARS[vm_password] )  ) { 
@@ -173,7 +175,7 @@ if ($FORM_VARS[func] == 'update_user_vm') {
        do_debug("passwords do not match\n\n "); 
     } 
   } 
-  // same check for spweb_password
+  // Are they changing the spweb_password
   if ($FORM_VARS[spweb_password] ) {
     if ($FORM_VARS[spweb_password] == $edit_uname){
          $user_info_msgs[] = "SpWeb Password can not be the same as your username/number." ;
@@ -186,9 +188,12 @@ if ($FORM_VARS[func] == 'update_user_vm') {
          do_debug("passwords do not match\n\n ");
       }
     }
-
+  }
+  // Are they adding a new mailbox?
+  if ($data->adding_mailbox_check($user_info[mailbox) ) {
 
   }
+
 
   if ($do_update) { 
     foreach ($user_info as $key => $value){
@@ -199,14 +204,15 @@ if ($FORM_VARS[func] == 'update_user_vm') {
        $user_info_msgs = array(); 
        $user_info_msgs[] = $error;
        $user_info = $data->get_user_info(); 
+     } else {
+       $user_info_msgs[] = "User information updated.";
      } 
   }
 
   $account_smarty->assign('user_info_msgs', $user_info_msgs ); 
-  
-} else {
-  $user_info = $data->get_user_info(); 
 }
+
+$user_info = $data->get_user_info(); 
 
 $vm_info = $data->get_vm_info($user_info[mailbox]);
 

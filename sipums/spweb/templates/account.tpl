@@ -149,6 +149,7 @@
     <TD>Voicemail Mailbox &nbsp;&nbsp; </td>
     <TD><!--{if $edit_mailbox}-->
        <INPUT name='mailbox' value='<!--{$mailbox}-->' >
+        
         <!--{else}-->
            <b><!--{$mailbox}--></b>
         <!--{/if}-->
