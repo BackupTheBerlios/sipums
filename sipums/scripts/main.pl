@@ -51,6 +51,7 @@ $domain = ivr::getDomain();
 
 #my ($uname,$domain) = &get_user_domain($ser_to); 
 my ($caller,$caller_domain); ## = &get_caller_id($ser_from); 
+
 $caller = &get_caller_id($ser_from); 
 
 $log->debug("-----------------------------------");
@@ -189,8 +190,9 @@ sub get_caller_id {
     my ($name,$sip_from) = split(/\<sip:/,$sip_from);
     my ($num,$d) = split(/\@/,$sip_from);
     $name =~ s/\"//g;
+    $log->debug("$name "); 
     $name =~ s/\s+$//;
-    chop($name);
+    $log->debug("$name "); 
     return "$name $num";
   }
                                                                                                                                                

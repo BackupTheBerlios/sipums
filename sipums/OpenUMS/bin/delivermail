@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.8 2004/08/31 06:49:35 kenglish Exp $
+### $Id: delivermail,v 1.9 2004/08/31 08:57:03 kenglish Exp $
 #
 # delivermail
 #
@@ -496,8 +496,9 @@ sub email_body($$$$$)
   my $datestring = date_string($file);
 
   my $return = "$MARKUP{'HEADER'}{$email_type}Hello,$MARKUP{'P'}{$email_type}";
-  my $callout_link = "To hear this message over the phone, click ";
-  $callout_link .=  &html_link(OpenUMS::Common::get_callout_url($file) );
+#  my $callout_link = "To hear this message over the phone, click ";
+#  $callout_link .=  &html_link(OpenUMS::Common::get_callout_url($file) );
+
   if ($recorded_call)
     {
 $return .= <<EOF;
