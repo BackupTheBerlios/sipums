@@ -31,7 +31,7 @@ default: compile
 compile: $(LIBS)
 	rm -f .compiledok
 	touch .compiledok
-	perl -wc  tools/useall
+	perl -wc  bin/useall
 install: $(LIBS)  .compiledok
 	mkdir -p $(LIBDIR)
 #	cd OpenUMS && make install
