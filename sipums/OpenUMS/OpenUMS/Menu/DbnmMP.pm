@@ -1,6 +1,6 @@
 package OpenUMS::Menu::DbnmMP;
 
-### $Id: DbnmMP.pm,v 1.2 2004/09/01 03:16:35 kenglish Exp $
+### $Id: DbnmMP.pm,v 1.3 2005/03/12 01:15:50 kenglish Exp $
 #
 # DbnmCollector.pm
 #
@@ -60,9 +60,12 @@ sub validate_input {
 
   my $dbnm_ar = $self->get_dbnm_list(); 
   if (!$input) { 
+    $log->debug("[DbnmMP.pm] NO INPUT .. \n"); 
     return 0 ; 
   } 
+  # $log->debug("[DbnmMP.pm] Gonna loop thue dbnm_ar=>" . scalar(@{$dbnm_ar}) ); 
   foreach my $pkey  (@{$dbnm_ar} ) { 
+    $log->debug("[DbnmMP.pm] pkey = $pkey == $input.. \n"); 
     if ($pkey =~ /^$input/) { 
        return 1; 
     }         

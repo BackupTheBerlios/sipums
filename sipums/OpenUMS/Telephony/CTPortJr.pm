@@ -130,7 +130,7 @@ Places the port on hook, just like hanging up.
 sub on_hook() {
 	my $self = shift;
         ## get the perl ref to the java object...
-        syslog('debug', 'CTPortJr::on_hook stub');
+        syslog('debug', '[CTPortJr::on_hook] stub');
         return ;
 }
 
@@ -285,7 +285,7 @@ sub play($) {
   my $files_str = shift;
 
   if (!$files_str ) { 
-     syslog('info', "PLAY CALLED WITH NO FILE " . $files_str );
+     syslog('info', "[CTPortJr::play] PLAY CALLED WITH NO FILE " . $files_str );
      return 
   }; 
   ## get the java object
@@ -297,7 +297,7 @@ sub play($) {
 
   foreach my $file (@files_array) {
       Telephony::SemsIvr::play($file); 
-      syslog('debug', "in play " . $Telephony::SemsIvr::MEDIA_STATE );
+      syslog('debug', "[CTPortJr::play] in play " . $Telephony::SemsIvr::MEDIA_STATE );
       if ($Telephony::SemsIvr::MEDIA_STATE != MEDIA_PLAYING) { 
         #playing was interrupted
         last; 
@@ -366,15 +366,13 @@ sub record($$$$$) {
    my $no_beep_flag = shift;
 
    ## get the perl ref to the java object...
-   syslog('debug', "file $file");
+   syslog('debug', "[CTPortJr::record] file $file");
    Telephony::SemsIvr::record($file, $timeout, $term_digits, $silence_timeout,$no_beep_flag);
-   
  
    my $wav = new Audio::Wav;
-
    sub do_error {
      my( %parameters ) = @_;
-      syslog('debug',"Audio::Wav ERROR: $parameters{'filename'}: $parameters{'message'}");
+      syslog('debug',"[CTPortJr::record] Audio::Wav ERROR: $parameters{'filename'}: $parameters{'message'}");
       ivr::msleep(50);
    } 
 
@@ -382,11 +380,11 @@ sub record($$$$$) {
 
    my $read ; 
    
-   syslog('debug', "Going to Read WAV");
+   syslog('debug', "[CTPortJr::record] Going to Read WAV");
 
    ivr::msleep(50);
    $read = $wav->read($file); 
-   syslog('debug', "Read Wave file");
+   syslog('debug', "[CTPortJr::record] Read Wave file");
 
 
 
@@ -401,9 +399,9 @@ sub record($$$$$) {
   # syslog('debug', "comd $cmd ");
   #  
    `$cmd`;
-   syslog('debug', "gonna move");
+   syslog('debug', "[CTPortJr::record] gonna move");
    move($tmp_file, $file); 
-   syslog('debug', "mved $tmp_file to $file");
+   syslog('debug', "[CTPortJr::record] mved $tmp_file to $file");
    return ;
 
 }
@@ -533,7 +531,7 @@ sub closelogger($){
 }
 sub clear {
   my $self = shift ; 
-  syslog('debug', 'Called clear, dummy stub');
+  syslog('debug', '[CTPortJr::record] Called clear, dummy stub');
 }
 sub finalize() {
   ## do clean up

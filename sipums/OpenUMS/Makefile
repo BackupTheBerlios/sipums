@@ -23,6 +23,7 @@ PHONESYS_LIBS = OpenUMS/PhoneSystem/PhoneSystemBase.pm OpenUMS/PhoneSystem/SIP.p
 CTPORT_LIBS = Telephony/CTPortJr.pm Telephony/SemsIvr.pm
 
 DELIVER_MAIL = bin/delivermail
+PURGE_DELETE = bin/purge_delete
 ADD_VM_USER = bin/addvmuser
 DEL_VM_USER = bin/deletevmuser
 SIPUMS_MYSQL_PASSORD = olseh
@@ -52,6 +53,7 @@ install: $(LIBS)  .compiledok
 	$(INSTALL) -D -v -m 644 $(OBJ_LIBS) $(LIBDIR)/OpenUMS/Object
 	$(INSTALL) -D -v -m 644 $(PHONESYS_LIBS) $(LIBDIR)/OpenUMS/PhoneSystem
 	$(INSTALL) -D -v -m 644 $(CTPORT_LIBS) $(LIBDIR)/Telephony
+	$(INSTALL) -v -m 774 $(PURGE_DELETE) $(BASEDIR)/
 	$(INSTALL) -v -m 774 $(DELIVER_MAIL) $(BASEDIR)/
 	$(INSTALL) -v -m 774 $(ADD_VM_USER) $(BASEDIR)/
 	$(INSTALL) -v -m 774 $(DEL_VM_USER) $(BASEDIR)/

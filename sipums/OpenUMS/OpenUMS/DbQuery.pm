@@ -1,5 +1,5 @@
 package OpenUMS::DbQuery;
-### $Id: DbQuery.pm,v 1.7 2005/01/15 19:55:41 kenglish Exp $
+### $Id: DbQuery.pm,v 1.8 2005/03/12 01:15:50 kenglish Exp $
 #
 # DbQuery.pm
 #
@@ -620,7 +620,13 @@ sub _get_dbnm_list_det {
   my $sth = $dbh->prepare($sql);
   $sth->execute();
 
-  while (my $pkey = $sth->fetchrow() ) {
+  if ($sth->rows == 0) {
+      $log->debug("No names matched $sql");
+  }
+
+  $log->debug(" _get_dbnm_list_det $sql, Got back " . $sth->rows);
+
+  while (my ($pkey) = $sth->fetchrow_array() ) {
     push @{$pkeys_ar}, $pkey ;
   }
   return $pkeys_ar;  
@@ -1346,10 +1352,10 @@ sub get_deleted_messages_to_purge {
   my $key_field = 'message_id';
   my $sql = qq{SELECT message_id,message_status_changed, message_wav_path,message_wav_file 
                FROM VM_Messages 
-               WHERE message_status_changed < NOW() - INTERVAL $days DAY};
-  
+               WHERE message_status_changed < NOW() - INTERVAL $days DAY
+                 AND message_status_id = 'D' 
+                 AND purged_flag = 0 };
   my $hr = $dbh->selectall_hashref($sql, $key_field); 
   return $hr; 
- 
 }
 1; 

@@ -1,6 +1,6 @@
 package OpenUMS::Permissions;
 
-### $Id: Permissions.pm,v 1.2 2004/09/01 03:16:35 kenglish Exp $
+### $Id: Permissions.pm,v 1.3 2005/03/12 01:15:50 kenglish Exp $
 #
 # Permissions.pm
 #
@@ -117,7 +117,7 @@ sub is_authorized {
   if ( int($PERMISSIONS->{$object_permission}) <= int($PERMISSIONS->{$user_permission}) ) {  
      return 1;   
   } else {
-     $log->normal("OpenUMS::Permissions: permission denied "); 
+     $log->normal("OpenUMS::Permissions: permission denied object_permission=>$object_permission,user_permission=>$user_permission"); 
 #           $PERMISSIONS->{$user_permission} . ",ob=" . $object_permission . " " . $PERMISSIONS->{$object_permission}); 
 #     $log->debug("OpenUMS::Permissions: regime = $PERMISSIONS->{$user_permission} <= $PERMISSIONS->{$object_permission} " . ($PERMISSIONS->{$user_permission} <= $PERMISSIONS->{$object_permission}) );   
      return 0; 

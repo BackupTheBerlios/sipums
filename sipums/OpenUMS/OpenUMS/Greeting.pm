@@ -1,5 +1,5 @@
 package OpenUMS::Greeting;
-### $Id: Greeting.pm,v 1.5 2004/09/01 03:16:35 kenglish Exp $
+### $Id: Greeting.pm,v 1.6 2005/03/12 01:15:50 kenglish Exp $
 # Greeting.pm
 #
 # Handles logic for Greeting .
@@ -87,12 +87,12 @@ sub get_name_sound {
   my $sth = $dbh->prepare($sql);
   $sth->execute();
                                                                                                                              
-  my ($name_vox_file, $name_vox_path ) = ("","");
-  ($name_vox_file, $name_vox_path) = $sth->fetchrow_array();
+  my ($name_wav_file, $name_wav_path ) = ("","");
+  ($name_wav_file, $name_wav_path) = $sth->fetchrow_array();
  
   $sth->finish();
-  if ($name_vox_file) { 
-     return "$name_vox_path$name_vox_file";
+  if ($name_wav_file) { 
+     return $main::CONF->get_var('VM_PATH') . "$name_wav_path$name_wav_file";
   } else {
     my $name_sound  =  OpenUMS::Common::get_prompt_sound("extension");
     $name_sound .=  " " .  OpenUMS::Common::ext_sound_gen($ext); 

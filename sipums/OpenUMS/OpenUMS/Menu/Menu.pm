@@ -1,6 +1,6 @@
 package OpenUMS::Menu::Menu;
 
-### $Id: Menu.pm,v 1.9 2005/02/04 20:57:52 kenglish Exp $
+### $Id: Menu.pm,v 1.10 2005/03/12 01:15:51 kenglish Exp $
 #
 # Menu.pm
 #
@@ -135,9 +135,15 @@ sub create_menu {
   } 
 
   my $sth = $dbh->prepare($sql);
-  my $user = new OpenUMS::Object::User($dbh,$self->{EXTENSION_TO},$self->{EXTENSION_FROM} );  ## create a dummy user object...
-  ## we need a ref to that user also
-  $self->{USER} = $user ; 
+  my $user ; 
+  if (!$self->{USER}) { 
+    ## we need a ref to that user also
+    $log->debug("NO USER, creating one" );
+    $user = new OpenUMS::Object::User($dbh,$self->{EXTENSION_TO},$self->{EXTENSION_FROM} );  ## create a dummy user object...
+    $self->set_user($user) ; 
+  }else{
+     $user = $self->{USER} ; 
+  } 
   my $phone_sys =  $self->{PHONE_SYSTEM};
 
   $sth->execute();
@@ -417,6 +423,7 @@ sub run_menu {
       } 
 
       $attempts_count++;  
+      #$log->debug("[Menu.pm] : NEXT attempts_count => $attempts_count max_attempts => " . $menu->{max_attempts}); 
       if ($attempts_count > $menu->{max_attempts} ) { 
         $log->debug("[Menu.pm] : Max Attempts exceeded ...  "); 
         if ($menuProcessor->no_input() || !($valid) ) { 
@@ -646,5 +653,10 @@ sub do_return_call {
 sub get_user {
   my ($self)  = shift; 
   return $self->{USER}; 
+}
+sub set_user {
+  my ($self,$user)  = @_; 
+
+  $self->{USER} = $user ; 
 }
 1;

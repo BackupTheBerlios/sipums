@@ -1,5 +1,5 @@
 package OpenUMS::DbUtils;
-### $Id: DbUtils.pm,v 1.6 2004/12/01 01:20:52 kenglish Exp $
+### $Id: DbUtils.pm,v 1.7 2005/03/12 01:15:50 kenglish Exp $
 #
 # DbUtils.pm
 #
@@ -597,6 +597,13 @@ sub delete_aa_item {
      return 1 ; 
   }
   return 0 ; 
+} 
+sub set_message_purge_flag { 
+  my ($dbh, $message_id) = @_;
+  my $sql  = "UPDATE VM_Messages SET purged_flag =  1 WHERE message_id = " . $message_id;
+  $dbh->do($sql); 
+
+
 } 
 
 1; 

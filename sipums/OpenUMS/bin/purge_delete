@@ -9,28 +9,66 @@ use OpenUMS::Common;
 use OpenUMS::GlobalSettings;
 use OpenUMS::IMAP;
 use OpenUMS::SipUmsMwi;
-
-
-
-my @databases = ('vm_canada_omatrix_org','vm_corp_servpac_com',
-                 'vm_omatrix_com', 'vm_omatrix_net',
-                 'vm_omatrix_org', 'vm_usa_omatrix_org');
-
-my $db = "vm_omatrix_net" ; 
-my $dbh = OpenUMS::Common::get_dbh($db);
-
+use OpenUMS::DbUtils;
+use MIME::Lite; 
 my $days = 2; 
-my $data = OpenUMS::DbQuery::get_deleted_messages_to_purge($dbh,$days);
-$CONF->load_settings($db); 
-print 'VM_PATH ' .$CONF->get_var('VM_PATH') . "\n" ; 
+## who the report gets sent to...
+my $email_address='kenglish@servpac.com';
 
-foreach my $key (keys %{$data}){
-  my $path = $CONF->get_var('VM_PATH') . $data->{$key}->{message_wav_path} . $data->{$key}->{message_wav_file} ;
-  my $cmd = "rm $path"; ## a->{$key}->{message_wav_path}; 
-  print "$cmd "; 
-  # `$cmd`;
-  print "\n";
+
+
+my @databases = ('vm_centuryc_servpac_com', "vm_corp_servpac_com",
+                 "vm_dev1_servpac_com", "vm_dev2_servpac_com",
+                 "vm_hicp_servpac_com", "vm_netenterprise_servpac_com", 
+                 "vm_systemmetrics_servpac_com", "vm_tcm_servpac_com");  
+ 
+my %report; 
+foreach my $db ( @databases) { 
+  my $dbh = OpenUMS::Common::get_dbh($db);
+  
+  my $data = OpenUMS::DbQuery::get_deleted_messages_to_purge($dbh,$days);
+  $CONF->load_settings($db); 
+  print 'VM_PATH ' .$CONF->get_var('VM_PATH') . "\n" ; 
+  print "database $db\n" ; 
+  $report{$db}=0;
+  foreach my $message_id (keys %{$data}){
+    print "message_id=$message_id\n"; 
+    my $path = $CONF->get_var('VM_PATH') . $data->{$message_id}->{message_wav_path} . $data->{$message_id}->{message_wav_file} ;
+    #my $cmd = "rm $path"; ## a->{$message_id}->{message_wav_path}; 
+    my $res= unlink ($path); 
+    #print "$cmd\n"; 
+    #my $res =`$cmd`;
+    print "result=$res\n";
+    OpenUMS::DbUtils::set_message_purge_flag($dbh, $message_id);
+    $report{$db}++;
+  }
 }
+my $date = `date` ; 
+chomp($date);
+my  $body="Purge Run for $date\n";
+    $body.="DB\t\t\t\tNum Purged\n";
+    $body.="-------------\t\t\t------------\n";
+foreach my $db (keys %report ) {
+  my $len=length($db);   
+  my $tabs ; 
+  if ($len < 25) { 
+     $tabs = "\t\t";
+  } else {
+     $tabs = "\t";
+  } 
+   $body.=$db.$tabs. $report{$db} . "\n"; 
+} 
+print "\n\n"; 
 
+print $body ; 
 
-
+my $subject = "Purger for $date "; 
+print "$subject\n"; 
+my $msg = MIME::Lite->new(
+                  From    => "\"PURGER\" " .
+                             "<purger\@mail.servpac.com>",
+                  To      => $email_address,
+                  Subject => $subject,
+                  Disposition => 'inline',
+                  Data => $body ) ; 
+$msg->send;

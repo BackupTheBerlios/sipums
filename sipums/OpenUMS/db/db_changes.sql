@@ -38,6 +38,7 @@ CREATE TABLE did_mapping (
   menu_id int(11) NOT NULL default '0',
   PRIMARY KEY  (client_number)
 ) TYPE=MyISAM;
+ show databases;
 
 
 

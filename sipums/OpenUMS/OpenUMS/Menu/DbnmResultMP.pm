@@ -1,5 +1,5 @@
 package OpenUMS::Menu::DbnmResultMP; 
-### $Id: DbnmResultMP.pm,v 1.3 2004/09/01 03:16:35 kenglish Exp $
+### $Id: DbnmResultMP.pm,v 1.4 2005/03/12 01:15:50 kenglish Exp $
 #
 # DbnmResultMP.pm
 #
@@ -47,14 +47,15 @@ sub _play_menu () {
   my ($sound_path, $sound_file,$extension) = ($cur->{name_wav_path}, $cur->{name_wav_file},$cur->{extension} ) ; 
 
 #  if (!$cur->{HEARD} ) { 
-    $log->debug("[DbnmResultMP.pm] phone_keys=$ext_input sound=$sound_path$sound_file extension=$extension)\n"); 
-    $sound .=  "$sound_path$sound_file " ; 
+    $sound .=  $main::CONF->get_var('VM_PATH') . "$sound_path$sound_file " ; 
 #    $cur->{HEARD} = 1; 
 #  } 
 
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
 
-  $sound .=   OpenUMS::Common::get_prompt_sound(  $menuSounds->{M}->[0]->{sound_file})  ; 
+  $log->debug("[DbnmResultMP.pm] sound_file = " . $menuSounds->{M}->[0]->{PROMPT_OBJ}->file()) ;
+  $log->debug("[DbnmResultMP.pm] phone_keys=$ext_input sound=$sound extension=$extension)\n"); 
+  $sound .=   $menuSounds->{M}->[0]->{PROMPT_OBJ}->file(); ##OpenUMS::Common::get_prompt_sound(  $menuSounds->{M}->[0]->{sound_file})  ; 
 
 
   if (defined($sound) ) { 

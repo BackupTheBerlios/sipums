@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.14 2004/12/17 00:56:59 kenglish Exp $
+### $Id: Common.pm,v 1.15 2005/03/12 01:15:50 kenglish Exp $
 #
 # Common.pm
 #
@@ -113,9 +113,123 @@ sub message_store_size($)
 }
 
 
+
+
+
+#################################
+## sub delete_user
+#################################
+
+sub delete_user 
+{
+  my $dbh = shift;
+  my $extension = shift ; 
+  return(0,"Extesion is no a number") unless $extension =~ /^\d+$/;
+
+  my $full_user_path = $main::CONF->get_var('VM_PATH') . USER_PATH . $extension ;
+  
+  return (0,"User directory does not exist") if (!(-e $full_user_path) ); 
+  return (0,"User directory is not a directory") if (!(-d $full_user_path) ); 
+  return (0,"User directory is not writable") if (!(-w $full_user_path) ); 
+  return (0,"User directory is not executable") if (!(-x $full_user_path) ); 
+
+  print STDERR " full_user_path $full_user_path\n";
+
+  my $cmd = "rm -Rf $full_user_path"; 
+  print STDERR " cmd = $cmd\n";
+  my $ret = `$cmd`; 
+
+  my $sql = "DELETE FROM VM_Users WHERE extension = $extension "; 
+  return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
+  $sql = "DELETE FROM VM_Messages WHERE extension_to = $extension "; 
+  return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
+
+  #$sql = "DELETE FROM extension WHERE extension = $extension "; 
+  #return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
+
+  $sql = "DELETE FROM VM_Greetings WHERE extension = $extension "; 
+  return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
+
+  return(1, "User deleted" );
+} 
+
+############################################################### 
+##   add_user($$$$)
+### Creates directory structure and database entry with default fields
+### for a new user.  Routine should be called from script running
+### as user openums.  Doesn't do enough error checkign.
+
+sub add_user($$$$)
+{
+  my $dbh = shift;
+  my $extension = shift;
+  my $name_first = shift;
+  my $name_last = shift;
+
+  return(0,"Extesion is no a number") unless $extension =~ /^\d+$/;
+  if (!$main::CONF || !($main::CONF->get_var('VM_PATH')) ) {
+     return(0,"NO VM_PATH DEFINED");
+  }
+
+#  return(0, "Invalid Permissions on directories") unless ( (-e USER_PATH) && (-d USER_PATH) 
+#                        && (-w USER_PATH) && (-x USER_PATH) );
+
+  my $full_user_path = $main::CONF->get_var('VM_PATH') . USER_PATH;
+  #return(0,'User directories do not exists') unless ( (-e $full_user_path) && (-d $full_user_path) 
+  #                      && (-w $full_user_path) && (-x $full_user_path) );
+			 
+  unless (-e  $full_user_path) {
+     return(0, "No User directories for this domain $full_user_path") ;
+  } 
+  unless (-d  $full_user_path) {
+     return(0, "User directories for this domain are not a directory: $full_user_path") ;
+  } 
+  unless (-w  $full_user_path) {
+     return(0, "User directories for this domain are not WRITABLE $full_user_path") ;
+  } 
+  unless (-w  $full_user_path) {
+     return(0, "User directories for this domain are not EXECUTABLE $full_user_path") ;
+  } 
+
+  return(0, 'User directory already exists') if (-e "$full_user_path$extension");
+  umask 002;
+  return(0,"Could not make $full_user_path$extension directory") unless mkdir("$full_user_path$extension");
+  return(0,"Could not make $full_user_path$extension/greetings' directory") unless mkdir("$full_user_path$extension/greetings");
+  return(0,"Could not make '$full_user_path$extension/messages' directory" ) unless mkdir("$full_user_path$extension/messages");
+  umask 022;
+
+  my ($email_user_name, $email_address, $phone_keys_first_name, $phone_keys_last_name) ; 
+#  if ($name_first) { 
+#     $email_user_name = substr($name_first, 0, 1) . $name_last;
+#     $email_address = "";
+#     $phone_keys_first_name = OpenUMS::DbUtils::get_phone_keys ($name_first);
+#     $phone_keys_last_name = OpenUMS::DbUtils::get_phone_keys ($name_last);
+# }
+    my $password = $extension;
+    my $email_server = DEFAULT_EMAIL_SERVER;
+    my $email_password = DEFAULT_EMAIL_PASSWORD;
+
+  my $sql = qq{INSERT VM_Users(extension, first_name, last_name, 
+                                email_address, password,
+                                phone_keys_first_name, phone_keys_last_name,
+                                email_server_address, email_user_name, email_password,
+                                new_user_flag,active,transfer,mwi_flag,auto_login_flag) 
+                VALUES ('$extension', '$name_first', '$name_last',
+                        '$email_address', PASSWORD('$password'),
+                        '$phone_keys_first_name', '$phone_keys_last_name',
+                        '$email_server', '$email_user_name', '$email_password',
+                         1,1,1,1,1)};
+  return(0,"User insert failed : '$sql' " ) unless $dbh->do($sql); 
+
+  OpenUMS::DbUtils::update_phone_keys($dbh, $extension ); 
+
+  return(1, "User created" );
+}
+
 #################################
 ## sub create_user
 #################################
+
 sub create_user 
 {
   ## like add_user but for the web interface
@@ -231,115 +345,6 @@ sub create_user
   return (1,"User created for extension $user_info->{extension}");  
 
 }
-#################################
-## sub create_user
-#################################
-
-sub delete_user 
-{
-  my $dbh = shift;
-  my $extension = shift ; 
-  return(0,"Extesion is no a number") unless $extension =~ /^\d+$/;
-
-  my $full_user_path = $main::CONF->get_var('VM_PATH') . USER_PATH . $extension ;
-  
-  return (0,"User directory does not exist") if (!(-e $full_user_path) ); 
-  return (0,"User directory is not a directory") if (!(-d $full_user_path) ); 
-  return (0,"User directory is not writable") if (!(-w $full_user_path) ); 
-  return (0,"User directory is not executable") if (!(-x $full_user_path) ); 
-
-  print STDERR " full_user_path $full_user_path\n";
-
-  my $cmd = "rm -Rf $full_user_path"; 
-  print STDERR " cmd = $cmd\n";
-  my $ret = `$cmd`; 
-
-  my $sql = "DELETE FROM VM_Users WHERE extension = $extension "; 
-  return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
-  $sql = "DELETE FROM VM_Messages WHERE extension_to = $extension "; 
-  return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
-
-  #$sql = "DELETE FROM extension WHERE extension = $extension "; 
-  #return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
-
-  $sql = "DELETE FROM VM_Greetings WHERE extension = $extension "; 
-  return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
-
-  return(1, "User deleted" );
-} 
-
-############################################################### add_user($$$$)
-### Creates directory structure and database entry with default fields
-### for a new user.  Routine should be called from script running
-### as user openums.  Doesn't do enough error checkign.
-  
-
-
-sub add_user($$$$)
-{
-  my $dbh = shift;
-  my $extension = shift;
-  my $name_first = shift;
-  my $name_last = shift;
-
-  return(0,"Extesion is no a number") unless $extension =~ /^\d+$/;
-
-                                                                                                                                               
-  if (!$main::CONF || !($main::CONF->get_var('VM_PATH')) ) {
-     return(0,"NO VM_PATH DEFINED");
-  }
-
-#  return(0, "Invalid Permissions on directories") unless ( (-e USER_PATH) && (-d USER_PATH) 
-#                        && (-w USER_PATH) && (-x USER_PATH) );
-
-  my $full_user_path = $main::CONF->get_var('VM_PATH') . USER_PATH;
-  #return(0,'User directories do not exists') unless ( (-e $full_user_path) && (-d $full_user_path) 
-  #                      && (-w $full_user_path) && (-x $full_user_path) );
-			 
-  unless (-e  $full_user_path) {
-     return(0, "No User directories for this domain $full_user_path") ;
-  } 
-  unless (-d  $full_user_path) {
-     return(0, "User directories for this domain are not a directory: $full_user_path") ;
-  } 
-  unless (-w  $full_user_path) {
-     return(0, "User directories for this domain are not WRITABLE $full_user_path") ;
-  } 
-  unless (-w  $full_user_path) {
-     return(0, "User directories for this domain are not EXECUTABLE $full_user_path") ;
-  } 
-
-  return(0, 'User directory already exists') if (-e "$full_user_path$extension");
-  umask 002;
-  return(0,"Could not make $full_user_path$extension directory") unless mkdir("$full_user_path$extension");
-  return(0,"Could not make $full_user_path$extension/greetings' directory") unless mkdir("$full_user_path$extension/greetings");
-  return(0,"Could not make '$full_user_path$extension/messages' directory" ) unless mkdir("$full_user_path$extension/messages");
-  umask 022;
-
-  my ($email_user_name, $email_address, $phone_keys_first_name, $phone_keys_last_name) ; 
-#  if ($name_first) { 
-#     $email_user_name = substr($name_first, 0, 1) . $name_last;
-#     $email_address = "";
-#     $phone_keys_first_name = OpenUMS::DbUtils::get_phone_keys ($name_first);
-#     $phone_keys_last_name = OpenUMS::DbUtils::get_phone_keys ($name_last);
-# }
-    my $password = $extension;
-    my $email_server = DEFAULT_EMAIL_SERVER;
-    my $email_password = DEFAULT_EMAIL_PASSWORD;
-
-  my $sql = qq{INSERT VM_Users(extension, first_name, last_name, 
-                                email_address, password,
-                                phone_keys_first_name, phone_keys_last_name,
-                                email_server_address, email_user_name, email_password,new_user_flag,active,transfer)
-                VALUES ('$extension', '$name_first', '$name_last',
-                        '$email_address', PASSWORD('$password'),
-                        '$phone_keys_first_name', '$phone_keys_last_name',
-                        '$email_server', '$email_user_name', '$email_password',1,1,1)};
-  return(0,"User insert failed : '$sql' " ) unless $dbh->do($sql); 
-
-  return(1, "User created" );
-}
-
 
 ################################################################ sweep_old($$)
 ### This sub removes old (older than DAYS_KEPT) X-CPVoicemails from a
@@ -1164,8 +1169,6 @@ sub ser_to_extension {
 sub get_prompt_sound {
   my $file = shift ; 
   my $new_file = BASE_PATH . PROMPT_PATH . $file ; 
-  $log->debug("amigo called get_prompt_sound( $file )"); 
-
  #  $main::CONF->get_var('VM_PATH') . PROMPT_PATH . $file ; 
    
   if ($new_file !~ /\.wav$/) {

@@ -1,5 +1,5 @@
 package OpenUMS::Config;
-### $Id: Config.pm,v 1.10 2004/11/25 00:03:52 kenglish Exp $
+### $Id: Config.pm,v 1.11 2005/03/12 01:15:50 kenglish Exp $
 #
 # Config.pm
 #
@@ -71,7 +71,7 @@ use constant MIN_PASSWORD_LENGTH  => '3';
 
 ### These are the buttons a user can press to break out of a state
 use constant TERM_KEYS        => "*#";
-use constant RECORD_TERM_KEYS => "9*#";
+use constant RECORD_TERM_KEYS => "#";
 
 ## Menu flags... i made them in the hundreds so we will not confuse them with number
 ## entered by the user

@@ -19,6 +19,7 @@ use constant MEDIA_RECORDING    => 200;
 our @EXPORT = qw(MEDIA_PLAYING MEDIA_RECORDING );
 
 my $MEDIA_STATE; 
+my $TERM_KEYS; 
 my $CALLER_HUNG_UP =0 ; 
 
 ######################## 
@@ -27,14 +28,23 @@ my $CALLER_HUNG_UP =0 ;
 ######################## 
 
 sub hang_up {
-  $Telephony::SemsIvr::CALLER_HUNG_UP = 1; 
-  if ($main::dbh) {
-      $main::dbh->disconnect(); 
+  if ($Telephony::SemsIvr::CALLER_HUNG_UP) { 
+    syslog('info', "[SemsIvr::hang_up] onBye: hang_up called but CALLER_HUNG_UP flag already set, returning"); 
+    return ;
   } 
-  syslog('info', "onBye: hang up call "); 
-  ivr::wakeUp(); 
-  cleanup();
+  $Telephony::SemsIvr::CALLER_HUNG_UP = 1; 
 
+  my $sleep_time_ms = int(rand 250) + 250;
+  syslog('info', "[SemsIvr::hang_up] onBye: hang_up called "); 
+#  select(undef, undef, undef, $sleep_time_ms/1000 );
+#  if ($Telephony::SemsIvr::CALLER_HUNG_UP) {
+#    syslog('info', "[SemsIvr::hang_up] onBye: woke up and found CALLER_HUNG_UP flag is set, returning.");
+#    return ;
+#  }else {
+#    syslog('info', "[SemsIvr::hang_up] onBye: woke up and found NO CALLER_HUNG_UP flag is set.");
+#  } 
+  ivr::wakeUp(); 
+  syslog('info', "[SemsIvr::hang_up] onBye: after wakeUp() "); 
 }
 
 ######################## 
@@ -45,8 +55,13 @@ sub hang_up {
 sub get_key {
   my ($key) = @_;
 
+  if ($Telephony::SemsIvr::CALLER_HUNG_UP) { 
+     syslog('info', "[SemsIvr::get_key] called but caller hung up"); 
+     return ;
+  }
+
   if (($key < 0)  || ($key > 11) ) {
-     syslog('info', "get_key called with invalid key $key\n"); 
+     syslog('info', "[SemsIvr::get_key] called with invalid key $key\n"); 
      return ;
   } 
   if ($key eq '10') {
@@ -60,16 +75,26 @@ sub get_key {
      ## stop the media from playing, 
      ivr::emptyMediaQueue();
      $Telephony::SemsIvr::MEDIA_STATE = MEDIA_IDLE; 
+     syslog('info', "[SemsIvr::get_key] CALLED GET KEYS $key\n"); 
+     ivr::wakeUp(); 
   } elsif ($Telephony::SemsIvr::MEDIA_STATE == MEDIA_RECORDING) {
      ## stop the recording 
-     ivr::stopRecording() ; 
-     $Telephony::SemsIvr::MEDIA_STATE = MEDIA_IDLE; 
      my $val = pop @Telephony::SemsIvr::keys; 
-     syslog('info', "POPPED KEY val\n"); 
+     if ($val =~ /\*/) {
+        $val =~ s/\*/\\*/;
+     }
+
+     if ($Telephony::SemsIvr::TERM_KEYS =~ /$val/) { 
+        syslog('info', "[SemsIvr::get_key] RECORD INTERUPTED TERM_KEYS (" . $Telephony::SemsIvr::TERM_KEYS . ") pressed=$val "); 
+        ivr::stopRecording() ; 
+        $Telephony::SemsIvr::MEDIA_STATE = MEDIA_IDLE; 
+        ivr::wakeUp(); 
+     }  else {
+        syslog('info', "[SemsIvr::get_key] Key pressed but not TERM_KEYS (" . $Telephony::SemsIvr::TERM_KEYS . ") pressed=$val "); 
+     } 
      ## the DTMF stopped the record so pop it
   } 
-  syslog('info', "CALLED GET KEYS $key\n"); 
-  ivr::wakeUp(); 
+  #ivr::wakeUp(); 
 }
 
 ######################## 
@@ -79,7 +104,7 @@ sub get_key {
 
 sub play_done {
   $Telephony::SemsIvr::MEDIA_STATE = MEDIA_IDLE;
-  syslog('info', "onMedieaQueueEmpty:  play_done called "); 
+  syslog('info', "[SemsIvr::play_done] onMedieaQueueEmpty:  play_done called "); 
   ivr::wakeUp(); 
 }
 
@@ -115,15 +140,18 @@ sub cleanup() {
 ## empty the array, clear the flag
 #  @Telephony::SemsIvr::keys = ();
 ## Turn on the DTMF Detection and set the onDTMF callback sub
+  syslog('info', "[SemsIvr::cleanup] cleanup called, setting all callbacks to null"); 
 
   ivr::setCallback(undef, "onDTMF");
   ivr::setCallback(undef, "onMediaQueueEmpty");
+  ivr::emptyMediaQueue();
   ivr::setCallback(undef, "onBye");
 
 #  ivr::setCallback("Telephony::SemsIvr::play_done", undef);
 #  ivr::setCallback("Telephony::SemsIvr::hang_up", undef);
 
   ivr::wakeUp(); 
+  syslog('info', "[SemsIvr::cleanup] cleanup done"); 
 
 }
 #
@@ -135,8 +163,12 @@ sub cleanup() {
 
 sub play {
   my $file = shift; 
+  if ($Telephony::SemsIvr::CALLER_HUNG_UP) { 
+     syslog('info', "[SemsIvr::play] called but caller hung up"); 
+     return ;
+  }  
 
-  syslog('info', "Play called: $file "); 
+  syslog('info', "[SemsIvr::play] Play called: $file "); 
   $Telephony::SemsIvr::MEDIA_STATE=MEDIA_PLAYING;
   ivr::enqueueMediaFile($file, 0)
 
@@ -150,19 +182,31 @@ sub play {
 
 sub collect {
   my ($digits, $sec,$idd) = @_;
+  if ($Telephony::SemsIvr::CALLER_HUNG_UP) {
+     syslog('info', "[SemsIvr::collect] called but caller hung up");
+     return ;
+  }
+
 
   ## block until the media is done playing
   ## sleep initiazlly 
 
-  syslog('info', "BEGIN COLLLECT:$digits,$sec"); 
+  syslog('info', "[SemsIvr::collect] BEGIN COLLLECT:$digits,$sec"); 
 
   my $woke_up ;  
 
   if ($Telephony::SemsIvr::MEDIA_STATE==MEDIA_PLAYING ) { 
+    syslog('info', "[SemsIvr::collect] waiting for play to finish, call ivr::msleep(3600000) "); 
     $woke_up = ivr::msleep(3600000); 
+    syslog('info', "[SemsIvr::collect] play done moving on with collect"); 
   }
 
-  syslog('info', "collecting : array size = ". scalar(@Telephony::SemsIvr::keys) . " digits = $digits"  ); ## BEGIN COLLLECT, sleep til wake up "); 
+  if ($Telephony::SemsIvr::CALLER_HUNG_UP) {
+     syslog('info', "[SemsIvr::collect] MEDIA STATE CHANGED but caller hung up");
+     return ;
+  }
+
+  syslog('info', "[SemsIvr::collect] collecting : array size = ". scalar(@Telephony::SemsIvr::keys) . " digits = $digits"  ); ## BEGIN COLLLECT, sleep til wake up "); 
 
   my $sleep_time = $sec * 1000;
   my $slept_for = 0; 
@@ -170,13 +214,14 @@ sub collect {
   while ((scalar(@Telephony::SemsIvr::keys) < $digits) && $slept_for < $sleep_time && !$Telephony::SemsIvr::CALLER_HUNG_UP){  
 
      my $this_sleep = $sleep_time - $slept_for ; 
+     syslog('info', "[SemsIvr::collect] ivr::msleep($this_sleep) " . $Telephony::SemsIvr::CALLER_HUNG_UP) ; 
      my $slept = ivr::msleep( $this_sleep ); 
      $slept_for += $slept; 
      #"SemsIvr::keys size " . scalar(@Telephony::SemsIvr::keys) . "\n";
   } 
-
+  syslog('info', "[SemsIvr::collect] collect while loop done ");
   my $collected_values = join('',@Telephony::SemsIvr::keys);
-  syslog('info', "COLLECT RETURNING $collected_values ");
+  syslog('info', "[SemsIvr::collect] COLLECT RETURNING $collected_values ");
   @Telephony::SemsIvr::keys = () ;
   return $collected_values; 
 
@@ -188,10 +233,20 @@ sub collect {
 ######################## 
 
 sub record {
-   my ($file,$length,$term_digits,$silence_timeout,$nobeepflag) = @_; 
-   
+   my ($file,$length,$term_keys,$silence_timeout,$nobeepflag) = @_; 
+   if ($Telephony::SemsIvr::CALLER_HUNG_UP) { 
+      syslog('info', "[SemsIvr::record] called but caller hung up"); 
+      return ;
+   }  
 
-   syslog('info', "Record gonna pl beep out $Telephony::SemsIvr::MEDIA_STATE "); 
+   if ($term_keys) { 
+     $Telephony::SemsIvr::TERM_KEYS=$term_keys; 
+   } else {
+     # set it to all keys...
+     $Telephony::SemsIvr::TERM_KEYS="1234567890#*"; 
+   } 
+
+   syslog('info', "[SemsIvr::record] Record gonna pl beep out $Telephony::SemsIvr::MEDIA_STATE "); 
 
 
    if (!($nobeepflag)) { 
@@ -204,16 +259,16 @@ sub record {
    } 
 
 
-   syslog('info', "MEDIA STATE CHANGED = $Telephony::SemsIvr::MEDIA_STATE "); 
+   syslog('info', "[SemsIvr::record] MEDIA STATE CHANGED = $Telephony::SemsIvr::MEDIA_STATE "); 
 
    ## make sure we are blocking everything else with the MEDIA State
    $Telephony::SemsIvr::MEDIA_STATE = MEDIA_RECORDING; 
-   syslog('info', "STARTING RECORD $file (MEDIA STATE = $Telephony::SemsIvr::MEDIA_STATE) "); 
+   syslog('info', "[SemsIvr::record] STARTING RECORD $file (MEDIA STATE = $Telephony::SemsIvr::MEDIA_STATE) "); 
    ivr::startRecording($file) ; 
    $Telephony::SemsIvr::MEDIA_STATE = MEDIA_RECORDING; 
    ivr::sleep($length); 
 
-   syslog('info', "done recordingyieldyield  ...."); 
+   syslog('info', "[SemsIvr::record] done recordingyieldyield  ...."); 
 
 #  my $yield_for = ivr::yield(); 
 #  syslog('info', "yield_for = $yield_for "); 

@@ -1,5 +1,5 @@
 package OpenUMS::Menu::MenuProcessor;
-### $Id: MenuProcessor.pm,v 1.7 2005/01/24 19:13:12 kenglish Exp $
+### $Id: MenuProcessor.pm,v 1.8 2005/03/12 01:15:51 kenglish Exp $
 #
 # MenuProcessor.pm
 #
@@ -172,6 +172,9 @@ sub _get_data  {
   $sql  .= qq{ FROM menu_sounds WHERE menu_id = ? order by order_no };
 
   ##################$log->debug($sql . $menu_id); 
+  if ($menu_id eq '606'){
+     $log->log("606 === " . $sql );  
+  } 
 
   my $sth = $dbh->prepare($sql) ;
   $sth->execute($menu_id);

@@ -89,8 +89,8 @@ sub forward_message {
     $log->debug("COMMENT_POSITION = " . $self->{COMMENT_POSITION} ) ; 
    if (defined($self->{COMMENT_POSITION}) ) { 
      my $src = "$message_path$message_file" ; 
-     $message_file =~ s/\.vox$//g;
-     $message_file .= "_fwd.vox";
+     $message_file =~ s/\.wav$//g;
+     $message_file .= "_fwd.wav";
 
      my $dst = $main::CONF->get_var('VM_PATH') . TEMP_PATH .  $message_file;
      $message_path = $main::CONF->get_var('VM_PATH') . TEMP_PATH ; 
@@ -106,7 +106,7 @@ sub forward_message {
        $arr[0] = "$message_path$message_file";   
        $arr[1] = $comment_file;   
      } 
-     OpenUMS::Common::cat_vox("$message_path$message_file", \@arr); 
+     OpenUMS::Common::cat_wav("$message_path$message_file", \@arr); 
   } 
 
   $log->debug("gonna create "); 

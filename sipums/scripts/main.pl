@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
 #main.pl
-open STDERR, ">>/var/log/openums/script.err";
-print STDERR "HEllo kevin!";
+open STDERR, ">>/var/log/ser/script.err";
+print STDERR "main.pl started " . `date`;
 
 use strict; 
 
@@ -32,6 +32,8 @@ use OpenUMS::CallRecorder ;
 use DBI; 
 
 my $PORT = $$;  ## use pid as uniqure port identifier
+my $ctport    = new Telephony::CTPortJr($PORT);
+
 $log = new OpenUMS::Log($PORT);
 
 ## open the syslog 
@@ -65,20 +67,31 @@ my $dbh = OpenUMS::Common::get_dbh("ser");
 # this will determine which voicemail db to use
 my $client_id = &get_client_id($dbh, $uname,$domain); 
 $log->debug("[main.pl]--  client_id is $client_id");
+if (!$client_id) { 
+   $log->debug("[main.pl]--  NO client_id, DYING...........");
+   $ctport->finalize();
+
+   sleep(5); 
+
+   $log->debug("[main.pl]-- exit");
+
+
+  exit; 
+ 
+} 
+
 ## my $main_number_flag = &is_client_main_number($dbh, $uname,$client_id); 
 
 
-
-## create a ctport, a phonesys and load global settings
-my $ctport    = new Telephony::CTPortJr($PORT);
+## create a phonesys object 
 my $phone_sys = new OpenUMS::PhoneSystem::SIP;
 
 
-my $client_vm_db = &change_client_db($dbh,$client_id); 
+my $client_vm_db = &change_to_client_db($dbh,$client_id); 
 $CONF->load_settings($client_vm_db);
 ## get the menu id, declare data1 and data2
 my $menu_id  = &get_did_mapping($dbh,$uname); 
-my ($menu,$data1,$data2); 
+my ($menu,$data1,$data2,$user ) =(undef,undef,undef,undef); 
 
 if (!$menu_id) {
   ## change back to ser db, we still need some info...
@@ -101,7 +114,7 @@ if (!$menu_id) {
     ## default, take a message for that extension
     $action = 'take_message';
   }  
-  $client_vm_db = &change_client_db($dbh,$client_id); 
+  $client_vm_db = &change_to_client_db($dbh,$client_id); 
   $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, $action);
   
   ##  set the data accordingly
@@ -111,49 +124,94 @@ if (!$menu_id) {
     ($data1,$data2)= ($extension_to,$caller);
   }
 
-  $menu = new OpenUMS::Menu::Menu($dbh, $ctport, $phone_sys, $data1, $data2);
-  $log->debug("[main.pl]-- CALLING menu->create_menu() ");
-  $menu->create_menu(); 
+#  $menu = new OpenUMS::Menu::Menu($dbh, $ctport, $phone_sys, $data1, $data2);
+#  $menu->create_menu(); 
 
   ## check the auto login 
   if ($action eq 'station_login') { 
-    my ($auto_login_flag,$new_user_flag,$auto_new_messages) = OpenUMS::DbQuery::is_auto_login_new_user($dbh,$extension_from);
+      my ($auto_login_flag,$new_user_flag,$auto_new_messages) = OpenUMS::DbQuery::is_auto_login_new_user($dbh,$extension_from);
+      if ($auto_login_flag) {
+         $action  = "auto_login";
+         $user = new OpenUMS::Object::User($dbh,$extension_from,$extension_from );
+         $user->auto_login($extension_from);
 
-    $log->debug("[main.pl]-- It's stationg login, auto_login_flag=$auto_login_flag,new_user_flag=$new_user_flag"); 
-
-    if ($auto_login_flag) {
-       $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, "auto_login");
-       $log->debug("[main.pl]-- User is auto_login ");
-       my $user = $menu->get_user();
-       $user->auto_login($extension_from);
-    }
-    if($new_user_flag) {
-      $log->debug("[main.pl]-- User is new_user, going to user_tutorial");
-      $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, "user_tutorial");
-    }
+         if($new_user_flag) {
+            $action  = "user_tutorial";
+         }
+      } 
   }
+  $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, $action); 
+  $log->debug("[main.pl]-- DID got $menu_id for action $action");
+
 } else {
 
   $log->debug("[main.pl]-- DID MAPPING $uname ==> $menu_id");
   $log->debug("[main.pl]-- CALLING menu->create_menu() ");
-  $menu = new OpenUMS::Menu::Menu($dbh, $ctport, $phone_sys, $data1, $data2);
-  $menu->create_menu(); 
+#  $menu = new OpenUMS::Menu::Menu($dbh, $ctport, $phone_sys, $data1, $data2);
+#  $menu->create_menu(); 
+
+  &change_to_ser_db($dbh); 
+  if (&is_user_calling($dbh,$caller_number,$domain) ) { 
+   &change_to_client_db($dbh,$client_id);  
+    if (&is_login_menu($dbh,$menu_id) )  {
+      my $extension_from = $caller_number; 
+
+      ($data1,$data2)= ($extension_from,$caller);
+
+      my ($auto_login_flag,$new_user_flag,$auto_new_messages) = OpenUMS::DbQuery::is_auto_login_new_user($dbh,$extension_from);
+
+      $log->debug("[main.pl]-- DID : It's station login, auto_login_flag=$auto_login_flag,new_user_flag=$new_user_flag");
+      my $action  = "station_login"; 
+      if ($auto_login_flag) {
+         $action  ="auto_login";
+
+         $user = new OpenUMS::Object::User($dbh,$extension_from,$extension_from ); 
+         $user->auto_login($extension_from);
+         if($new_user_flag) {
+           $action  ="user_tutorial";
+         }
+      } 
+      $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, $action); 
+      $log->debug("[main.pl]-- DID got $menu_id for action $action");
+
+    } 
+  } else {  
+    &change_to_client_db($dbh,$client_id);  
+  } 
+  $log->debug("changed to client_db ");
 
 } 
   
 ## dupe the shit!
+$log->debug("[main.pl]-- gonna run $menu_id " ) ;
+$menu = new OpenUMS::Menu::Menu($dbh, $ctport, $phone_sys, $data1, $data2);
+## set the user if it's someone logging ...
+if ($user) { 
+  $log->debug("[main.pl]-- calling set_user $menu_id " ) ;
+  $menu->set_user($user); 
+}else {
+  $log->debug("[main.pl]-- user variable is not defined" ) ;
+
+} 
+$log->debug("[main.pl]-- CALLING menu->create_menu() ");
+$menu->create_menu(); 
+
 
 $menu->run_menu($menu_id, $data1, $data2); 
 
 $log->debug("[main.pl]-- Signalling delivermail");
 &OpenUMS::Common::signal_delivermail;
 
+
+$log->debug("[main.pl]-- dbh->disconnect() ");
+$dbh->disconnect();
 $log->debug("[main.pl]-- finalize");
 $ctport->finalize();
 
+sleep(5); 
+
 $log->debug("[main.pl]-- exit");
 
-sleep(5); 
 
 exit; 
 
@@ -186,7 +244,7 @@ sub change_to_ser_db {
   $dbh->do("use ser") || die "Could not use ser " . $dbh->errstr;
   return ; 
 }
-sub change_client_db {
+sub change_to_client_db {
   my ($dbh,$client_id) = @_;
 
   my $sql = "SELECT voicemail_db FROM clients WHERE client_id = $client_id "; 
@@ -219,6 +277,13 @@ sub get_caller_id {
     $name =~ s/\s+$//;
     $log->debug("$name "); 
     return "$name $num";
+  } elsif ($sip_from =~ /<sip:/) {
+    $log->debug("CASE 3");
+    $sip_from =~ s/.*<sip://g;  
+    $sip_from =~ s/>$//g;
+    my ($num,$d) = split(/\@/,$sip_from);
+    $log->debug("num=$num,d=$d");
+    return $num;
   }
                                                                                                                                                
 }
@@ -242,6 +307,13 @@ sub get_caller_number {
     $name =~ s/\s+$//;
     $log->debug("[main.pl]--$name ");
     return $num;
+  } elsif ($sip_from =~ /<sip:/) {
+    $log->debug("CASE 3");
+    $sip_from =~ s/.*<sip://g;  
+    $sip_from =~ s/>$//g;
+    my ($num,$d) = split(/\@/,$sip_from);
+    $log->debug("num=$num,d=$d");
+    return $num;
   }
 
 }
@@ -260,6 +332,14 @@ sub get_user_extention {
   }
 
 }
+sub is_login_menu {
+
+  my ($dbh,$menu_id) =@_; 
+  my $sql = qq{SELECT count(*) FROM menu WHERE menu_type_code  ='LOGIN' AND menu_id = $menu_id};
+  my $arr = $dbh->selectrow_arrayref($sql);
+
+}
+
 sub is_user_calling{
   my ($dbh,$caller,$domain) =@_; 
   my $sql = qq{SELECT count(*) FROM subscriber WHERE username ='$caller' AND domain = '$domain'};
@@ -279,7 +359,7 @@ sub get_client_id {
   $log->debug("[main.pl]-- did query $sql "); 
 
   my $client_id = $arr->[0];
-  $log->debug( "[main.pl]-- got client_id $client_id "); 
+#  $log->debug( "[main.pl]-- got client_id $client_id "); 
   return $client_id ; 
 
 }
@@ -295,6 +375,7 @@ sub is_client_main_number {
   my $count = $arr->[0];
   return $count ; 
 }
+
 sub get_did_mapping{
   my ($dbh, $client_number) = @_;
   my $sql = qq{SELECT menu_id FROM did_mapping

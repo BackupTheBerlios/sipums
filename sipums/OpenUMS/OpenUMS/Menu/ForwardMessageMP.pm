@@ -1,5 +1,5 @@
 package OpenUMS::Menu::ForwardMessageMP; 
-### $Id: ForwardMessageMP.pm,v 1.3 2004/09/01 03:16:35 kenglish Exp $
+### $Id: ForwardMessageMP.pm,v 1.4 2005/03/12 01:15:50 kenglish Exp $
 #
 # MessagePresenter.pm
 #
@@ -94,7 +94,7 @@ sub play_invalid {
 sub _get_input {
   my $self = shift; 
   my $ctport = $self->{CTPORT}; 
-  $log->debug("get_input , menu_name = " . $self->menu_name()); 
+  $log->debug("[ForwardMessage] get_input , menu_name = " . $self->menu_name()); 
   if ($self->menu_name() eq 'FWD'){
      $self->{INPUT} = 'DEFAULT'; 
      return ;
@@ -106,7 +106,7 @@ sub _get_input {
       if ($self->is_valid_extension($input) ) { 
         $self->{INPUT} = 'EXT'; 
         $self->{EXTENSION_TO}  = $input ; 
-        $log->debug("They entered a valid extension : " . $self->{INPUT} . " EXTENSION_TO " . $self->{EXTENSION_TO} ); 
+        $log->debug("[ForwardMessage] They entered a valid extension : " . $self->{INPUT} . " EXTENSION_TO " . $self->{EXTENSION_TO} ); 
       } else {
         $self->{INPUT} = $input; 
       } 
@@ -114,7 +114,7 @@ sub _get_input {
       my $user = $self->{USER}; 
       $user->create_temp_file();
       my ($file, $path) = $user->get_temp_file();
-      $log->debug( "getting input for RECFILE $file $path");
+      $log->debug( "[ForwardMessage] getting input for RECFILE $file $path");
       $ctport->clear();
 
 
@@ -136,12 +136,14 @@ sub _get_input {
 } 
 sub validate_input {
   my $self = shift ;
-                                                                                                                                               
+
+  $log->debug( "[ForwardMessage] validate_input Messge validate_input: DBNM ");
 
   if ($self->menu_name() eq 'FWD' || $self->menu_name() =~ /^RECCOM/) { 
     return  1 ;
   } elsif ($self->menu_name() eq 'DBNM') {
 
+     $log->debug( "[ForwardMessage] Forward Messge validate_input: DBNM ");
      my $input = $self->{INPUT}; 
      my $dbnm_ar = $self->get_dbnm_list();
 
@@ -149,6 +151,7 @@ sub validate_input {
         return 0 ;
      }
      foreach my $pkey  (@{$dbnm_ar} ) {
+       $log->debug( "pkey $pkey");
        if ($pkey =~ /^$input/) {
           return 1;
        }
@@ -170,12 +173,12 @@ sub process {
   my $input       = $self->{INPUT} ;
   my $menuOptions = $self->{MENU_OPTIONS} ;
 
-  $log->debug("process : " . $self->{INPUT} . " EXTENSION_TO " . $self->{EXTENSION_TO} ); 
+  $log->debug("[ForwardMessage] process : " . $self->{INPUT} . " EXTENSION_TO " . $self->{EXTENSION_TO} ); 
 
   if ($self->menu_name() eq 'GETFWDMB' ) {
     if (defined($menuOptions->{$input}->{item_action}) )  { 
        if ($self->{MENU_OPTIONS}->{$input}->{item_action} =~ /^ADDEXT/ ){
-          $log->debug(" adding mailbox to forward object " ); 
+          $log->debug("[ForwardMessage] adding mailbox to forward object " ); 
           my $fwdObj = $user->get_forward_object(); 
           $fwdObj->add_mailbox( $self->{EXTENSION_TO} ) ; 
        } 
@@ -187,7 +190,7 @@ sub process {
        if ($self->{MENU_OPTIONS}->{$input}->{item_action} =~ /^ADDEXT/ ){
           my $cur =  $dbnm_spool->get_current();
           my $extension_to = $cur->{extension};
-          $log->debug(" adding mailbox to forward object $extension_to " );
+          $log->debug("[ForwardMessage] adding mailbox to forward object $extension_to " );
           my $fwdObj = $user->get_forward_object();
           $fwdObj->add_mailbox( $extension_to ) ;
        } elsif ($self->{MENU_OPTIONS}->{$input}->{item_action} eq 'NEXTNAME' ) {
@@ -198,13 +201,13 @@ sub process {
       # }
     }
   } elsif ($self->menu_name() eq 'FWD') {
-      $log->debug("menu_name = FWD"); 
+      $log->debug("[ForwardMessage] menu_name = FWD"); 
       my $fwdObj = $user->get_forward_object(); 
       $fwdObj->forward_message();   
 #      $user->clear_temp_file();
       return ("NEXT", $menuOptions->{DEFAULT}->{dest_id} ) ; 
   } elsif ($self->menu_name() =~ /^RECCOM/ ) {
-    $log->debug("menu_name = RECCOM"); 
+    $log->debug("[ForwardMessage] menu_name = RECCOM"); 
     my $fwdObj = $user->get_forward_object(); 
     my ($file, $path) = $user->get_temp_file();
     if ( $self->menu_name() eq 'RECCOMEND') { 
