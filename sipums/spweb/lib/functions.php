@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: functions.php,v 1.7 2004/08/12 00:03:26 kenglish Exp $
+ * $Id: functions.php,v 1.8 2004/08/12 20:32:38 kenglish Exp $
  */
 
 
@@ -697,6 +697,14 @@ function do_debug($msg) {
     $config->data_sql->db_name ;
     return change_db($db, $config->data_sql->db_name ); 
   } 
+  function change_to_conference_db(&$db) {
+    global $log; 
+    global $config;
 
+    $new_db = $config->data_sql->db_name_conference;
+    $log->log("CHANGING TO CONFERENCE DB " . $new_db); 
+
+    return change_db($db, $new_db); 
+  }
 
 ?>

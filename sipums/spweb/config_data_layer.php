@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: config_data_layer.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: config_data_layer.php,v 1.2 2004/08/12 20:32:38 kenglish Exp $
  */
 
 		$config->data_container_type="sql";		//Type of data container 'sql' or 'ldap'
@@ -18,6 +18,7 @@
 		$config->data_sql->db_host="localhost";		//database host
 		$config->data_sql->db_port="";				//database port - leave empty for default
 		$config->data_sql->db_name="ser";			//database name
+		$config->data_sql->db_name_conference="conference";			//database name
 		$config->data_sql->db_user="ser";			//database conection user
 		$config->data_sql->db_pass="olseh";			//database conection password
 

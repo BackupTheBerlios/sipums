@@ -1,5 +1,15 @@
 <html>
 <head>
+<!--{if $include_js_datepicker}-->
+<script language="javascript" type="text/javascript" src="js/datetimepicker.js">
+ 
+//Date Time Picker script- by TengYong Ng of http://www.rainforestnet.com
+//Script featured on JavaScript Kit (http://www.javascriptkit.com)
+//For this script, visit http://www.javascriptkit.com
+ 
+</script>
+<!--{/if}-->
+
 <title>SpWeb :: Servpac's VoIP Configuration Manager</title>
 	<LINK REL="StyleSheet" HREF="style/styles.css" TYPE="text/css">
 
@@ -51,7 +61,7 @@
         <!--{if $admin_voicemail}-->
 	<td align="center" nowrap <!--{if $thispage eq "voicemail.php"}--> bgcolor="#eeeeee" <!--{/if}--> ><a href="voicemail.php">Voicemail</a></td>
         <!--{/if}-->
-	<td align="right" nowrap><a href="conference.php">Kelepona Conference</a></td>
+	<td align="center" nowrap><a href="conference.php">Kelepona Conference</a></td>
 	<td align="right" nowrap><b><a href="signout.php">Sign Out</a></b></td>
 
 	</tr>
