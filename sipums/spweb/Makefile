@@ -24,5 +24,5 @@ install:  .compiledok
 	$(INSTALL) -v -m 644 lib/*.php $(LIBDIR)
 	$(INSTALL) -v -m 644 style/*.css $(STYLEDIR)
 	$(INSTALL) -v -m 644 templates/*.tpl $(TEMPLATEDIR)
-	$(INSTALL) -v -m 644 js/*.js $(JSDIR)
+	$(INSTALL) -v -m 644 js/*.js $(BASEDIR)/js
 	$(INSTALL) -v -m 644 phplib/*.inc $(PHPLIBDIR)/phplib

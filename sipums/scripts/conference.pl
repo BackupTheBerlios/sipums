@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+
+##############################################33
+## conference.pl: this prompts them for their password and
+# then redirects them to the conference room
+##############################################33
+
 #main.pl
 #open STDERR, ">>/var/log/openums/script.err";
 

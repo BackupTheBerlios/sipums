@@ -1,4 +1,4 @@
-### $Id: SipUmsMwi.pm,v 1.5 2004/08/13 19:32:47 kenglish Exp $
+### $Id: SipUmsMwi.pm,v 1.6 2004/08/31 05:05:50 kenglish Exp $
 #
 # Copyright (C) 2003 Comtel
 #
@@ -126,7 +126,7 @@ sub get_data {
       my $saved_msg_count = $sth_saved->fetchrow();
       $sth_saved->finish();
 
-      $log->debug("$ext $last_new_msg_count $new_msg_count"); 
+      $log->debug("in while $ext $saved_msg_count $last_new_msg_count $new_msg_count"); 
 
       ## if they have no new messages and they had new messages before, we turn it off...
       if (!$new_msg_count && $last_new_msg_count) {
@@ -151,13 +151,14 @@ sub get_data {
       }
 
    }
-   $sql = qq{ select extension, unix_timestamp(last_visit) last_visit ,
+   $sql = qq{select extension, unix_timestamp(last_visit) last_visit ,
               max(unix_timestamp(m.message_created)) last_message,count(*) count
                FROM VM_Users u INNER JOIN  VM_Messages m on (u.extension = m.extension_to)
                WHERE m.message_status_id ='N'
                GROUP BY extension, unix_timestamp(last_visit) };
    $sth  = $dbh->prepare($sql);
    $sth->execute();
+
 
 #   while (my ($ext,$last_visit_uts, $last_msg_uts,$new_message_count) = $sth->fetchrow_array() ) {
 #      $log->debug("$ext--> $new_message_count");
