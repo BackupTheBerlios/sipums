@@ -14,11 +14,13 @@ function delete_mailbox () {
   if ($_POST[do_delete] == $DELETE_KEYWORD){ 
     if($vmUser->delete()) { 
        header("Location: mailboxes.php?msg=Mailbox $_POST[ext] deleted");
+       exit;
      } else {
         return "delete mailbox failed"; 
      }
   } else {  
     header("Location: mailboxes.php?msg=Delete mailbox cancelled");
+    exit;
   } 
    
     

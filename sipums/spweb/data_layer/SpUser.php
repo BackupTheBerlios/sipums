@@ -286,7 +286,7 @@ class SpUser {
       $q_caller_id = $this->db->quote($caller_id);
       $q = "UPDATE subscriber SET rpid = $q_caller_id WHERE " . $this->getMyWhere(); 
 
-      $log->debug("UPDATE IS  $q"); 
+      $log->log("UPDATE IS  $q"); 
       $res=$this->db->query($q);   
       if(DB::isError($res) ) {
          $log->log("query failed $q");
