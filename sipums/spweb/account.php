@@ -249,28 +249,31 @@ if ($FORM_VARS[func] == 'update_vm_flags') {
 
 /// HERE WE SET ALL THE VALUES IN THE TEMPLATE
 
+$account_smarty->assign('vstore_email_options', array(
+                       'N'  => 'Do not send Voicemail over E-mail (Default)',
+                       'C' => 'Send a copy of voicemail over e-mail',
+                        'S' => 'Send a copy of voicemail over E-mail and delete it from the voicemail'));
+
+$account_smarty->assign('email_delivery_options', Array(
+                        'I'  => "Deliver and store in IMAP folder 'INBOX Voicemail'",
+                        'S' => 'Deliver and store in Main Inbox'));
+
+
+
 if (!$vm_info[extension]) {
   do_debug("no extension");
   $account_smarty->assign('user_info_msg', "This User has no voicemail box. <BR>If a valid mailbox is entered, a new mailbox <BR>will be created for this user." ); 
+  $account_smarty->assign('store_flag','V'); 
 
 } else {
   $account_smarty->assign('store_flag',$vm_info[store_flag]); 
   $account_smarty->assign('vstore_email',$vm_info[vstore_email]); 
   $account_smarty->assign('email_delivery',$vm_info[email_delivery]); 
 
-  $account_smarty->assign('vstore_email_options', array(
-                        'N'  => 'Do not send Voicemail over E-mail (Default)',
-                        'C' => 'Send a copy of voicemail over e-mail',
-                        'S' => 'Send a copy of voicemail over E-mail and delete it from the voicemail'));
-
-  $account_smarty->assign('email_delivery_options', Array(
-                        'I'  => "Deliver and store in IMAP folder 'INBOX Voicemail'",
-                        'S' => 'Deliver and store in Main Inbox'));
-
   
+  do_debug("email_deliver_options set " ); 
 
   if ($vm_info[store_flag] == "V") {
-    do_debug("setting  vstore_email = " . $vm_info[vstore_email]); 
     $account_smarty->assign('vstore_email',$vm_info[vstore_email]); 
   } elseif ($vm_info[store_flag] == "E" ) {
     $account_smarty->assign('email_delivery',$vm_info[email_delivery]); 

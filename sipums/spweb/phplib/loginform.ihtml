@@ -1,0 +1,25 @@
+<HTML>
+<head>
+  <meta HTTP-EQUIV="refresh" content="3; URL=/spweb/index.php">
+  <title>Redirecting to Login</title>
+  <style type="text/css">@import url("/style/style.css"); </style>
+</head>
+<?
+	global $username, $config, $page_attributes;
+
+	print_html_head();
+	unset ($page_attributes['tab_collection']);
+
+	$errors=array();
+	if (isset($_POST['username'])) $errors[]="Either your username or your password are invalid. Please try again!";
+
+	print_html_body_begin($page_attributes);
+?>
+<BODY>
+
+<p align="center"><b><span style="font-size: 15px; color: Red;">Your session expired.</span></b><BR>
+  You should be redirected to the login page in 3 seconds.
+  If you are not, <a href="/spweb/index.php">click here</a>
+</BODY
+</html>
+
