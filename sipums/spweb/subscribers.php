@@ -51,6 +51,7 @@ $subscribers = $data->get_subscribers($qdomains);
 $subscribers_smarty->assign("subscribers",$subscribers); 
 if ($perm->have_perm('SUPER')){
   $subscribers_smarty->assign("edit_caller_id",1);
+  $subscribers_smarty->assign("edit_perm",1);
 }
 
 $footer_smarty = get_smarty(); 

@@ -27,23 +27,18 @@
       <!--{/if}--> 
       <tr  style="cursor:default;">
         <td align="right">User:</td>
-        <td align="left"><b><!--{$edit_uname}--></b></td>
+        <td align="left"><B><!--{$edit_uname}--></b></td>
       </tr>
       <tr  style="cursor:default;">
         <td align="right">Domain:</td>
         <td align="left"><b><!--{$edit_udomain}--></b></td>
       </tr>
       <tr  style="cursor:default;">
-        <td align="right">Setting:</td>
-        <td align="left"><select name=caller_id_setting>
-	<!--{html_options options=$setting_options selected=$caller_id_setting}-->
+        <td align="right">Permission:</td>
+        <td align="left"><select name=perm>
+	<!--{html_options options=$perm_options selected=$perm}-->
          </select></td>
       </tr>
-   <!--
-      <TR>
-        <td align='center' colspan=2><INPUT TYPE=checkbox name='apply_to_all' value=1> Check here to apply the same setting to all users in this domain</td> 
-      </TR>
-   --> 
       <TR>
 
         <td align='center' colspan=2><INPUT TYPE=submit value='Apply'></td> 

@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: edit_subscriber.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: edit_subscriber.php,v 1.2 2004/08/02 21:49:16 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -31,6 +31,35 @@ class CData_Layer extends CDL_common{
   } 
 
 
+  function get_perm($edit_uname, $edit_udomain ) {
+    $q = "SELECT perm FROM subscriber WHERE username = '$edit_uname' AND domain = '$edit_udomain'";
+    $res = $this->db->query($q);
+    if (DB::isError($res)) {
+      do_debug("QUERY FAILED $q");
+      do_debug("Error looking up by name");
+      return 0;
+    }
+                                                                                                                                               
+    $row = $res->fetchRow(DB_FETCHMODE_ORDERED);
+    $res->free();
+    $perm = $row[0];
+    return $perm;
+  }
+
+
+  function save_perm($edit_uname, $edit_udomain,$new_perm ) {
+    $q = "UPDATE subscriber SET perm = '$new_perm' WHERE username = '$edit_uname'
+          AND domain = '$edit_udomain' ";
+    $res=$this->db->query($q);   
+    if (DB::isError($res)) { 
+      do_debug("QUERY FAILED $q"); 
+      return 0;   
+    }  else {
+      do_debug("did QUERY $q"); 
+      return 1;   
+    } 
+  } 
+
   function set_caller_id_to_unknown($edit_uname, $edit_udomain ) {
     $q = "UPDATE subscriber SET rpid = '<sip:unknown@$edit_udomain>' WHERE username = '$edit_uname'
           AND domain = '$edit_udomain' ";
@@ -40,10 +69,10 @@ class CData_Layer extends CDL_common{
       return 0;   
     }  else {
       do_debug("did QUERY $q"); 
-     
     } 
     return 1;   
   } 
+
   function set_caller_id_to_did($edit_uname, $edit_udomain ) {
 
     $this->db->quote($this->user_info[first_name]);   

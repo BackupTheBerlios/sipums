@@ -39,40 +39,44 @@
               <!--{else}-->
                  <!--{$subscriber.caller_id|default:"&nbsp;"}-->
               <!--{/if}-->
-                
-      
-              
               </a>
              </span>
         </td>
         <td nowrap="nowrap">
              <span style="overflow:hidden;text-overflow:ellipsis;">
+               <a href="account.php?gfunc=change_edit_user&edit_user=<!--{$subscriber.username}-->@<!--{$subscriber.domain}-->">
               <!--{$subscriber.first_name}--> <!--{$subscriber.last_name}-->
               <!--{if !$subscriber.first_name && !$subscriber.last_name}-->
-                   &nbsp;
+                   Set Name
               <!--{/if}-->
+              </a>
              </span>
         </td>
         <td nowrap="nowrap">
              <span style="overflow:hidden;text-overflow:ellipsis;">
-              <!--{$subscriber.mailbox}--> 
-              <!--{if !$subscriber.mailbox}-->
-                   No Mailbox
-              <!--{/if}-->
+               <a href="account.php?gfunc=change_edit_user&edit_user=<!--{$subscriber.username}-->@<!--{$subscriber.domain}-->">
+              <!--{$subscriber.mailbox|default:"Set Mailbox"}--> 
+              </a>
              </span>
         </td>
 
         <td nowrap="nowrap">
              <span style="overflow:hidden;text-overflow:ellipsis;">
-              <!--{$subscriber.email_address}-->
-              <!--{if !$subscriber.email_address}-->
-                   &nbsp;
-              <!--{/if}-->
+              <a href="account.php?gfunc=change_edit_user&edit_user=<!--{$subscriber.username}-->@<!--{$subscriber.domain}-->">
+              <!--{$subscriber.email_address|default:"Set Email"}-->
+              </a>
              </span>
         </td>
         <td nowrap="nowrap">
              <span style="overflow:hidden;text-overflow:ellipsis;">
-             <!--{$subscriber.perm}-->
+              <!--{if $edit_perm}-->
+                <a href="edit_subscriber.php?func=perm&edit_user=<!--{$subscriber.username}-->@<!--{$subscriber.domain}-->">
+                 <!--{$subscriber.perm|default:"Set Caller Id"}-->
+                </a>
+              <!--{else}-->
+                 <!--{$subscriber.perm}-->
+              <!--{/if}-->
+              </a>
              </span>
         </td>
       </tr>

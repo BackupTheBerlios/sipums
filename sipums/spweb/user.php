@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: user.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: user.php,v 1.2 2004/08/02 21:49:16 kenglish Exp $
  */
 
 require 'prepend.php';
@@ -19,10 +19,15 @@ $data = CData_Layer::create($errors) ;
 page_open (array("sess" => "phplib_Session_Pre_Auth",
    "auth" => "phplib_Pre_Auth",
    "perm" => "phplib_Perm"));
+if ( $perm->check('USER')) {
+  // we send them to the account page
+  do_debug("he, redirect here...");
+  header('Location: account.php'); 
+  exit ;
+} 
 
 
 ## do this in every file after the page_open
-$perm->check('USER');
 
 $smarty = get_smarty_header($data, $auth, $perm); 
 $smarty->display('app_header.tpl');
