@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: account.php,v 1.11 2004/08/12 20:32:38 kenglish Exp $
+ * $Id: account.php,v 1.12 2004/08/13 00:52:33 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -59,13 +59,13 @@ class CData_Layer extends CDL_common{
       }
     }
 
-    $q = "SELECT concat(s.username,'@',s.domain) edit_user FROM subscriber s 
-          $where order by s.domain,s.username"; 
+    $q = "SELECT  concat(s.username,'@',s.domain), s.username edit_user FROM subscriber s 
+          $where order by s.username"; 
     $res= $this->db->query($q);
     $log->log("get_edit_users = $q ");
     $out=array();
     while ($row=$res->fetchRow(DB_FETCHMODE_ORDERED) ) {
-      $out[]=$row[0];
+      $out[$row[0]]=$row[1];
     }
     $res->free();
     return $out;

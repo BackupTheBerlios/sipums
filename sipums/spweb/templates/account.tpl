@@ -16,7 +16,7 @@
 		<td><b>USER  :</b></td>
 		<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
 		<td><select name='edit_user'  onchange="document.UserSelectForm.submit();">
-                   <!--{html_options values=$edit_users selected=$edit_user output=$edit_users}-->
+                   <!--{html_options options=$edit_users selected=$edit_user}-->
                    </select>
                </td>
              </form>
