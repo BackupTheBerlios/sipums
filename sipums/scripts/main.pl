@@ -66,7 +66,7 @@ $log->debug("-- -- CALL NUMBER --$caller_number--");
 #my $dbh = OpenUMS::Common::get_dbh();
 my $dbh = OpenUMS::Common::get_dbh("ser");
 
-my $client_id = &get_client_id($dbh, $uname); 
+my $client_id = &get_client_id($dbh, $uname,$domain); 
 my $main_number_flag = &is_client_main_number($dbh, $uname,$client_id); 
 
 $log->debug("$uname client_id is $client_id");
@@ -143,8 +143,11 @@ $log->debug("Signalling delivermail");
 
 $log->debug("finalize");
 $ctport->finalize();
+
 $log->debug("exit");
+
 sleep(5); 
+
 exit; 
 
 ## open the sys log
@@ -180,7 +183,7 @@ sub change_client_db {
   if (!$db) {
     die "FATAL ERROR: No voicemail_db found for $client_id";
   } 
-  $log->debug("Client DB is $db, cleint_id = $client_id");
+  $log->debug("Client DB is $db");
 
   $dbh->do("use $db") || die "Could not use $db " . $dbh->errstr;
   return $db;
@@ -257,9 +260,10 @@ sub is_user_calling{
 
 }
 sub get_client_id {
-  my ($dbh, $number) = @_;
+  my ($dbh, $number,$domain) = @_;
   my $sql = qq{SELECT client_id FROM subscriber 
-     WHERE username = '$number' };
+     WHERE username = '$number'
+       AND domain ='$domain' };
 
   $log->debug("$sql-----\n$number"); 
 
