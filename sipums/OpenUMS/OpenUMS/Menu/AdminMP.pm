@@ -1,5 +1,5 @@
 package OpenUMS::Menu::AdminMP ; 
-### $Id: AdminMP.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
+### $Id: AdminMP.pm,v 1.3 2004/08/19 01:57:56 kenglish Exp $
 #
 # AdminMP.pm
 #
@@ -51,7 +51,7 @@ sub _play_menu () {
   ## if the it's RECPLAY, we play back the greeting to them 
   if ($self->setting_type() =~/^RECPLAY/) {
      my ($file, $path) = $user->get_temp_file();
-     $sound = TEMP_PATH . $file; 
+     $sound = $main::CONF->get_var('VM_PATH') . TEMP_PATH . $file; 
      if (!$file ) {
         ## if they don't have it... 
          
