@@ -49,6 +49,15 @@ HTML-Parser-3.36
 libwww-perl-5.800 (includes LWP::UserAgent)
   http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/libwww-perl-5.800.tar.gz
 
+If you are using the cgi interface, you will need the following too.
+
+HTML-Template-2.7 :
+  http://search.cpan.org/CPAN/authors/id/S/SA/SAMTREGAR/HTML-Template-2.7.tar.gz
+
+CGI-Enurl-1.07
+  http://search.cpan.org/CPAN/authors/id/J/JE/JENDA/CGI-Enurl-1.07.tar.gz
+
+
 INSTALLATION:
 
   Warning: Don't skip anything. OpenUMS is a new project and we haven't perfected installing it yet. For the Dialogic version, we used a cd image to install openums on a new box. For the SER/Sems installation, you will have to follow each step carefully. 
@@ -81,7 +90,7 @@ You may need root password to do this. The best way is to install the voicemail 
 
    /var/spool/openums/prompts/  -- Voicemail prompts, included in this package under 'prompts'
    /var/spool/openums/spool/temp -- Temp directory where messages are put
-                                    while they are being recorded
+                                    WHILE they are being recorded
 
    /var/spool/openums/spool/temp -- Temp directory where messages are put
                                     while they are being recorded
@@ -97,6 +106,12 @@ You may need root password to do this. The best way is to install the voicemail 
   4) Add Sems Media scripts
 
    These scripts are written to use OpenUMS unders SEMS. They are still in development. WE will answer any question you have on the mailing list.
+    Under the 'scripts' directory, you find our sample scripts for using OpenUMS. Add the test.pl to your SEMS enviornment and call that number assoicated with it. You should be played back the test prompt. If this doesn't work, please contact the mailing list, we will try to help you.
+
+
+
+    Getting Help:
+    We have made a mailing list call 'sipusm-support', feel free to subscribe. WE will monitor it and try to fix any bugs that you find in a timely fashi.
 
 
 Kevin English

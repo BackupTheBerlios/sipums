@@ -21,6 +21,8 @@ dist:  .compiledok
 	mkdir -p $(DISTDIR)/cgi-bin/templates/reports
 	mkdir -p $(DISTDIR)/cgi-bin/OpenUMS/WWW
 	mkdir -p $(DISTDIR)/cgi-bin/OpenUMS/WWW
+	mkdir -p $(DISTDIR)/scripts
+
 #	Copy the files
 	cp  README $(DISTDIR)
 	cp  INSTALL $(DISTDIR)
@@ -45,6 +47,7 @@ dist:  .compiledok
 	cp cgi-bin/templates/*.html $(DISTDIR)/cgi-bin/templates
 	cp cgi-bin/templates/reports/*.html $(DISTDIR)/cgi-bin/templates/reports
 	cp cgi-bin/OpenUMS/WWW/*.pm $(DISTDIR)/cgi-bin/OpenUMS/WWW
+	cp scripts/*.pl $(DISTDIR)/scripts/
 
 
 	rm -f .compiledok
