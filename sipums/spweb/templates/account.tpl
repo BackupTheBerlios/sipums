@@ -64,7 +64,7 @@
 <td bgcolor="#EEEEEE" width="55%" valign="top" onmouseover="this.className='highlightOn'" onmouseout="this.className='highlightOff'">
 <b>Call Settings:</b><br/>Here you may modify how calls get routed.<br /><br /><center><table class="mainnb">
 
-<form name=''  method='POST' action='' target='_self' onsubmit="return form_Validator(this)">
+<form name=''  method='POST' action='' target='_self' >
 <input type='hidden' name='func' value='update_call_opts'> 
 <TABLE>
 <TR>
@@ -129,7 +129,7 @@
 </td>
 <!-- B1 -->
 <td bgcolor="#EEEEEE"  valign="top" onmouseover="this.className='highlightOn'" onmouseout="this.className='highlightOff'">
-<form name=''  method='POST' action='' target='_self' onsubmit="return form_Validator(this)">
+<form name=''  method='POST' action='' target='_self' >
 <input type='hidden' name='func' value='update_user_info'> 
 <b>User Information </b><br />
   <TABLE>
@@ -210,7 +210,7 @@
 </tr><tr>
 <!-- A2 -->
 <td bgcolor="#EEEEEE" width="55%" valign="top" onmouseover="this.className='highlightOn'" onmouseout="this.className='highlightOff'">
-<form name=''  method='POST' action='' target='_self' onsubmit="return form_Validator(this)">
+<form name=''  method='POST' action='' target='_self' >
 <input type='hidden' name='func' value='update_um'>
 <b>Unified Messaging Settings</b><br />
   <table>
@@ -284,7 +284,7 @@
 </form>
 
 <!-- B2 -->
-<form name=''  method='POST' action='' target='_self' onsubmit="return form_Validator(this)">
+<form name=''  method='POST' action='' target='_self' >
   <input type='hidden' name='func' value='update_vm_flags'>
 <td bgcolor="#EEEEEE"  valign="top" onmouseover="this.className='highlightOn'" onmouseout="this.className='highlightOff'">
 <b>Voicemail Settings</b><br />

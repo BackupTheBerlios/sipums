@@ -6,7 +6,7 @@
         <td align="center" valign="top">
 <!-- Required Indent -->
 
-<form name=''  method='POST' action='' target='_self' onsubmit="return form_Validator(this)">   
+<form name=''  method='POST' action='' target='_self' >   
 <INPUT type='hidden' name='func' value='<!--{$func}-->'>
 <INPUT type='hidden' name='domain' value="<!--{$domain}-->">
 <center>

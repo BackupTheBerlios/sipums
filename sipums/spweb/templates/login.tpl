@@ -16,7 +16,7 @@
  
 	
 
-<form name=''  method='POST' action='' target='_self' onsubmit="return form_Validator(this)"><table width="100%"><tr><td align="center">
+<form name=''  method='POST' action='' target='_self'><table width="100%"><tr><td align="center">
 	<table border="0" width="200" class="imain">
 		<tr>
 			<td align="center">
