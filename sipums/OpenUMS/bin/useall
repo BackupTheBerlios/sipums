@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+#
+# useall
+#
+# "use"s all OpenUMS *.pm files.  Useful for looking for namespace
+# collisions etc.
+                                                                                                                                               
+use strict;
+use warnings;
+
+use DBI;
+use DBD::mysql;
+use OpenUMS::Menu::MenuProcessor;
+use OpenUMS::Menu::AAGMP; 
+use OpenUMS::Menu::AdminMP ; 
+use OpenUMS::Menu::AppendMsgMP; 
+use OpenUMS::Menu::AutoAttendantMP; 
+use OpenUMS::Menu::DbnmMP;
+use OpenUMS::Menu::DbnmResultMP; 
+use OpenUMS::Menu::ExtensionMP ;
+use OpenUMS::Menu::InfoMP ; 
+use OpenUMS::Menu::IntroMP ; 
+use OpenUMS::Menu::Menu;
+use OpenUMS::Menu::MessageMP; 
+use OpenUMS::Menu::PasswordMP;
+use OpenUMS::Menu::PostRecMsgMP; 
+use OpenUMS::Menu::RecMsgMP; 
+use OpenUMS::Menu::UserSettingsMP ; 
+use OpenUMS::Menu::ForwardMessageMP; 
+use OpenUMS::CallRecorder; 
+use OpenUMS::Common;
+use OpenUMS::Config;
+use OpenUMS::DbQuery;
+use OpenUMS::DbUtils;
+use OpenUMS::GlobalSettings;
+use OpenUMS::Greeting;
+use OpenUMS::Holidays;
+use OpenUMS::IMAP;
+use OpenUMS::Log;
+use OpenUMS::Permissions;
+use OpenUMS::PhoneSystem; 
+use OpenUMS::PhoneSystem::Comdial ; 
+use OpenUMS::PhoneSystem::NECAspire ; 
+use OpenUMS::PhoneSystem::PhoneSystemBase; 
+use OpenUMS::IMAP;
+use OpenUMS::Object::User;
+use OpenUMS::Object::DbnmSpool; 
+use OpenUMS::Object::ForwardMessageObj  ; 
+use OpenUMS::Object::MessageObj; 
+use OpenUMS::Object::MessageSpool; 
+use OpenUMS::CallOut; 
+use OpenUMS::IMAP;

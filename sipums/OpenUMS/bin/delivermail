@@ -1,0 +1,1120 @@
+#!/usr/bin/perl -w
+### $Id: delivermail,v 1.1 2004/07/20 03:07:49 richardz Exp $
+#
+# delivermail
+#
+# Executable wrapper around process_unsent_messages
+#
+# Copyright (C) 2004 Integrated Comtel Inc.
+use warnings;
+use strict ; 
+use lib qw(lib /usr/local/openums/lib); 
+$ENV{PATH} = "/bin:/usr/bin";
+
+use File::Copy;
+use POSIX;
+
+use OpenUMS::Config;
+use OpenUMS::Common; 
+use OpenUMS::GlobalSettings;
+use OpenUMS::IMAP;
+
+##############################################################################
+# Config Section
+#
+
+use constant LOGFILE => '/var/log/openums/delivermail.log';
+
+use constant DELAY => 300;
+
+use constant SELF => '/usr/local/openums/delivermail';
+use constant ARGS => '';
+
+#
+# End Config Section
+##############################################################################
+sub ALARM;
+sub TERMINATE;
+sub RESTART;
+sub PROCESS;
+
+sub Log::logger($$);
+sub Log::log($);
+sub Log::new();
+
+sub validate_pidfile($);
+sub process_unsent_messages;
+sub send_mobile_notice($$);
+sub send_recorded_call($);
+sub deliver_email($);
+sub get_vstore_email($);
+sub get_mobile_email_flag($);
+sub subject_string($$);
+sub email_body($$$$$);
+sub get_voicemail_store($);
+sub notice_body($$$$$);
+sub cid_string($);
+sub duration_string($);
+sub date_string;
+sub short_date_string;
+sub html_link($);
+sub send_error_email($);
+sub error_body;
+
+
+### Ignore forked processes dying
+#$SIG{CHLD} = 'IGNORE';
+
+### Ignore signals until we are ready.
+$SIG{ALRM} = 'IGNORE';
+$SIG{HUP}  = 'IGNORE';
+$SIG{TERM} = 'IGNORE';
+$SIG{USR1} = 'IGNORE';
+
+&validate_pidfile(DELIVERPID);
+
+### Daemonize
+my $pid = fork;
+exit if $pid;
+unless (defined($pid))
+  { die("Could not daemonize : $!"); }
+unless(open(*STDERR, '>>', '/var/log/openums/delivermail.err'))
+  { die("Cannot reopen STDERR to .err file"); }
+for my $handle (*STDIN, *STDOUT)
+  {
+    unless(open($handle, '+<', '/dev/null'))
+      { die("Cannot reopen $handle to /dev/null : $!"); }
+  }
+unless (POSIX::setsid())
+  { die("Could not resessionize daemon : $!"); }
+
+### Initialize the log.
+my $log = &Log::new();
+unless (open(FILE, ">" . DELIVERPID))
+  {
+    $log->error("!!!Unable to open lockfile: $!");
+    die;
+  }
+print(FILE "$$\n");
+close(FILE);
+
+#
+# Tray tables are back and all seats are in their full upright positions
+#
+$log->info("Hello World! Delivermail is ready to go ... ");
+
+### Set up signal handlers
+$SIG{ALRM} = \&ALARM;
+$SIG{HUP}  = \&RESTART;
+$SIG{TERM} = \&TERMINATE;
+$SIG{USR1} = \&PROCESS;
+
+while(1)
+  {
+    alarm(DELAY);
+
+    ### Block other signals for now
+    my $sigset = POSIX::SigSet->new(SIGALRM, SIGHUP, SIGTERM, SIGUSR1);
+    my $block = sigprocmask(SIG_BLOCK, $sigset);
+    unless ($block)
+      {
+        $log->error("Unable to block signals for process : $!");
+        &RESTART;
+      }
+
+    &process_unsent_messages;
+
+    ### Unblock signals
+    if ($block)
+      {
+        $block = !(sigprocmask(SIG_UNBLOCK, $sigset));
+        if ($block)
+          {
+            $log->error("Unable to unblock signals : $!");
+
+            ### Attempt to restart;
+            &RESTART;
+          }
+      }
+    $log->info("Going to sleep. ZzzzZzzz ...");
+    POSIX::pause; ### Wait for a signal
+  }
+
+$log->error("Process fell off the bicycle.  Attempting to restart ...");
+&RESTART;
+
+################################################################### error_body
+sub error_body
+  {
+    my $dbh = shift;
+    my $first_name = shift;
+    my $last_name = shift;
+    my $extension = shift;
+    my $email_type = shift;
+
+    my $link = &html_link(OpenUMS::Common::get_password_url($dbh, $extension), $email_type);
+
+    my $body = <<EOF;
+$MARKUP{'HEADER'}{$email_type}
+$MARKUP{'P'}{$email_type}$first_name $last_name at extension $extension,
+$MARKUP{'P'}{$email_type}Warning, the Voicemail System has a recorded message for you, but was
+unable to deliver it to your "In Box Voicemail."
+$MARKUP{'P'}{$email_type}The Voicemail System will attempt to deliver the message at a later time.
+If successful, you will recieve no further error notices.
+$MARKUP{'P'}{$email_type}Some possible reasons for this error are
+$MARKUP{'LIST'}{$email_type}
+$MARKUP{'LI'}{$email_type}You (or your email administrator) changed your email password.
+\t   (Click on $link to update the Voicemail system.)
+$MARKUP{'LI'}{$email_type}Network or power outage.
+$MARKUP{'LI'}{$email_type}Temporary server unavailibility.
+$MARKUP{'TSIL'}{$email_type}
+$MARKUP{'P'}{$email_type}You may continue to receive copies of this notice until the issue has
+been resolved.
+$MARKUP{'REDAEH'}{$email_type}
+EOF
+
+    return($body);
+  }
+
+
+######################################################### send_error_email($$)
+sub send_error_email($)
+{ 
+  my $extension = shift;
+
+  my $dbh = OpenUMS::Common::get_dbh();
+  my $sql = qq(SELECT email_address, first_name, last_name, email_type
+               FROM VM_Users
+               WHERE extension = $extension);
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+  my ($email_address, $first_name,
+      $last_name, $email_type) = $sth->fetchrow_array();
+  $sth->finish();
+
+  ### Get the error mail queue
+  ### $send_flag = 1 if now - last_sent > 43200 seconds
+  $sql = qq(SELECT extension,
+            IF((UNIX_TIMESTAMP()-UNIX_TIMESTAMP(last_sent)>43200),1,0)send_flag,
+              count(*)
+            FROM email_failures
+            WHERE extension = $extension
+            GROUP BY extension);
+  $sth = $dbh->prepare($sql);
+  $sth->execute();
+  my ($ext, $send_flag, $sent_flag_prev) = $sth->fetchrow_array() ;
+  $sth->finish();
+
+  ### If extension is in email_failures
+  if ( defined($ext) && ($send_flag == 0) )
+    {
+      ### But it hasn't been 43200 seconds yet.
+      $log->debug("Sending email failed. User already warned");
+      return(undef);
+    }
+  $log->debug("Sending email failed. Sending error_email");
+
+  ### 
+  if ($sent_flag_prev)
+    {
+      $sql = qq(UPDATE email_failures
+                SET last_sent = now()
+                WHERE extension = $extension );
+    }
+  else
+    {
+      $sql = qq(INSERT INTO email_failures
+                            (extension, email_address, first_sent, last_sent)
+                VALUES ('$extension', '$email_address', NOW(), NOW()) );
+    }
+  $sth = $dbh->prepare($sql);
+  $sth->execute();
+  $sth->finish();
+
+
+  $log->info('Spawning child mailer process');
+  local $SIG{CHLD} = 'IGNORE';
+  unless (my $pid = fork)
+    {
+      my $dbh = OpenUMS::Common::get_dbh();
+      unless (defined($email_address))
+        {
+          $log->err("Undefined email_address for extension $extension.  No warning sent!");
+          exit;
+        }
+
+      my $hostname = OpenUMS::Common::get_ip();
+      my $body = &error_body($dbh, $first_name, $last_name, $extension, $email_type);
+
+      my $msg = MIME::Lite->new(
+                    From    => 'Voicemail System',
+                    To      => "$email_address, report\@convergepro.org",
+                    Subject => 'Warning. You have an undelivered voicemail.',
+                    Type    => ($email_type eq 'T') ? 'text/plain'
+                                                    : 'text/html',
+                    Data    => $body);
+      eval { $msg->send; };
+      ($@) ? $log->err('Unable to send error mail')
+           : $log->info('Error email sent');
+
+      ### The child process _cannot_ return
+      exit;
+    }
+  $dbh->disconnect;
+}
+
+
+################################################################ html_link($$)
+sub html_link($)
+{
+  my $link = shift;
+
+  return("<B><A HREF=$link>this link</A></B>");
+}
+
+
+########################################################### duration_string($)
+sub duration_string($)
+{
+  my $duration = shift;
+
+  my $min = POSIX::floor($duration/60);
+  my $sec = $duration%60;
+  my $durationstring;
+  if ($min == 0) {
+    if (!$sec) {
+      $durationstring = 'empty';
+    } else {
+      $durationstring = "$sec second";
+      if ($sec != 1)
+        { $durationstring .= 's'; }
+    }
+  } else {
+    $durationstring = "$min minute";
+    if ($min != 1)
+      { $durationstring .= 's'; }
+    if ($sec) {
+      $durationstring .= " and $sec second";
+      if ($sec != 1)
+        { $durationstring .= 's'; }
+    }
+  }
+  return($durationstring);
+}
+
+
+############################################################### date_string($)
+sub date_string
+{
+  my $file = shift;
+
+  $file =~ /^\d+_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})_\d{2}\.(vox|vox)$/;
+  my $unixtime    = Date::Parse::str2time("$1:$2:$3T$4:$5", "HST");
+  my $englishtime = Date::Format::time2str("%A, %b %e at ", $unixtime, 'HST');
+  if ( POSIX::floor($4%12) >= 10 ) {
+    $englishtime .= ' ';
+  }
+  $englishtime .= Date::Format::time2str("%l:%M %p (HST)", $unixtime, 'HST');
+
+  return($englishtime);
+}
+
+
+######################################################### short_date_string($)
+sub short_date_string
+{
+  my $file = shift;
+
+  $file =~ /^\d+_(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})_\d{2}\.(vox|wav)$/;
+
+  return("$4:$5:$6 $2/$3/$1");
+}
+
+
+################################################################ cid_string($)
+sub cid_string($)
+{
+  my $caller_id = shift;
+
+  if (defined($caller_id))
+    {
+      $log->verbose("Got Caller-ID $caller_id");
+      if ($caller_id =~ /^\d{3}$/)
+        { $caller_id = "Extension $caller_id"; }
+      elsif ($caller_id =~ /^(\d{3})(\d{3})(\d{4})$/)
+        { $caller_id = "($1)$2-$3"; }
+      else
+        { $caller_id = "$caller_id"; }
+    }
+  else
+    {
+      $log->verbose('Got undefined Caller-ID');
+      $caller_id = 'Unknown number';
+    }
+  return($caller_id);
+}
+
+
+####################################################### get_voicemail_store($)
+sub get_voicemail_store($)
+{
+  my $extension = shift;
+
+  my $dbh = OpenUMS::Common::get_dbh();
+  my $sql = qq(SELECT store_flag
+               FROM VM_Users
+               WHERE extension = $extension);
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+  my $store = $sth->fetchrow();
+  $sth->finish();
+
+  return($store);
+}
+
+
+############################################################ notice_body($$$$)
+sub notice_body($$$$$)
+{
+  my $dbh = shift;
+  my $extension = shift;
+  my $file = shift;
+  my $caller_id = shift;
+  my $duration = shift;
+
+  my $cidstring = cid_string($caller_id);
+  my $datestring = short_date_string($file);
+
+  my $saved = 0;
+  my $new = 0;
+
+  if ( get_voicemail_store($extension) eq 'E' )
+    {
+      my $saved_ref = OpenUMS::IMAP::saved_imap_messages($dbh, $extension);
+      my $new_ref = OpenUMS::IMAP::new_imap_messages($dbh, $extension);
+      if (defined($saved_ref))
+        { $saved = scalar(@$saved_ref); }
+      if (defined($new_ref))
+        { $new = scalar(@$new_ref); }
+    }
+  else
+    {
+      $saved = OpenUMS::DbQuery::saved_message_count($dbh, $extension);
+      $new =  OpenUMS::DbQuery::new_message_count($dbh, $extension);
+    }
+
+  ### Body "here doc"
+my $return = <<EOF;
+You have
+$new new VM
+$saved saved VM
+
+Latest VM: 
+From: $cidstring
+Time: $datestring
+Len:  $duration sec.
+EOF
+
+  return ($return);
+}
+
+
+########################################################### subject_string($$)
+sub subject_string($$)
+{
+  my $caller_id = shift;
+  my $recorded_call = shift;
+
+  my $subject;
+  if ($recorded_call)
+    { $subject = 'Voicemail received from your recorded call'; }
+  else
+    {
+      $subject = 'Voicemail received from ';
+      if (defined($caller_id))
+        {
+          # $log->verbose("Delivermail got Caller-ID $caller_id");
+          if ($caller_id =~ /^\d{3}$/)
+            { $subject .= "extension $caller_id"; }
+          elsif ($caller_id =~ /^(\d{3})(\d{3})(\d{4})$/)
+            { $subject .= "phone number ($1)$2-$3"; }
+          else
+            { $subject .= "phone number $caller_id"; }
+        }
+      else
+        {
+          # $log->verbose('Delivermail got undefined Caller-ID');
+          $subject .= 'an unknown phone';
+        }
+    }
+  return($subject);
+}
+
+
+############################################################# email_body($$$$)
+### This sub returns the body of an OpenUMS email.  It knows well
+### grammarizification (unlike the author of this comment, apparently)
+### and how to pluralify or singlelize the english part of the timestamp.
+sub email_body($$$$$)
+{
+  my $file = shift;
+  my $caller_id = shift;
+  my $duration = shift;
+  my $recorded_call = shift;
+  my $email_type = shift;
+
+  my $cidstring = cid_string($caller_id);
+  my $durationstring = duration_string($duration);
+  my $datestring = date_string($file);
+
+  my $return = "$MARKUP{'HEADER'}{$email_type}Hello,$MARKUP{'P'}{$email_type}";
+  my $callout_link = "To hear this message over the phone, click ";
+  $callout_link .=  &html_link(OpenUMS::Common::get_callout_url($file) );
+  if ($recorded_call)
+    {
+$return .= <<EOF;
+$MARKUP{'P'}{$email_type}Your recorded call is attached.
+$MARKUP{'LIST'}{$email_type}
+EOF
+    }
+  else
+    {
+$return .= <<EOF;
+$MARKUP{'P'}{$email_type}You received a voicemail, which is attached.
+$MARKUP{'LIST'}{$email_type}
+$MARKUP{'LI'}{$email_type}From:      $cidstring
+EOF
+    }
+
+$return .= <<EOF;
+$MARKUP{'LI'}{$email_type}Timestamp: $datestring
+$MARKUP{'LI'}{$email_type}Length:    $durationstring
+$MARKUP{'TSIL'}{$email_type}
+$MARKUP{'REDAEH'}{$email_type}
+
+$MARKUP{'P'}{$email_type}$callout_link 
+EOF
+
+
+  return ($return);
+}
+
+
+####################################################### get_vstore_email($)
+sub get_vstore_email($)
+{
+  my $extension = shift;
+
+  my $dbh = OpenUMS::Common::get_dbh();
+  my $sql = qq(SELECT vstore_email FROM VM_Users WHERE extension = ?);
+  my $sth = $dbh->prepare($sql);
+  $sth->execute($extension);
+  my $vstore = $sth->fetchrow();
+  $sth->finish();
+
+  return($vstore);
+}
+
+
+##################################################### get_mobile_email_flag($)
+sub get_mobile_email_flag($)
+{
+  my $extension = shift;
+
+  my $dbh = OpenUMS::Common::get_dbh();
+  my $sql = qq(SELECT mobile_email, mobile_email_flag
+               FROM VM_Users
+               WHERE extension = ?);
+  my $sth = $dbh->prepare($sql);
+  $sth->execute($extension);
+  my ($mobile_email, $mobile_email_flag) = $sth->fetchrow_array();
+  $sth->finish();
+
+  if ($mobile_email_flag)
+    { return($mobile_email); }
+  return(undef);
+}
+
+
+############################################################# deliver_email($)
+#
+#
+#
+sub deliver_email($)
+{
+  my $msg_href = shift;
+
+  my $extension = $msg_href->{'extension_to'};
+  my $caller_id = $msg_href->{'extension_from'};
+  my $path = BASE_PATH . $msg_href->{'message_wav_path'};
+  my $file = $msg_href->{'message_wav_file'};
+
+  $log->debug("Preparing $file file for delivery.");
+
+  ### Check for valid file
+  unless ( (-e "$path$file") && (-r "$path$file") )
+    {
+      $log->err("Deliver says $path$file does not exist or is unreadable!!");
+      return(undef);
+    }
+
+  ### Get the voicemail timestamp from the filename.
+  unless ($file =~ /^\d.*(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2}).*vox$/)
+    {
+      $log->err("Delivermail received file with bad timestamp : $file");
+      return(undef);
+    }
+
+  ### Get the sound file duration
+  my $wavduration = POSIX::ceil(&sound_duration("$path$file"));
+  if ($wavduration == 0)
+    { $log->err('Deliver received file with zero length'); }
+
+
+  ### Get the email_address.
+  my $dbh = OpenUMS::Common::get_dbh();
+  my $sql = qq(SELECT email_address, email_type
+               FROM VM_Users
+               WHERE extension = $extension);
+  my $sth = $dbh->prepare($sql);
+
+  $sth->execute;
+  my ($email_address, $email_type) = $sth->fetchrow_array();
+  $sth->finish();
+  $dbh->disconnect;
+
+  unless (defined($email_address))
+    {
+      $log->err("No email_address defined for extension $extension");
+      return(undef);
+    }
+  $log->debug("Found email=$email_address");
+
+  $log->info("Building message for $email_address");
+  my $subject = subject_string($caller_id, 0) . " - ($wavduration seconds)";
+
+  &OpenUMS::Common::vox_to_wav("$path$file");
+  my $wavfile = $file;
+  $wavfile =~ s/\.vox$/\.wav/ ;
+
+  my $msg = MIME::Lite->new(
+                  From    => "\"Voicemail\" " . 
+                             "<__CP_Voicemail__$wavfile\@ConvergePro>",
+                  To      => $email_address,
+                  Subject => $subject,
+                  Disposition => 'inline',
+                  Type => ($email_type eq 'T') ? 'text/plain'
+                                               : 'text/html',
+                  Data => email_body("$file", $caller_id,
+                                     $wavduration, 0, $email_type));
+  $msg->attach(Disposition => 'attachment',
+               Type     => 'audio/wav;' . 
+                           'x-unix-mode=0644;' . 
+                           'x-mac-type=57415645',
+               Path     => "$path$wavfile",
+               Encoding => 'base64',
+               Filename => $wavfile);
+  $msg->add('X-CPVoicemail' => $wavfile);
+
+  my $email_delivery = get_email_delivery($extension);
+  my $store = get_voicemail_store($extension);
+  my $vstore_email = get_vstore_email($extension);
+
+  my $success;
+  if ( ($email_delivery eq 'S') || ($email_delivery eq 'F') )
+    {
+      $log->debug("Sending message to $email_address");
+      $success = &fire_email($email_address, $msg);
+    }
+  else ### ($email_delivery eq 'I')
+    {
+      $log->debug("Appending $wavfile to $email_address");
+      $success = &append_email($extension, $email_address, $msg);
+    }
+
+  if ( ($success) || ($vstore_email eq 'C') )
+    {
+      $log->debug("Updating database.");
+      my $dbh = OpenUMS::Common::get_dbh();
+      my $sql = qq(UPDATE VM_Messages
+                   SET message_status_id = ?
+                   WHERE message_id = ?);
+      my $sth = $dbh->prepare($sql);
+      if (($msg_href->{store_flag} eq 'V') && ($email_delivery eq 'F'))
+        { $sth->execute('D', $msg_href->{'message_id'}); }
+      else
+        { $sth->execute('N', $msg_href->{'message_id'}); }
+      $sth->finish();
+
+      ### Do they want a mobile notice?
+      if ( defined(my $mobile_email = get_mobile_email_flag($extension)) )
+        { send_mobile_notice($msg_href, $mobile_email); }
+
+    } 
+   else
+    { $log->debug("Error delivering email.  Database unchanged."); }
+
+  return(1);
+}
+
+
+############################################################ append_email($$$)
+sub append_email($$$)
+{
+  my $extension = shift;
+  my $email_address = shift;
+  my $msg = shift;
+
+  my $dbh = OpenUMS::Common::get_dbh();
+
+  my $imap = eval { &OpenUMS::IMAP::open_imap_connection($dbh, $extension, $log); };
+
+  unless (defined($imap))
+    {
+      $log->err("Unable to open IMAP account for $email_address");
+      send_error_email($extension);
+      return(undef);
+    }
+
+  $log->debug("Appending to " . &VMINBOX($dbh, $extension));
+  $imap->select(&VMINBOX($dbh, $extension));
+  eval { $imap->append(&VMINBOX($dbh, $extension), $msg->as_string); };
+  my $fail = $@;
+  ($fail) ? $log->err("Unable to append message to $email_address : $fail")
+          : $log->verbose("Done appending message to $email_address");
+
+  $imap->close;
+  $dbh->disconnect;
+
+  return(!($fail));
+}
+
+
+############################################################### fire_email($$)
+sub fire_email($$)
+{
+  my $email_address = shift;
+  my $msg = shift;
+
+  eval { $msg->send; };
+  ($@) ? $log->err("Unable to send message to $email_address : $@")
+       : $log->verbose("Done sending message to $email_address");
+
+  return(!($@));
+}
+
+######################################################## send_recorded_call($)
+#
+#
+#
+sub send_recorded_call($)
+{
+  my $msg_href = shift;
+
+  my $extension = $msg_href->{'extension_to'};
+  my $file = $msg_href->{'message_wav_file'};
+  my $caller_id = $msg_href->{'extension_from'};
+  my $path = BASE_PATH . $msg_href->{'message_wav_path'};
+  my $subject = subject_string($caller_id, 0);
+  my $wavduration = POSIX::ceil(&sound_duration("$path$file"));
+  if ($wavduration == 0)
+    { $log->err('Delivermail received file with zero length'); }
+
+  my $dbh = OpenUMS::Common::get_dbh();
+  my $sql = qq(SELECT email_address, email_type
+               FROM VM_Users
+               WHERE extension = $extension);
+  my $sth = $dbh->prepare($sql);
+  $sth->execute;
+  my ($email_address, $email_type) = $sth->fetchrow_array();
+  $sth->finish();
+  $dbh->disconnect;
+
+  unless (my $pid = fork)
+    {
+      $log->info("Building recorded_call for $email_address");
+
+      &OpenUMS::Common::vox_to_wav("$path$file");
+      my $wavfile = $file;
+      $wavfile =~ s/\.vox$/\.wav/ ;
+
+      my $msg = MIME::Lite->new(From     =>'Voicemail',
+                                To       =>$email_address,
+                                Subject  =>$subject,
+                                Type     =>($email_type eq 'T') ? 'text/plain'
+                                                                : 'text/html',
+                                Data     =>email_body("$file",
+                                                      $caller_id,
+                                                      $wavduration, 1,
+                                                      $email_type) );
+      $msg->attach(Disposition => 'attachment',
+                   Type     => 'audio/wav;' .
+                               'x-unix-mode=0644;' .
+                               'x-mac-type=57415645',
+                   Path     => "$path$wavfile",
+                   Encoding => 'base64',
+                   Filename => $wavfile);
+      $msg->add('X-CPVoicemail' => $wavfile);
+
+      $log->debug("Sending recorded_call to $email_address");
+      eval { $msg->send; };
+      if ($@)
+        { $log->err("Unable to send recorded_call to $email_address"); }
+      else
+        {
+          my $dbh = OpenUMS::Common::get_dbh();
+          $log->verbose("Done sending recorded_call $email_address");
+          $log->verbose('Updating database.');
+          my $sql = qq(UPDATE VM_Messages
+                        SET message_status_id = ?
+                        WHERE message_id = ?);
+          my $sth = $dbh->prepare($sql);
+          $sth->execute('D', $msg_href->{'message_id'});
+          $sth->finish();
+          $dbh->disconnect;
+        }
+      exit;
+    } 
+}
+
+
+######################################################### send_mobile_notice()
+#
+#
+#
+sub send_mobile_notice($$)
+{
+  my $msg_href = shift;
+  my $mobile_email = shift;
+
+  my $extension = $msg_href->{'extension_to'};
+  my $file = $msg_href->{'message_wav_file'};
+  my $caller_id = $msg_href->{'extension_from'};
+  my $path = BASE_PATH . $msg_href->{'message_wav_path'};
+  my $subject = subject_string($caller_id, 0);
+
+  my $wavduration = POSIX::ceil(&sound_duration("$path$file"));
+
+  ### Fork a grandchild process to do the work so we can continue onwards.
+  local $SIG{CHLD} = 'IGNORE';
+  unless (my $pid = fork)
+    {
+      my $dbh = OpenUMS::Common::get_dbh();
+      $log->info("Building notice for $mobile_email");
+      my $msg = MIME::Lite->new(From    =>'Voicemail',
+                                To      =>$mobile_email,
+                                Subject =>$subject,
+                                Type    =>'TEXT',
+                                Data    =>notice_body($dbh, $extension, $file,
+                                                  $caller_id, $wavduration));
+
+      $log->debug("Sending notice to $mobile_email");
+      eval { $msg->send; };
+      ($@) ? $log->err("Unable to send notice to $mobile_email")
+           : $log->verbose("Done sending notice to $mobile_email");
+      $dbh->disconnect;
+
+      exit;
+      ### This exit is very important
+    }
+
+  return(1);
+}
+
+
+###################################################### process_unsent_messages
+#
+# Look through the database for all the messages marked 'V' and
+# process each as necessary.
+#
+sub process_unsent_messages
+{
+  ### Open up a databse connection
+  my $dbh = OpenUMS::Common::get_dbh();
+  $log->info('Processing unsent messages');
+
+  ### Get all messages marked 'V'
+  my $sql = qq(SELECT m.message_id        message_id,
+                      m.message_wav_path  message_wav_path,
+                      m.message_wav_file  message_wav_file,
+                      m.extension_to      extension_to,
+                      m.extension_from    extension_from, 
+                      m.record_call_flag  record_call_flag,
+                      u.store_flag        store_flag
+               FROM VM_Messages m INNER JOIN VM_Users u
+               ON (m.extension_to = u.extension)
+               WHERE message_status_id = 'V');
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+
+  ### loop through each
+  while (my $msg_href = $sth->fetchrow_hashref())
+    {
+      my $temp_path = BASE_PATH . TEMP_PATH;
+      my $extension = $msg_href->{'extension_to'};
+      my $msg_path = BASE_PATH . "users/$extension/messages/";
+      my $msg_file = $msg_href->{'message_wav_file'};
+      my $record_call_flag = $msg_href->{'record_call_flag'};
+
+      $log->debug("Found unsent message $msg_file");
+
+      ### Sanity check
+      unless ($extension =~ /^\d+$/)
+        {
+          $log->warn("Message found with invalid extension = $extension");
+          next;
+        }
+
+      ### If it's in the temp dir, it has not been volume adjusted yet.
+      if ( (-e "$temp_path$msg_file") && (-r "$temp_path$msg_file") )
+        {
+          OpenUMS::Common::adjust_volume("$temp_path$msg_file");
+          move("$temp_path$msg_file", "$msg_path$msg_file"); 
+        }
+
+      ### 'Nother sanity check
+      unless ( (-e "$msg_path$msg_file") && (-r "$msg_path$msg_file") )
+        { 
+          $log->warn("Failed to move $temp_path$msg_file");
+          next;
+        }
+
+      ### Get the user preferences.
+      my $email_delivery = get_email_delivery($extension);
+      my $vstore_email = get_vstore_email($extension);
+
+      ### If they are 'Voicemail Store' with email set to none.
+      if ( ($msg_href->{store_flag} eq 'V') && ($vstore_email eq 'N') )
+        {
+
+          $log->debug("Updating database.");
+          my $dbh = OpenUMS::Common::get_dbh();
+          my $sql = qq(UPDATE VM_Messages
+                       SET message_status_id = ?
+                       WHERE message_id = ?);
+          my $sth = $dbh->prepare($sql);
+          $sth->execute('N', $msg_href->{'message_id'});
+          $sth->finish();
+
+          ### Do they want a mobile notice?
+          if ( defined(my $mobile_email = get_mobile_email_flag($extension)) )
+            { send_mobile_notice($msg_href, $mobile_email); }
+        }
+      ### Or, they are set to 'Voicemail Store' with an 'email Copy'
+      else
+        {
+          ### If it's a recorded call
+          if ($msg_href->{'record_call_flag'})
+            { send_recorded_call($msg_href); }
+          ### It's a message.
+          else
+            { deliver_email($msg_href); }
+        }
+    }
+
+  ### Cleanup on aisle 12.
+  $sth->finish();
+  $dbh->disconnect;
+  $log->info('Finished processing.');
+}
+
+
+########################################################## validate_pidfile($)
+#
+# Validates if a pidfile belongs to a running process.  Does not return if
+# pidfile and contents are valid
+#
+sub validate_pidfile($)
+{
+  my $pidfile = shift;
+  if (-e $pidfile) 
+    {
+      print($pidfile . " exists ...\n");
+
+      unless (open(FILE, "<$pidfile"))
+        {
+          print("!!But unable to read from it : $!");
+          exit(0);
+        }
+      my $oldpid = <FILE>;
+      chomp $oldpid;
+      close(FILE);
+
+      ### Explicitly untaint $oldpid.  It must contain an integer only
+      if ($oldpid =~ /^([0-9]+)$/)
+        { $oldpid = $1;}
+       else
+        {
+          print("!!But contains an invalid value.\n");
+          exit(0);
+        }
+
+      if (kill 0 => $oldpid)
+        {
+          print(SELF . " is already running with pid = $oldpid\n");
+          exit(0);
+        }
+
+      print("But process is dead.  Proceeding ...\n");
+      unless (unlink($pidfile))
+        {
+          print("Unable to clear $pidfile : $!");
+          exit(0);
+        }
+    }
+  return;
+}
+
+
+######################################################################## ALARM
+#
+# Catch sigALRM
+#
+sub ALARM
+{
+  $SIG{ALRM} = \&ALARM;
+
+  alarm(0);
+
+  $log->info("Delivermail caught ALARM.  Going to process ...");
+
+  alarm(DELAY);
+}
+
+
+###################################################################### PROCESS
+#
+# Catch sigUSR1
+#
+sub PROCESS
+{
+  $SIG{USR1} = \&PROCESS;
+
+  alarm(0);
+
+  $log->info("Delivermail caught PROCESS request ...");
+
+  alarm(DELAY);
+}
+
+
+#################################################################### TERMINATE
+#
+# Catch sigTERM.  Clean up and die.
+#
+sub TERMINATE
+{
+  $SIG{ALRM} = sub { };
+  $SIG{HUP}  = sub { };
+  $SIG{TERM} = sub { };
+  $SIG{USR1} = sub { };
+
+  alarm(0);
+
+  $log->info("Delivermail caught TERMINATE request.  Cleaning up ...");
+
+  unlink(DELIVERPID);
+
+  exit(1);
+}
+
+
+###################################################################### RESTART
+#
+# Catch sigHUP. Does not return.
+#
+sub RESTART
+{
+  ### Ignore all signals now.
+  $SIG{ALRM} = sub { };
+  $SIG{HUP}  = sub { };
+  $SIG{TERM} = sub { };
+  $SIG{USR1} = sub { };
+
+  alarm(0); 
+
+  $log->info("Delivermail caught RESTART request.  Cleaning up ...");
+
+  ### Reenable them
+  my $s = POSIX::SigSet->new;
+  my $t = POSIX::SigSet->new;
+  sigprocmask(SIG_BLOCK, $s, $t);
+
+  unlink(DELIVERPID);
+
+  $log->info("Restarting ...");
+
+  ### The braces supress a warning.
+  { exec(SELF); }
+
+  $log->error("Unable to restart : $!");
+  die;
+}
+
+
+##################################################################### Log::new
+#   
+# Create a new $log object
+#     
+sub Log::new() 
+{
+  my $self = { };
+  our $parent = $$;
+
+  bless ($self, 'Log');
+
+  unless (open(LOG, ">>" . LOGFILE))
+    { die("Unable to open logfile " . LOGFILE . " : $!\n"); }
+
+  LOG->autoflush(1);
+
+  return $self;
+}
+
+
+##################################################################### Log->($)
+#
+# General purpose logger, with auto level
+# Example: $log->err("this is an error");
+#
+sub Log::AUTOLOAD($)
+{
+  my $self = shift;
+  my @lines = @_;
+
+  my $sub = $Log::AUTOLOAD;
+  $sub =~ s/.*:://;
+  $sub = uc($sub);
+
+  return(&Log::logger($sub, @lines));
+}
+
+
+############################################################## Log::logger($$)
+#
+# Outputs a log entry.
+#
+sub Log::logger($$)
+{
+  my $level = shift;
+  my @lines = @_;
+
+  our $parent;
+
+  my ($yy, $mm, $dd, $hr, $min, $sec) = Date::Calc::Today_and_Now();
+
+  for my $line (@lines)
+    {
+      # strip off all the newlines to improve the logging format
+      $line =~ s/\n+/ /g;
+      $line =~ s/\s+$/ /;
+
+      printf(LOG "%04d/%02d/%02d %02d:%02d:%02d ($parent)[$$:%s] %s\n",
+                 $yy, $mm, $dd, $hr, $min, $sec, $level, $line);
+    }
+
+  return 1;
+}
+
+
+1;
