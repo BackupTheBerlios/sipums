@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: domains.php,v 1.3 2004/08/06 07:29:21 kenglish Exp $
+ * $Id: domains.php,v 1.4 2004/08/11 03:31:02 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -13,7 +13,6 @@ class CData_Layer extends CDL_common{
          $q = "SELECT domain, voicemail_db FROM domain";  
   
       } 
-      do_debug("sql  - $q") ; 
       $res=$this->db->query($q);
       $out=array();
       while ($row=$res->fetchRow(DB_FETCHMODE_ASSOC ) ) {

@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: functions.php,v 1.4 2004/08/06 07:29:21 kenglish Exp $
+ * $Id: functions.php,v 1.5 2004/08/11 03:31:02 kenglish Exp $
  */
 
 
@@ -598,6 +598,7 @@ function extract_user_domain ($email){
 }
 function do_debug($msg) {
   global $config; global $FDEBUG; 
+  global $FDEBUG; 
   
   if ($config->debug) { 
     $me = basename($_SERVER['PHP_SELF']) ;
@@ -605,35 +606,46 @@ function do_debug($msg) {
   } 
 }
 
- function change_domain(){ 
+ function change_domain($new_domain=""){ 
 
-   global $FORM_VARS; 
-   do_debug("change_domain() : $FORM_VARS[change_domain] ");
-   if ($FORM_VARS[change_domain] == 1) {
+   global $_GET,$_POST,$log; 
+
+   if (!$new_domain) { 
+     if ($_POST[change_domain]) { 
+       $new_domain = $_POST[domain]; 
+     } 
+   } 
+
+   $log->log("change_domain() : $new_domain ");
+
+   if ($new_domain) {
       global $sess;
       global $adomain;
 
       $sess->register("adomain");
-      $adomain = $FORM_VARS[domain];
+      $adomain = $new_domain;
 
-      do_debug("change_domain() : registered adomain $adomain");
-   } 
+      $log->log("change_domain() : registered adomain $adomain");
+   } else {
+      $log->log("failed to change domain, no new_domain");
+   }  
 
  }
  function change_edit_user($edit_uname,$edit_udomain){
-      global $sess;
+      global $sess,$log;
       global $gedit_uname;
       global $gedit_udomain;
       $sess->register("gedit_uname");
       $sess->register("gedit_udomain");
       $gedit_uname = $edit_uname;
       $gedit_udomain = $edit_udomain;
-      do_debug("change_edit_user() : $gedit_uname $gedit_udomain");
+      $log->log("change_edit_user() : $gedit_uname $gedit_udomain");
  }
  function rpid_to_caller_id($caller_id)  {
+    global $log; 
     $caller_id = str_replace("<sip:",'', $caller_id);
     $caller_id = str_replace(">",'',$caller_id);
-    do_debug("caller_id = " . $caller_id  );
+    $log->log("caller_id = " . $caller_id  );
     list($number, $domain) = split('@', $caller_id);
     $caller_id = $number ;
     return $caller_id; 
@@ -646,7 +658,9 @@ function do_debug($msg) {
       $res=$db->query($q);
       if (DB::isError($res)) {
            $log->log("FAILED QUERY : $q",LOG_ERR);
+
       }
+
       while ($row=$res->fetchRow(DB_FETCHMODE_ORDERED) ) {
          $voicemail_db=$row[0];
          $log->log("voicemail_Db $voicemail_db");

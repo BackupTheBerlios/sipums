@@ -18,6 +18,11 @@ page_open (array("sess" => "phplib_Session_Pre_Auth",
 
 ## do this in every file after the page_open
 $perm->check('ADMIN');
+if ($perm->have_perm('SUPER'))  {
+  $log->log("calling change perm") ;
+  change_domain();
+}
+
 
 $header_smarty = get_smarty_header($data, $auth, $perm); 
 
@@ -43,7 +48,7 @@ if ($perm->have_perm('SUPER')){
 }
 
 $footer_smarty = get_smarty(); 
-do_debug("ad domain = $adomain");
+$log->log("ad domain = $adomain");
 $data->init($adomain); 
 $mbs = $data->get_mailboxes($adomain); 
 $mb_smarty->assign('mailboxes',$mbs); 

@@ -21,7 +21,6 @@ class spCpl {
   *****************************/
   function _get_dnd_xml () { 
   
-    //   do_debug("get_dnd_xml $this->uname, $this->udomain");
     $xmlstr = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- (call_setting=dnd) --> 
@@ -40,7 +39,6 @@ XML;
 
   function _get_forward_xml($forward_number)  { 
   
-    ///      do_debug("_get_forward $this->uname, $this->udomain $forward_number");
   $xmlstr = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- (call_setting=fwd) -->
@@ -68,7 +66,6 @@ XML;
  
   }
   function _get_ring_both_xml($rb_number)  {
-    ///      do_debug("_get_ring_both_xml $this->uname, $this->udomain $rb_number");
       $xmlstr = <<<XML
 
 <?xml version="1.0" encoding="UTF-8"?>
@@ -110,7 +107,8 @@ XML;
 
   }
   function _get_find_me_follow_me_xml($fmfm_number) {
-    ///      do_debug("_get_find_me_follow_me_xml $this->uname, $this->udomain $rb_number");
+     global $log; 
+    ///   $log->log("_get_find_me_follow_me_xml $this->uname, $this->udomain $rb_number");
 
       $xmlstr = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -158,9 +156,9 @@ XML;
   } 
   
   function set_dnd() {
-
+    global $log; 
     $xml = $this->_get_dnd_xml($this->uname, $this->udomain); 
-    ///      do_debug("set_dnd xm $xml");
+    ///      $log->log("set_dnd xm $xml");
     return $this->_load_cpl($xml);
 
   }
@@ -171,8 +169,9 @@ XML;
   **  DESCRIPTION: This funciton sets user's phone to forward to the given number the cpl throught the fifo
   *****************************/
   function set_forward($forward_number){
+    global $log; 
     $xml = $this->_get_forward_xml($forward_number); 
-    ///      do_debug("set_forward xml $xml");
+    ///      $log->log("set_forward xml $xml");
     return $this->_load_cpl($xml);
   }
   /****************************
@@ -181,8 +180,9 @@ XML;
   **  DESCRIPTION: This funciton sets user's phone to find me follow me
   *****************************/
   function set_find_me_follow_me($fmfm_number){
+    global $log; 
     $xml = $this->_get_find_me_follow_me_xml($fmfm_number);
-    ///      do_debug("set_find_me_follow_me xml $xml");
+    ///      $log->log("set_find_me_follow_me xml $xml");
     return $this->_load_cpl($xml);
   }
 
@@ -229,23 +229,24 @@ XML;
     } 
   } 
   function _cpl_get() {
-    global $config; 
+    global $config,$log; 
     if (!$this->uname || !$this->udomain) { 
         return ;
     }  
     $fifo_cmd=":GET_CPL:" . $config->reply_fifo_filename .  "\n$this->uname@$this->udomain\n\n";
-          do_debug("writing to fifo:--\n$fifo_cmd---\n");
+    $log->log("writing to fifo:--\n$fifo_cmd---\n");
 
     $data = write2fifo($fifo_cmd, $errors, $status);
 
-    do_debug("wrote to fifo $status:$error\n");
-    do_debug("data = $data\n ");
+    $log->log("wrote to fifo $status:$error\n");
+    $log->log("data = $data\n ");
     
     return "$data";
   }
   function get_cpl() {
+    global $log; 
     $xml = $this->_cpl_get();
-    // do_debug("getting call setting $xml ");
+    // $log->log("getting call setting $xml ");
     $this->call_setting = $this->get_call_setting($xml);
     if ($this->call_setting == 'fwd') {
        $this->get_forward_number($xml); 
@@ -253,10 +254,7 @@ XML;
        $this->get_rb_number($xml); 
     }  elseif ($this->call_setting == 'fmfm') {
        $this->get_fmfm_number($xml); 
-    } else  { 
-       $this->call_setting = "default"; 
     } 
-     
   }  
    function get_fmfm_number($xml) {
                                                                                                                                                
@@ -346,24 +344,25 @@ XML;
   } 
 
   function get_call_setting ($xml) {
+    global $log; 
     $str = 'call_setting='; 
     if (!$xml) { 
        return "default";
     }
-    // do_debug( "xml $xml ");
+    // $log->log( "xml $xml ");
     $data = strstr($xml, 'call_setting=');
-    // do_debug( "data =$data");
+    // $log->log( "data =$data");
     if (!$data) return ;
     $func = str_replace($str,"", $data); 
     $func = str_replace($str,"", $data); 
     $i=0; 
-    // do_debug( "substr=" . substr($func,$i,1)."\n");
+    // $log->log( "substr=" . substr($func,$i,1)."\n");
     while (substr($func,$i,1) !=")" ) { 
-       do_debug(substr($func,$i,1)); 
+       $log->log(substr($func,$i,1)); 
        $i++; 
     } 
     $func = substr($func,0,$i); 
-    // do_debug("func=$func" ); 
+    $log->log("func=$func" ); 
     return $func ; 
   } 
 
@@ -372,9 +371,10 @@ XML;
      return $this->_remove_cpl(); 
   } 
   function _remove_cpl()  {
-    do_debug("call _remove_cpl");
+    global $log;  
+    $log->log("call _remove_cpl");
                                                                                                                                                
-    global $config,$log;
+    global $config, $log;
     $fifo_cmd=":REMOVE_CPL:" . $config->reply_fifo_filename ."\n$this->uname@$this->udomain\n\n";
 
     $log->log("writing to fifo:--\n$fifo_cmd--- ",LOG_DEBUG);

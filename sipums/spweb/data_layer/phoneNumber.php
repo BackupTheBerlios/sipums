@@ -17,6 +17,7 @@ class PhoneNumber {
   }
 
   function  valid() { 
+    // global $log; 
     $ret=0;
     if (strlen($this->number) == 7) {
        $ret=1;
@@ -24,7 +25,7 @@ class PhoneNumber {
        $this->longDistanceFlag=1; 
        $ret= 1;
     } 
-    do_debug("numb = $this->number ret=$ret");
+    // $log->log("numb = $this->number ret=$ret");
     return $ret;
   }
   function isLongDistance() {

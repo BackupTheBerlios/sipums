@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: subscribers.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: subscribers.php,v 1.2 2004/08/11 03:31:02 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -27,9 +27,6 @@ class CData_Layer extends CDL_common{
       $q="select s.username, s.domain, s.first_name, s.last_name, s.phone, s.email_address, s.perm, s.mailbox, s.rpid  FROM ".$config->data_sql->table_subscriber." s ". 
          " $where order by s.domain,s.username ";
 
-      do_debug("q -= $q");
-
-	
              $res=$this->db->query($q);
              if (DB::isError($res)) {
                log_errors($res, $errors); 

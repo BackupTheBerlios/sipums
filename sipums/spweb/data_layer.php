@@ -29,7 +29,7 @@ class CDL_common{
      return $obj;
   }
   function connect_to_db($cfg, &$errors){
-    global $config;
+    global $config,$log;
 
     $dsn = $cfg->db_type."://".
 				$cfg->db_user.":".
@@ -41,7 +41,7 @@ class CDL_common{
 				$cfg->db_name;
      $db = DB::connect($dsn,true);
      if (DB::isError($db)) {	
-          do_debug($errors); 
+          $log->log($errors); 
          return false; 
      }
      return $db;
@@ -350,12 +350,12 @@ class CDL_common{
 	
 
   function check_passw_of_user($user, $domain, $passw, &$errors){
-    global $config;
+    global $config,$log;
     $q="SELECT phplib_id FROM ". $config->data_sql->table_subscriber.
        " WHERE username='".addslashes($user)."' AND web_password=PASSWORD('".addslashes($passw)."')" ;
     $res=$this->db->query($q);
     if (DB::isError($res)) {
-      do_debug("LOGIN QUERY FAILED" . $res->getMessage()); 
+      $log->log("LOGIN QUERY FAILED" . $res->getMessage()); 
       $errors[]="SYSTEM LOGIN FAILED"; 
       return false;
     }
@@ -368,13 +368,14 @@ class CDL_common{
     return $row->phplib_id;
   }
   function create_php_lib_id ($user, $domain) {
+     global $log; 
      $new_phplib_id = md5(uniqid('fvkiore')); 
      $q = "UPDATE subscriber SET phplib_id = '$new_phplib_id' "
           . " WHERE username='$user' AND domain='$domain' "; 
-     do_debug("Creating phplib_id $new_phplib_id  $q"); 
+     $log->log("Creating phplib_id $new_phplib_id  $q"); 
      $res=$this->db->query($q);
      if (DB::isError($res)) {
-       do_debug("get_user_domain query $q: " . $res->getMessage());
+       $log->log("get_user_domain query $q: " . $res->getMessage());
        return false;
      } else {
        return $new_phplib_id ; 
@@ -382,21 +383,21 @@ class CDL_common{
   } 
 
   function get_user_domain($user) { 
-     global $config;
+     global $config,$log;
      $q = "SELECT domain FROM " .  $config->data_sql->table_subscriber . 
         " WHERE username='".addslashes($user)."'";
      $res=$this->db->query($q);
      if (DB::isError($res)) {
-       do_debug("get_user_domain query $q: " . $res->getMessage());
+       $log->log("get_user_domain query $q: " . $res->getMessage());
        return false;
      } 
 
      if (!$res->numRows()) {
-       do_debug("No domain found for $uname query=$q"); 
+       $log->log("No domain found for $uname query=$q"); 
        return false;
      }
      if ($res->numRows() !=1 ) {
-       do_debug("NOOOOOOOOOOOOOOO, bad, more than one domain for user $uname "); 
+       $log->log("NOOOOOOOOOOOOOOO, bad, more than one domain for user $uname "); 
        return false;
      }
      $row = $res->fetchRow(DB_FETCHMODE_ORDERED);
@@ -406,7 +407,7 @@ class CDL_common{
   } 
 
   function get_privileges_of_user($user, $domain, $only_privileges, &$errors){
-    global $config;
+    global $config,$log;
 
     // if $only_privileges is array, generate where phrase which select only this privileges
 
@@ -414,10 +415,10 @@ class CDL_common{
          from ".$config->data_sql->table_subscriber ." 
          where username = '".$user."' 
          and domain = '".$domain."'"; 
-      do_debug("privileg query $q");
+      $log->log("privileg query $q");
       $res=$this->db->query($q);
       if (DB::isError($res)) {
-         do_debug("error getting privs" . $res->getMessage() ); return false;
+         $log->log("error getting privs" . $res->getMessage() ); return false;
       }
       $out=array();
       $row=$res->fetchRow(DB_FETCHMODE_ORDERED);
@@ -587,19 +588,18 @@ class CDL_common{
  *
  ***************************************************************************/
   function get_voicemail_db($domain) {
-    if ($domain ) {
+    global $log;
+    if ($domain) {
       $q = "SELECT voicemail_db FROM domain WHERE domain='$domain' " ;
       $res=$this->db->query($q);
       if (DB::isError($res)) {
-           do_debug("FAILED QUERY : $q");
+           $log->log("get_voicemail_db($domain) QUERY FAILED: $q");
       }
 
-      do_debug("QUERY : $q");
       $out=array();
 
       while ($row=$res->fetchRow(DB_FETCHMODE_ORDERED) ) {
          $voicemail_db=$row[0];
-         do_debug("voicemail_Db $voicemail_db");
       }
       $res->free();
 
@@ -608,26 +608,23 @@ class CDL_common{
       }
       return $voicemail_db; 
     } else {
-      do_debug("get_voicemail_db : udomain not set ");
+      $log->log("get_voicemail_db : udomain not set ");
       return 0;
     }
   }
 
    
   function change_db ($db_name) {
-    do_debug("change db to $db_name");
+    global $log; 
+    $log->log("change db to $db_name");
     $this->db->_db = $db_name ;   
     if (!@mysql_select_db($db_name, $this->db->connection)) {
-        do_debug("COULD NOT CHANGE DB TO $db_name");
+        $log->log("COULD NOT CHANGE DB TO $db_name");
         return ; 
     } else {
-        do_debug("CHANGED DB TO " .$this->db->_db);
+        $log->log("CHANGED DB TO " .$this->db->_db);
         return ;
     } 
-
-    // if (!@mysql_select_db($dn_name, $this->db->connection)) {
-    //    do_debug("COULD NOT CHANGE DB TO $db_name");
-    // }
   }
 
 		

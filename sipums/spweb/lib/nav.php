@@ -9,7 +9,7 @@ function get_smarty_header($data, $auth, $perm ) {
 
   if ($perm->have_perm('SUPER') || $perm->have_perm('RESELLER') ) {
     ## they are allowed to view more than one domain
-    change_domain();
+    // change_domain();
     $smarty->assign("admin_domain",1);
     $opts = $data->get_domain_options(null,null);
 

@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: mailboxes.php,v 1.3 2004/08/06 07:29:21 kenglish Exp $
+ * $Id: mailboxes.php,v 1.4 2004/08/11 03:31:02 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -14,14 +14,14 @@ class CData_Layer extends CDL_common{
 
 
   function get_perm($mailbox) {
-
+    global $log; 
     $voicemail_db = $this->get_voicemail_db($this->udomain); 
     $q = "SELECT permission_id FROM VM_Users WHERE extension = '$mailbox' "; 
     $res = $this->db->query($q);
 
     if (DB::isError($res)) {
-      do_debug("QUERY FAILED $q");
-      do_debug("Error looking up by name");
+      $log->log("QUERY FAILED $q");
+      $log->log("Error looking up by name");
       return 0;
     }
     $row = $res->fetchRow(DB_FETCHMODE_ORDERED);
@@ -35,25 +35,27 @@ class CData_Layer extends CDL_common{
   }
 
   function save_perm($mailbox,$new_perm) {
+    global $log; 
     if ($this->mailbox)  { 
 
        $q="UPDATE VM_Users SET permission_id = '$new_perm' WHERE "
           . " extension=  ". $mailbox;
        $res=$this->db->query($q);
        if (DB::isError($res)) {
-         do_debug("QUERY FAILED $q " . $res->getMessage());
+         $log->log("QUERY FAILED $q " . $res->getMessage());
        } 
 
      } 
   }
   function get_mailboxes() {
+    global $log; 
     if ($this->udomain)  { 
        $voicemail_db = $this->get_voicemail_db($this->udomain); 
-       do_debug("CHANGING TO $voicemail_db "); 
+       $log->log("CHANGING TO $voicemail_db "); 
        $this->change_db($voicemail_db); 
 
        // if (DB::isError($res)) {
-       //   do_debug("QUERY FAILED $q " . $res->getMessage());
+       //   $log->log("QUERY FAILED $q " . $res->getMessage());
        // } else {
 
          $vm_info = array();
@@ -70,7 +72,7 @@ class CData_Layer extends CDL_common{
   
          $extensions =array(); 
          if (DB::isError($res)) {
-           do_debug("QUERY FAILED $q " . $res->getMessage());
+           $log->log("QUERY FAILED $q " . $res->getMessage());
          } else {
           $out=array();
           while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC)) { 
@@ -87,15 +89,15 @@ class CData_Layer extends CDL_common{
               $row[email_delivery]="";
             } 
             $vm_info[$extension]  = $row ;
-            do_debug("extension = $row[extension]");
+            $log->log("extension = $row[extension]");
           }
-          do_debug("store_flag = " . $vm_info[store_flag]);
+          $log->log("store_flag = " . $vm_info[store_flag]);
           $res->free();
         }
 
         global $config;
 
-        do_debug("Changing back to " . $config->data_sql->db_name );
+        $log->log("Changing back to " . $config->data_sql->db_name );
 
         $ser_db=$config->data_sql->db_name ; 
         $this->change_db($ser_db);
@@ -106,11 +108,11 @@ class CData_Layer extends CDL_common{
         $res = $this->db->query($q);
 
         if (DB::isError($res)) {
-           do_debug("QUERY FAILED $q " . $res->getMessage());
+           $log->log("QUERY FAILED $q " . $res->getMessage());
         } else {
           $out=array();
           while ($row = $res->fetchRow(DB_FETCHMODE_ASSOC) ) {  
-            do_debug("$row[username] $row[mailbox] ");
+            $log->log("$row[username] $row[mailbox] ");
             $vm_info[$row[mailbox]][did] = $row[username] ; 
             $vm_info[$row[mailbox]][user] = $row[username] . '@' .$this->udomain ; 
           }
@@ -120,18 +122,19 @@ class CData_Layer extends CDL_common{
      //  }
 
     }  else {
-      do_debug("ERROR : get_mailboxes no domain to query " );
+      $log->log("ERROR : get_mailboxes no domain to query " );
 
     }  
   } 
 
   function get_perm_options($uname) { 
+    global $log; 
     if ($uname ){
        $q = "SELECT mailbox FROM subscriber WHERE  domain = '" . $this->udomain 
               . "' and subscriber = '" . $uname ."' " ;
         $res = $this->db->query($q);
         if (DB::isError($res)) {
-           do_debug("QUERY FAILED $q " . $res->getMessage());
+           $log->log("QUERY FAILED $q " . $res->getMessage());
            return ;
         }
         $row = $res->fetchRow(DB_FETCHMODE_ORDERED); 
@@ -153,7 +156,7 @@ class CData_Layer extends CDL_common{
         return $perm_options;
             
     } else {
-      do_debug("ERROR : get_perm_options called with no uname " );
+      $log->log("ERROR : get_perm_options called with no uname " );
 
     }  
   } 

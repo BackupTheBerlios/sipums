@@ -51,17 +51,20 @@ class VmUser {
 
          if (DB::isError($res)) {
            $log->log("FAILED QUERY : $q",LOG_ERR);
-           return false;
-         }
-        $this->dbFields = $res->fetchRow(DB_FETCHMODE_ASSOC) ;
-        $log->log("store flag = : " . $this->dbFields[store_flag] ,LOG_ERR);
-        
-        $this->permission_id  = $this->dbFields[permission_id]; 
-        $res->free();
+           $returnValue = false; 
+         } else { 
+
+           $this->dbFields = $res->fetchRow(DB_FETCHMODE_ASSOC) ;
+           $log->log("store flag = : " . $this->dbFields[store_flag] ,LOG_ERR);
+           $this->permission_id  = $this->dbFields[permission_id]; 
+           $res->free();
+
+           $returnValue = true; 
+        }
 
         change_to_default_db($this->db); 
+        return $returnValue; 
 
-        return true; 
      } else {
          $log->log("VmUser->get called with invalid data  $this->mailbox ",LOG_ERR);
          return false;
@@ -95,6 +98,37 @@ class VmUser {
      } 
     
    } 
+   function delete() {
+ global $log;
+     if ($this->mailbox && $this->db && $this->domain) {
+                                                                                                                                               
+        if (!$this->voicemail_db ) {
+          $this->voicemail_db = get_voicemail_db($this->db, $this->domain);
+        }
+       $cmd = "perl /usr/local/openums/deletevmuser " .
+              $this->mailbox . " " . 
+              $this->voicemail_db  ;
+                                                                                                                                               
+       $output = `$cmd` ;
+                                                                                                                                               
+       $log->log("\ndid $cmd: $output ");
+       if (preg_match("/Success/", $output) ) {
+          $log->log("DELETE VM USER SUCCESS");
+          return true ;
+       } else {
+          $log->log("DELETE VM USER FAILED");
+          return false;
+       }
+                                                                                                                                               
+     }  else {
+       $log->log("VmUser->delete called with blank fields: $this->mailbox ",LOG_ERR);
+       return false;
+     }
+
+    
+
+   
+   } 
 
    function updateBasic() {
      global $log;
@@ -113,12 +147,13 @@ class VmUser {
        $res = $this->db->query($q);
        if (DB::isError($res)) {
          $log->log("FAILED TO VmUser->updateBasic : $q",LOG_ERR);
-         return false;
+         change_to_default_db($this->db); 
+         $returnValue = false ; 
+       } else { 
+         $returnValue = true ; 
        }
-
        change_to_default_db($this->db); 
-
-       return true;
+       return $returnValue ;
      } else {
        $log->log("VmUser->save called with blank fields: $this->mailbox ",LOG_ERR);
        return false;
@@ -136,18 +171,49 @@ class VmUser {
             " password = Password('$new_password') " .
             " WHERE extension = " . $this->mailbox;
        $res = $this->db->query($q);
+
        if (DB::isError($res)) {
          $log->log("FAILED TO VmUser->updatePassword : $q",LOG_ERR);
-         return false;
+         $returnValue = false;
+       } else { 
+         $returnValue = true;
        }
-
        change_to_default_db($this->db);
-       return true;
+       return $returnValue;
      } else {
        $log->log("VmUser->updatePassword called with blank fields: $this->mailbox ",LOG_ERR);
        return false;
      }
    }
+   function clearPersonalInfo() {
+     global $log; 
+     if ($this->mailbox && $this->db && $this->domain) {
+       if (!$this->voicemail_db ) {
+          $this->voicemail_db = get_voicemail_db($this->db, $this->domain);
+       }
+
+       change_db($this->db, $this->voicemail_db);
+       $q ="UPDATE VM_Users SET first_name='',last_name='', phone_keys_first_name=NULL,"
+         . "  phone_keys_last_name =NULL, "
+         . " email_address='', email_user_name='',email_password='',name_wav_path='', " 
+         . "  name_wav_file='', mobile_email=null , mobile_email_flag=0 "
+         . " WHERE extension =".  $this->mailbox; 
+
+       $log->log("Gonna VmUser->clearPersonalInfo() : $q",LOG_ERR);
+       $res = $this->db->query($q);
+       if (DB::isError($res)) {
+         $log->log("FAILED TO VmUser->clearPersonalInfo() : $q",LOG_ERR);
+         $returnValue = false;
+       } else { 
+         $returnValue = true;
+       } 
+       change_to_default_db($this->db);
+       return $returnValue;
+     } else {
+       $log->log("VmUser->clearPersonalInfo called with blank fields: $this->mailbox ",LOG_ERR);
+       return false;
+     } 
+   } 
 
    function deactivate() {
     global $log;
@@ -165,13 +231,13 @@ class VmUser {
        $res = $this->db->query($q);
        if (DB::isError($res)) {
          $log->log("FAILED TO VmUser->deactivate : $q",LOG_ERR);
-         return false;
-       }
+         $returnValue = false; 
+       } else { 
+         $returnValue =  true;
+       } 
 
        change_to_default_db($this->db);
-       return true;
-        
- 
+       return $returnValue;
     }  else { 
        $log->log("VmUser->deactivate called with blank fields: $this->mailbox ",LOG_ERR);
        return false;
@@ -230,17 +296,64 @@ class VmUser {
 
        if (DB::isError($res)) {
           $log->log("FAILED QUERY : $q");
-       }
-
+          $returnValue = false; 
+       } else {
+          $returnValue = true; 
+       } 
 
        change_to_default_db($this->db);
-       return true;
+       return $returnValue ;
     } else {
       $log->log("ERRROR: Tried to updateVmFlags with no extension ");
     } 
 
 
   } 
+
+  function savePerm($new_perm) {
+    global $log ;
+    if ($this->mailbox && preg_match("/SUPER|ADMIN/USER/", $new_perm))  {
+       $voicemail_db = $this->get_voicemail_db($this->udomain);
+       $this->change_db($voicemail_db );
+
+       $q="UPDATE VM_Users SET permission_id = '$new_perm' WHERE "
+          . " extension=  ". $this->mailbox;
+       $res=$this->db->query($q);
+       if (DB::isError($res)) {
+         $log->log("QUERY FAILED $q " . $res->getMessage());
+       }
+       change_to_default_db($this->db);
+
+    } else {
+      $log->log("ERRROR: Tried to savePerm with no extension or invalid perm $new_perm");
+    }
+  }
+
+  function getPermOptions() {
+     if (!$this->permission_id) {
+       $this->get(); 
+     }  
+
+     switch( $this->permission_id ) {
+        case "SUPER":
+          $perm_options[]='SUPER';
+          $perm_options[]='ADMIN';
+          $perm_options[]='USER';
+          break;
+        case "ADMIN":
+          $perm_options[]='ADMIN';
+          $perm_options[]='USER';
+          break;
+        case "USER":
+          $perm_options[]='USER';
+          break;
+     }
+        return $perm_options;
+                                                                                                                                               
+  }
+
+  
+
 
 }
 ?>

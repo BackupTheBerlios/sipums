@@ -21,6 +21,11 @@ page_open (array("sess" => "phplib_Session_Pre_Auth",
 ## do this in every file after the page_open
 $perm->check('USER');
 
+if ($perm->have_perm('SUPER'))  {
+  change_domain();
+}
+
+
 $header_smarty = get_smarty_header($data, $auth, $perm); 
 
 $reports_smarty = get_smarty(); 

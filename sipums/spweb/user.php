@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: user.php,v 1.5 2004/08/03 21:12:52 kenglish Exp $
+ * $Id: user.php,v 1.6 2004/08/11 03:31:02 kenglish Exp $
  */
 
 require 'prepend.php';
@@ -22,12 +22,12 @@ page_open (array("sess" => "phplib_Session_Pre_Auth",
 
 if ( $perm->check('USER')) {
   // we send them to the account page
-  do_debug("he, redirect here...");
+  $log->log("he, redirect here...");
   header('Location: account.php'); 
   exit ;
 }  
 
-  do_debug("No Redirect...");
+  $log->log("No Redirect...");
 
 ## do this in every file after the page_open
 

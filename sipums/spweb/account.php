@@ -171,6 +171,18 @@ function update_user_info(){
          $user_info_msgs[] = "Could not change user's mailbox to " . $_POST[mailbox] .".  It is already assigned to another user." ;
          $user_info_msgs[] = "Before assigning an old mailbox to a user, you must first delete it using the 'mailboxes' tab." ; 
          return $user_info_msgs;  
+     } elseif (!$_POST[mailbox])  { 
+       $log->log("Want to remove mailbox from user"); 
+       // this means they are disassociating the old mailbox with this account. 
+       $vmUser = new vmUser($data->db,	$spUser->username,$spUser->domain,$_POST[old_mailbox],$spUser->voicemailDbName); 
+       $temp_mailbox = $_POST[old_mailbox] ; 
+       $log->log("Calling Deactivate"); 
+       $vmUser->deactivate(); 
+       $vmUser->clearPersonalInfo(); 
+       $vmUser = null; 
+       $spUser->mailbox = null;  
+       $spUser->removeMailbox();
+       $user_info_msgs[] = "Mailbox $temp_mailbox no longer belongs to user "; 
      }  else {
        // deactivate the old mailbox
        if ($vmUser->deactivate())  { 
@@ -376,12 +388,12 @@ page_open (array("sess" => "phplib_Session_Pre_Auth",
    "perm" => "phplib_Perm"));
 $perm->check('USER');
 //get those smarties
-$header_smarty = get_smarty_header($data, $auth, $perm); 
-$account_smarty = get_smarty(); 
 
 // get what user we are editing, default is himself...
 $edit_uname = $auth->auth[uname]; 
 $edit_udomain = $auth->auth[udomain]; 
+
+$account_smarty = get_smarty(); 
 
 // Check persmissions  and get the drop down of users  if the guy has permissions
 if ($perm->have_perm('ADMIN')) { 
@@ -403,14 +415,17 @@ if ($perm->have_perm('ADMIN')) {
   
   if ($FORM_VARS[gfunc] == 'change_edit_user') { 
      list($edit_uname,$edit_udomain) = split('@',$FORM_VARS[edit_user]); 
-     do_debug("gonna change edit user to $edit_uname,$edit_udomain" ); 
+     $log->log("Wanna change edit user to $edit_uname,$edit_udomain" ); 
      change_edit_user($edit_uname,$edit_udomain); 
+
+     $log->log("Wanna change change_domain $edit_udomain" ); 
+     change_domain($edit_udomain); 
   } else {
     global $gedit_uname; 
     global $gedit_udomain; 
-    do_debug("Getting edit user off the session $gedit_uname,$gedit_udomain" ); 
+    $log->log("Getting edit user off the session $gedit_uname,$gedit_udomain" ); 
     if ($gedit_uname && $gedit_udomain ) {
-       do_debug("Getting edit user off the session $gedit_uname,$gedit_udomain" ); 
+       $log->log("Getting edit user off the session $gedit_uname,$gedit_udomain" ); 
        $edit_uname   = $gedit_uname   ;
        $edit_udomain = $gedit_udomain ;
     } 
@@ -418,6 +433,13 @@ if ($perm->have_perm('ADMIN')) {
   $account_smarty->assign('edit_users',$edit_users);
   $account_smarty->assign('edit_user',"$edit_uname@$edit_udomain");
 }
+
+// this is  to check for the change domaiN
+global $adomain; 
+if ($perm->have_perm('SUPER') && !$adomain)  {
+  change_domain(); 
+}
+$header_smarty = get_smarty_header($data, $auth, $perm); 
 
 /* Initialize the object $data, $spUser and $vmUser 
     data =  helper database function
