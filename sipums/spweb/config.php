@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: config.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: config.php,v 1.2 2004/08/03 09:14:40 kenglish Exp $
  */
 
 /*****************************************************************************
@@ -232,8 +232,8 @@
 		   for more information
 		*/
 
-		$config->enable_loging = true;
-		$config->log_file = "/var/log/serweb";
+		$config->enable_loging = false;
+		$config->log_file = "/var/log/spweb.log";
 
 		/* ------------------------------------------------------------*/
 		/* Speed dial                                                  */

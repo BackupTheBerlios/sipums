@@ -12,6 +12,10 @@ default: compile
 compile:  
 	rm -f .compiledok
 install:  .compiledok
+	mkdir -p $(BASEDIR)/data_layer
+	mkdir -p $(BASEDIR)/lib
+	mkdir -p $(BASEDIR)/style
+	mkdir -p $(BASEDIR)/templates
 	$(INSTALL) -v -m 644 *.php $(BASEDIR)
 	$(INSTALL) -v -m 644 data_layer/*.php $(DATADIR)
 	$(INSTALL) -v -m 644 lib/*.php $(LIBDIR)

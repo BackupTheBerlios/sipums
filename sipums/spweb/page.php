@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: page.php,v 1.2 2004/08/03 08:06:27 kenglish Exp $
+ * $Id: page.php,v 1.3 2004/08/03 09:14:40 kenglish Exp $
  */
 
 function put_headers(){

@@ -371,13 +371,23 @@ sub record($$$$$) {
    
  
    my $wav = new Audio::Wav;
+
+   sub do_error {
+     my( %parameters ) = @_;
+      syslog('debug',"Audio::Wav ERROR: $parameters{'filename'}: $parameters{'message'}");
+      ivr::msleep(50);
+   } 
+
+   $wav->set_error_handler( \&do_error );
+
    my $read ; 
    
    syslog('debug', "Going to Read WAV");
 
-   ivr::msleep(500);
+   ivr::msleep(50);
    $read = $wav->read($file); 
    syslog('debug', "Read Wave file");
+
 
 
    use Data::Dumper;

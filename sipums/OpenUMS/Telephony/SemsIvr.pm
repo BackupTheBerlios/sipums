@@ -47,8 +47,6 @@ sub get_key {
   } 
   push @Telephony::SemsIvr::keys, $key;
 
-
-  print "\n\n\n CALLED GET KEYS $key\n\n\n"; 
   if ($Telephony::SemsIvr::MEDIA_STATE == MEDIA_PLAYING ) { 
      ## stop the media from playing, 
      ivr::emptyMediaQueue();
