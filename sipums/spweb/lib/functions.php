@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: functions.php,v 1.14 2004/08/30 04:22:54 kenglish Exp $
+ * $Id: functions.php,v 1.15 2004/09/08 22:28:39 kenglish Exp $
  */
 
 
@@ -645,9 +645,9 @@ function do_debug($msg) {
     global $log; 
     $caller_id = str_replace("<sip:",'', $caller_id);
     $caller_id = str_replace(">",'',$caller_id);
-    $log->log("caller_id = " . $caller_id  );
     list($number, $domain) = split('@', $caller_id);
     $caller_id = $number ;
+    $caller_id = str_replace("\"",'', $caller_id);
     return $caller_id; 
 
  } 

@@ -241,12 +241,12 @@ class SpUser {
       $username = $this->username; 
       $domain  =  $this->domain; 
   
-      if ($first_name && $last_name) { 
+      //if ($first_name && $last_name) { 
          $AREA_CODE = $this->AREA_CODE; 
          $caller_id = "\"\" <sip:$this->AREA_CODE$username@$domain>"; 
-      }  else {
-         $caller_id = "<sip:$username@$domain>"; 
-      } 
+      //}  else {
+      //   $caller_id = "<sip:$username@$domain>"; 
+      //} 
 
       $log->log("setCallerIdToDid, saving caller_id = $caller_id"); 
 
