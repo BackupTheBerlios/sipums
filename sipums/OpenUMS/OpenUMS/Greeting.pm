@@ -1,5 +1,5 @@
 package OpenUMS::Greeting;
-### $Id: Greeting.pm,v 1.2 2004/07/31 20:27:05 kenglish Exp $
+### $Id: Greeting.pm,v 1.3 2004/08/05 09:14:14 kenglish Exp $
 # Greeting.pm
 #
 # Greets
@@ -72,7 +72,7 @@ sub get_greeting_sound {
      if (!$greeting_wav_file) {
        return OpenUMS::Greeting::get_no_greeting_sound($ext);    
      } else { 
-       return "$greeting_wav_path$greeting_wav_file"; 
+       return  BASE_PATH . "$greeting_wav_path$greeting_wav_file"; 
      }
   } 
   return "hi";

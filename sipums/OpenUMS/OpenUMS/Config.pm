@@ -1,5 +1,5 @@
 package OpenUMS::Config;
-### $Id: Config.pm,v 1.5 2004/07/31 20:27:05 kenglish Exp $
+### $Id: Config.pm,v 1.6 2004/08/05 09:14:14 kenglish Exp $
 #
 # Config.pm
 #
@@ -37,6 +37,7 @@ use constant PROMPT_PATH        => BASE_PATH . "prompts/";
 use constant TEMP_PATH          => "spool/temp/";
 use constant STORE_PATH         =>  "spool/store/";
 use constant USER_PATH          => BASE_PATH . "users/";
+use constant USER_REL_PATH          => "users/";
 use constant DEFAULT_INVALID_SOUND => "invalid.wav";
 
 ### These constants configure the basic box and phone system.
@@ -138,7 +139,7 @@ use constant DELIVERMAIL_ERRFILE => '/var/log/openums/delivermail.err';
 
 our @EXPORT=qw(SAFE_PATH
 
-               BASE_PATH PROMPT_PATH TEMP_PATH STORE_PATH USER_PATH
+               BASE_PATH PROMPT_PATH TEMP_PATH STORE_PATH USER_PATH USER_REL_PATH
                AUTOATTENDANT_PATH DEFAULT_INVALID_SOUND 
 
                MAX_PORTS MAX_EXTENSION_DIGITS DEFAULT_PASSWORD

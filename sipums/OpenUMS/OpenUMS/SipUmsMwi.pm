@@ -1,4 +1,4 @@
-### $Id: SipUmsMwi.pm,v 1.3 2004/08/01 20:06:13 kenglish Exp $
+### $Id: SipUmsMwi.pm,v 1.4 2004/08/05 09:14:14 kenglish Exp $
 #
 # Copyright (C) 2003 Comtel
 #
@@ -66,7 +66,7 @@ sub update_mwis($$)
   my @exts = sort keys %{$data} ; 
   foreach my $ext (@exts ) { 
      $log->debug("$ext, doing send mwi  " . $data->{$ext}->{action}  ); 
-     send_mwi($user_mailboxes->{$ext}, $data->{$ext}->{action} );
+     send_mwi($user_mailboxes->{$ext}, $data->{$ext}->{action},$data->{$ext}->{new_message_count}, $data->{$ext}->{saved_message_count}  );
      save($dbh,$ext,$data->{$ext}->{new_message_count});
   } 
 
@@ -104,7 +104,10 @@ sub get_data {
    my $sth  = $dbh->prepare($sql);
    $sth->execute();
                                                                                                                                                
-   my $sth2 = $dbh->prepare("SELECT count(*) FROM VM_Messages WHERE extension_to = ? AND message_status_id = 'N'");
+   my $sth_new = $dbh->prepare("SELECT count(*) FROM VM_Messages WHERE extension_to = ? AND message_status_id = 'N'");
+
+   my $sth_saved = $dbh->prepare("SELECT count(*) FROM VM_Messages WHERE extension_to = ? AND message_status_id = 'S'");
+
    my %data;
                                                                                                                                                
    my $data;
@@ -112,19 +115,26 @@ sub get_data {
    while (my ($ext,$last_new_msg_count, $last_sent_uts, $last_visit_uts) = $sth->fetchrow_array() ) {
 
                                                                                                                                                
-      $sth2->execute($ext);
-      my $new_msg_count = $sth2->fetchrow();
-      $sth2->finish();
+      $sth_new->execute($ext);
+      my $new_msg_count = $sth_new->fetchrow();
+      $sth_new->finish();
+
+      $sth_saved->execute($ext);
+      my $saved_msg_count = $sth_saved->fetchrow();
+      $sth_saved->finish();
+
       $log->debug("$ext $last_new_msg_count $new_msg_count"); 
 
       ## if they have no new messages and they had new messages before, we turn it off...
       if (!$new_msg_count && $last_new_msg_count) {
+          $data->{$ext}->{saved_message_count} = $saved_msg_count ; 
           $data->{$ext}->{new_message_count} = $new_msg_count ; 
           $data->{$ext}->{action}  = 'D'; ## deactivate
       }
                                                                                                                                                
       ## if they had no new messages and they have new messages now, we turn it off...
      if (!$last_new_msg_count && $new_msg_count) {
+          $data->{$ext}->{saved_message_count} = $saved_msg_count ; 
           $data->{$ext}->{new_message_count} = $new_msg_count ; 
           $data->{$ext}->{action} = 'A'; ## activate
       }
@@ -132,6 +142,7 @@ sub get_data {
 
       ## if they logged in and still have new messages
       if ($last_visit_flag && $new_msg_count) {
+          $data->{$ext}->{saved_message_count} = $saved_msg_count ; 
           $data->{$ext}->{new_message_count} = $new_msg_count ; 
           $data->{$ext}->{action} = 'A'; ## activate
       }
@@ -142,16 +153,15 @@ sub get_data {
                FROM VM_Users u INNER JOIN  VM_Messages m on (u.extension = m.extension_to)
                WHERE m.message_status_id ='N'
                GROUP BY extension, unix_timestamp(last_visit) };
-
    $sth  = $dbh->prepare($sql);
    $sth->execute();
-   while (my ($ext,$last_visit_uts, $last_msg_uts,$new_message_count) = $sth->fetchrow_array() ) {
-      $log->debug("$ext--> $new_message_count");
-      if ($last_msg_uts > $last_visit_uts) { 
-          $data->{$ext}->{new_message_count} = $new_message_count; 
-          $data->{$ext}->{action} = 'A'; ## activate
-      } 
-   } 
+
+   #while (my ($ext,$last_visit_uts, $last_msg_uts,$new_message_count) = $sth->fetchrow_array() ) {
+   #   $log->debug("$ext--> $new_message_count");
+   #   if ($last_msg_uts > $last_visit_uts) { 
+   #       $data->{$ext}->{action} = 'A'; ## activate
+   #   } 
+   #} 
    
 
    return $data ;
@@ -222,7 +232,9 @@ sub save {
 ## sub send_mwi
 #################################
 sub send_mwi {
-  my ($ser_user, $mwi_action) = @_;
+  my ($ser_user, $mwi_action,$new_count, $saved_count) = @_;
+  $saved_count = "0" if (!$saved_count); 
+  $new_count = "0" if (!$saved_count); 
   my $flash; 
 
   if ($mwi_action eq 'A') {
@@ -252,7 +264,7 @@ Event: message-summary
 Content-Type: application/simple-message-summary
                                                                                                                                                
 Messages-Waiting: $flash
-Voicemail: 2/5
+Voicemail: $new_count/$saved_count
 .
                                                                                                                                                
 );

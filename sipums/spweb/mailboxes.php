@@ -28,6 +28,7 @@ $qdomains = array();
 
 if ($perm->have_perm('SUPER')){
   $qdomains[0] = 'ALL';
+  #$mb_smarty->assign(edit_permission) = get_smarty(); 
   global $adomain;
   if ($FORM_VARS[domain]) {
     $qdomains[0] = $FORM_VARS[domain];
@@ -38,6 +39,7 @@ if ($perm->have_perm('SUPER')){
   ## here we'd query the reseller domains  $qdomain[] = $auth->
 } elseif ($perm->have_perm('ADMIN') ) {
   $qdomains[] = $auth->auth[udomain];
+   
 }
 
 $footer_smarty = get_smarty(); 

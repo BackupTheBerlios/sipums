@@ -190,9 +190,17 @@ if ($FORM_VARS[func] == 'update_user_vm') {
     }
   }
   // Are they adding a new mailbox?
-  if ($data->adding_mailbox_check($user_info[mailbox) ) {
-
-  }
+  if (!$FORM_VARS[old_mailbox] && $FORM_VARS[mailbox] ) { 
+    do_debug("They are adding a mailbox\n\n ");
+    if ($data->create_mailbox($user_info)) { 
+       $user_info_msgs[] = "Mailbox created.";
+    }  else {
+       $user_info_msgs[] = "Could not create mailbox.";
+       $user_info[mailbox] = ""; 
+    } 
+  } elseif($FORM_VARS[old_mailbox] !=$FORM_VARS[mailbox] ) { 
+    // Are they updating a new mailbox?
+  } 
 
 
   if ($do_update) { 

@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: edit_subscriber.php,v 1.4 2004/08/03 09:14:40 kenglish Exp $
+ * $Id: edit_subscriber.php,v 1.5 2004/08/05 09:14:14 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -39,7 +39,6 @@ class CData_Layer extends CDL_common{
       do_debug("Error looking up by name");
       return 0;
     }
-                                                                                                                                               
     $row = $res->fetchRow(DB_FETCHMODE_ORDERED);
     $res->free();
     $perm = $row[0];

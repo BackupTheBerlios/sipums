@@ -1,6 +1,6 @@
 package OpenUMS::Menu::IntroMP ; 
 
-### $Id: IntroMP.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
+### $Id: IntroMP.pm,v 1.3 2004/08/05 09:14:14 kenglish Exp $
 #
 # .pm
 #
@@ -76,7 +76,7 @@ sub _play_menu () {
       if  ($msound->{var_name} eq 'NAME') {
         my ($name_wav_file , $name_wav_path) = OpenUMS::DbQuery::get_name_file($self->{DBH}, $user->extension);
         if ($name_wav_file ) { 
-          push @to_play_sounds, "$name_wav_path$name_wav_file"; 
+          push @to_play_sounds, BASE_PATH . "$name_wav_path$name_wav_file"; 
         } 
       } 
       elsif ($msound->{var_name} eq 'NEW_MESSAGE_COUNT' ) {

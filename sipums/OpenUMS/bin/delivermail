@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.4 2004/08/01 20:06:13 kenglish Exp $
+### $Id: delivermail,v 1.5 2004/08/05 09:14:14 kenglish Exp $
 #
 # delivermail
 #
@@ -134,8 +134,9 @@ while(1)
 
       $log->debug("process_unsent_messages for $DB_NAME");
       $dbh->do("use " . $DB_NAME);
-      &process_unsent_messages($dbh);
+      my $sent = &process_unsent_messages($dbh);
       ##  update the MWIs
+      $log->debug("$DB_NAME DELIVERED $sent NEW MESSAGES");
 
       $dbh->do("use " . SER_DB_NAME);
 
@@ -144,7 +145,6 @@ while(1)
       $dbh->do("use $DB_NAME");
 
       $log->debug("OpenUMS::SipUmsMwi::update_mwis  for $DB_NAME, " );
-
       OpenUMS::SipUmsMwi::update_mwis($dbh,$users_mailboxes); 
     } 
     $log->debug("disconnecting dbh...");
@@ -881,7 +881,7 @@ sub process_unsent_messages($)
                WHERE message_status_id = 'V');
   my $sth = $dbh->prepare($sql);
   $sth->execute();
-
+  my $unsent_count = 0; 
   ### loop through each
   while (my $msg_href = $sth->fetchrow_hashref())
     {
@@ -945,11 +945,13 @@ sub process_unsent_messages($)
        ### Do they want a mobile notice?
        if ( defined(my $mobile_email = get_mobile_email_flag($extension)) )
          { send_mobile_notice($msg_href, $mobile_email); }
+       $unsent_count++; 
     }
 
   ### Cleanup on aisle 12.
   $sth->finish();
   $log->info('Finished processing.');
+  return $unsent_count; 
 }
 
 

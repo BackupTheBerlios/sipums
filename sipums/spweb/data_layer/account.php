@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: account.php,v 1.5 2004/08/05 08:52:43 kenglish Exp $
+ * $Id: account.php,v 1.6 2004/08/05 09:14:14 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -71,26 +71,7 @@ class CData_Layer extends CDL_common{
        do_debug("user_info $key;$value"); 
     } 
 
-    if (is_numeric($this->user_info[mailbox])  ) { 
-       do_debug("GONNA GET VM INFO");
-
-       $vm_info  = $this->get_vm_info() ; 
-       
-       if (!$vm_info[extension]) { 
-          if (!$this->create_mailbox($error)) { 
-             $error = "Failed to add mailbox";     
-	     do_debug("create_mailbox failed $error");
-             return false ;   
-	  } 
-       } else {  
-          do_debug("calling update_mailbox");
-          $this->update_mailbox() ;
-       } 
-
-    }  else { 
-       do_debug("mailbox is not numeric");
-    }
-
+          // $this->update_mailbox() ;
     do_debug("CALLED update_user_info "); 
     if ($this->uname and $this->udomain) {  
        $first_name = $this->db->quote($this->user_info[first_name]);
@@ -190,7 +171,6 @@ class CData_Layer extends CDL_common{
     $this->db->_db=$config->data_sql->db_name ; 
     $this->change_db($this->db->_db);
     do_debug("changed db : " . $this->db->_db); 
-    
 
 /** $res = $this->db->query("SELECT count(*) from domain");
     if (DB::isError($res)) {
@@ -206,16 +186,17 @@ class CData_Layer extends CDL_common{
   } 
 
 
-  function create_mailbox() {
-    if ($this->user_info[mailbox]) { 
-       do_debug("called create_mailbox()");  
-       if (!$this->user_info[voicemail_db]) {
-           $this->get_voicemail_db($this->udomain);
-       }
+  function create_mailbox($p_user_info) {
+    do_debug("called create_mailbox($mailbox)");  
+
+    if ($p_user_info[mailbox]) { 
+       $voicemail_db = $this->get_voicemail_db($this->udomain);
        $cmd = "perl /usr/local/openums/addvmuser " .   
-              $this->user_info[mailbox] . " \"" .
-              $this->user_info[first_name]. "\" \"" .$this->user_info[last_name] . "\" " . $this->user_info[voicemail_db]  ;
+              $p_user_info[mailbox] . " \"" .
+              $p_user_info[first_name]. "\" \"" .$p_user_info[last_name] . "\" " . $voicemail_db  ;
+
        $output = `$cmd` ;
+
        do_debug("\ndid $cmd: $output ");
        if (preg_match("/Success/", $output) ) {
           do_debug("ADD VM USER SUCCESS");

@@ -1,5 +1,5 @@
 package OpenUMS::DbQuery;
-### $Id: DbQuery.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
+### $Id: DbQuery.pm,v 1.3 2004/08/05 09:14:14 kenglish Exp $
 #
 # DbQuery.pm
 #
@@ -175,7 +175,7 @@ sub get_new_name_file {
   my $ext = shift;
   my $now = OpenUMS::Common::get_timestamp();
   ## for now we'll just put them in the greeeting dir..
-  my $name_wav_path = USER_PATH . "$ext/greetings/";
+  my $name_wav_path = USER_REL_PATH . "$ext/greetings/";
   my $name_wav_file = $ext . "_name_" . $now . ".wav";
                                                                                                                              
   return ($name_wav_file, $name_wav_path );

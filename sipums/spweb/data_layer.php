@@ -593,15 +593,20 @@ class CDL_common{
       if (DB::isError($res)) {
            do_debug("FAILED QUERY : $q");
       }
+
       do_debug("QUERY : $q");
       $out=array();
+
       while ($row=$res->fetchRow(DB_FETCHMODE_ORDERED) ) {
-         $out[]=$row[0];
+         $voicemail_db=$row[0];
+         do_debug("voicemail_Db $voicemail_db");
       }
       $res->free();
 
-      $this->user_info[voicemail_db] = $out[0];
-      return $out[voicemail_db];
+      if ($this->user_info) { 
+        $this->user_info[voicemail_db] = $voicemail_db; 
+      }
+      return $voicemail_db; 
     } else {
       do_debug("get_voicemail_db : udomain not set ");
       return 0;
@@ -611,6 +616,7 @@ class CDL_common{
    
   function change_db ($db_name) {
     do_debug("change db to $db_name");
+    $this->db->_db = $db_name ;   
     if (!@mysql_select_db($db_name, $this->db->connection)) {
         do_debug("COULD NOT CHANGE DB TO $db_name");
         return ; 

@@ -1,5 +1,5 @@
 package OpenUMS::Menu::UserSettingsMP ; 
-### $Id: UserSettingsMP.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
+### $Id: UserSettingsMP.pm,v 1.3 2004/08/05 09:14:14 kenglish Exp $
 #
 # UserSettingsMP.pm
 #
@@ -259,7 +259,7 @@ sub process {
             my $ctport = $self->{CTPORT} ; 
             $ctport->play(PROMPT_PATH . "greeting_activate.wav");
         } elsif ($item_action eq 'SAVENAME') {
-            $log->debug("[UserSetting.pm] SAVING NAME FOR  USER " . $user->extension());
+            $log->debug("[UserSetting.pm] SAVING NAME FOR USER " . $user->extension());
             $user->save_name();
 #           my $ctport = $self->{CTPORT} ;
 #           $ctport->play(PROMPT_PATH . "greeting_activate.wav");

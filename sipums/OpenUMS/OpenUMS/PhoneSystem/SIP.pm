@@ -1,5 +1,5 @@
 package OpenUMS::PhoneSystem::SIP ; 
-### $Id: SIP.pm,v 1.6 2004/08/03 21:27:08 kenglish Exp $
+### $Id: SIP.pm,v 1.7 2004/08/05 09:14:14 kenglish Exp $
 #
 # SIP.pm
 #
@@ -58,7 +58,8 @@ sub hangup_occurred {
 #################################
 
 sub send_mwi_on {
- my ($user) = @_;  
+ my ($user,$new_count, $saved_count) = @_;  
+   
 
  my $mwi_fifo_cmd = qq(:t_uac_dlg:hh
 NOTIFY

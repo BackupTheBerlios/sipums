@@ -12,6 +12,8 @@
         <th align="left">Domain</td>
         <th align="left">Line Count</td>
         <th align="left">Voicemail DB </td>
+        <th align="left">Company Name</td>
+        <th align="left">Main Number</td>
         <th align="left" >&nbsp;</td>
       </tr>
    <!--{foreach name=domains item=domain from=$domains}-->
@@ -31,11 +33,23 @@
               <!--{if !$domain.voicemail_db}-->  
                      NO VOICEMAIL SETUP  
               <!--{/if}-->  
-              <a href="edit_domain.php?domain=<!--{$domain.domain}-->&change_domain=1"><!--{$domain.voicemail_db}--></a>
+              <!--<a href="edit_domain.php?domain=<!--{$domain.domain}-->&change_domain=1">-->
+              <!--{$domain.voicemail_db}--> <!--</a>-->
+            </span>
+
+        </td>
+        <td nowrap="nowrap">
+            <span style="overflow:hidden;text-overflow:ellipsis;">
+              <!--{$domain.company_name}--> 
             </span>
         </td>
-        <td align="left" >&nbsp;</td>
-      </tr>
+        <td nowrap="nowrap">
+            <span style="overflow:hidden;text-overflow:ellipsis;">
+              <!--{$domain.company_number}--> 
+            </span>
+        </td>
+        <td nowrap="nowrap">&nbsp;</td>
+      </TR>
    <!--{/foreach}-->
      
   </table>

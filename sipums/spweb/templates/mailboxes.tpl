@@ -34,10 +34,8 @@
 <!--{foreach from=$mailboxes item=mb}-->
 <TR>
    <Td><!--{$mb.extension}--></Td>
-   <Td><a href='account.php?func=change_edit_user&edit_user=<!--{$mb.user}-->'><!--{$mb.did|default:"&nbsp;"}--></a> </Td>
-   <Td><!--{if $mb.last_name}--><!--{$mb.last_name}-->, <!--{/if}--><!--{$mb.first_name}-->
-
-       <!--{if !$mb.last_name && !$mb.first_name }-->&nbsp;<!--{/if}--></Td>
+   <Td><a href='account.php?gfunc=change_edit_user&edit_user=<!--{$mb.user}-->'><!--{$mb.did|default:"&nbsp;"}--></a> </Td>
+   <Td><!--{if $mb.last_name}--><!--{$mb.last_name}-->, <!--{/if}--><!--{$mb.first_name}--> </Td>
    <Td><!--{$mb.email_address|default:"&nbsp;"}--> </Td>
    <Td><!--{$mb.email_user_name|default:"&nbsp;"}--> </Td>
    <TD><!--{$mb.store_flag}--> - <!--{$mb.email_delivery}--><!--{$mb.vstore_email}--></td>
@@ -47,7 +45,7 @@
    <Td><!--{if $mb.mwi_flag}-->Y<!--{else}-->N<!--{/if}--></Td>
    <Td><!--{if $mb.auto_login_flag}-->Y<!--{else}-->N<!--{/if}--></Td>
    <Td><!--{if $mb.auto_new_messages_flag}-->Y<!--{else}-->N<!--{/if}--></Td>
-   <Td><a href="admin.cgi?mod=UserAdmin&func=edit_permission&ext=<!--{$mb.extension}-->"><!--{$mb.permission_id}--></a></td>
+   <Td><a href="edit_mb.php?func=edit_perm&ext=<!--{$mb.extension}-->"><!--{$mb.permission_id}--></a></td>
    
    <Td><!--{if !$mb.user}--><a href='edit_mb.php?func=delete_mailbox&ext=<!--{$mb.extension}-->'>delete</a><!--{else}-->&nbsp;<!--{/if}--> </td>
    <Td><a href="edit_mb.php?func=change_password&ext=<!--{$mb.extension}-->">Change Mailbox Password</a></Td>
@@ -60,7 +58,10 @@
 </TR>
 <!--{/foreach}-->
 </TABLE>
-<TABLE> <TR><TH align=center colspan=2> Flags Legend</tH></tr>
+<TABLE> 
+<TR><TH align=center colspan=2>To delete a mailbox, you must first remove it from the subscriber line.</tH></tr>
+
+<TR><TH align=center colspan=2> Flags Legend</tH></tr>
 <td valign=top align=right> Strorage: </td>
 <td valign=top> V - Voicemail Store <BR>
      E - Email Store </td>

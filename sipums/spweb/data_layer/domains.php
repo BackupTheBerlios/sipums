@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: domains.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: domains.php,v 1.2 2004/08/05 09:14:14 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -8,10 +8,12 @@ class CData_Layer extends CDL_common{
   function get_domains($include_count) { 
       $q="";
       if ($include_count) { 
-         $q = "SELECT d.domain domain, d.voicemail_db, count(s.username) user_count FROM domain d LEFT JOIN subscriber s ON (d.domain = s.domain) group by d.domain,d.voicemail_db"; 
+         $q = "SELECT d.domain domain, d.voicemail_db, d.company_name, d.company_number, count(s.username) user_count FROM domain d LEFT JOIN subscriber s ON (d.domain = s.domain) group by d.domain,d.voicemail_db,d.company_name, d.company_number"; 
       } else { 
          $q = "SELECT domain, voicemail_db FROM domain";  
+  
       } 
+      do_debug("sql  - $q") ; 
       $res=$this->db->query($q);
       $out=array();
       while ($row=$res->fetchRow(DB_FETCHMODE_ASSOC ) ) {

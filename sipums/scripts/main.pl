@@ -53,6 +53,8 @@ $log->debug("-- -- CALL FROM $caller");
 #my $dbh = OpenUMS::Common::get_dbh();
 my $dbh = OpenUMS::Common::get_dbh("ser");
 
+my $main_number_flag = &is_domain_main_number($dbh, $uname,$domain); 
+
 my $extension  = &get_user_extention($dbh,$uname,$domain); 
 my $domain_vm_db =  &change_domain_db($dbh,$domain); 
 
@@ -76,12 +78,12 @@ $GLOBAL_SETTINGS->load_settings($domain_vm_db);
       $ctport->play("/var/spool/openums/prompts/goodbye.wav"); 
       $log->debug("GOT BACK $keys ");
 
-      sleep(10);
+     sleep(10);
      exit ;
   } 
  ## this figures out what menu to play
  my $action = 'auto_attendant';  ## default is always auto_attendant
- if  (!$extension) {
+ if  (!$extension || $main_number_flag) {
    $action = 'auto_attendant';  
  }  elsif ($caller eq $uname){
    ## if the phone called from is the same as the number, they are checking voicemail
@@ -90,7 +92,7 @@ $GLOBAL_SETTINGS->load_settings($domain_vm_db);
    ## default, take a message for that extension
    $action = 'take_message';
  }  
- $action = 'auto_attendant';
+ # $action = 'auto_attendant';
 
  my $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, $action);
 
@@ -111,6 +113,7 @@ $log->debug("Signalling delivermail");
 $log->debug("finalize");
 $ctport->finalize();
 $log->debug("exit");
+ivr::sleep(3); 
 exit; 
 
 ## open the sys log
@@ -195,6 +198,15 @@ sub get_user_extention {
     return $ext ;
   }
 
+}
+sub is_domain_main_number {
+  my ($dbh, $number,$domain) = @_;
+  my $sql = qq{SELECT count(*) FROM domain 
+     WHERE company_number = '$number' 
+        AND domain ='$domain' } ; 
+  my $arr = $dbh->selectrow_arrayref($sql);
+  my $count = $arr->[0];
+  return $count ; 
 }
 
 

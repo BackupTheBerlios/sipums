@@ -24,14 +24,16 @@ class spCpl {
     //   do_debug("get_dnd_xml $this->uname, $this->udomain");
     $xmlstr = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- (call_setting=dnd) --> 
+ 
 <!DOCTYPE cpl PUBLIC '-//IETF//DTD RFCxxxx CPL 1.0//EN' 'cpl.dtd'>
-<!-- (call_setting=dnd) -->
 <cpl>
   <incoming>
-    <location url="sip:voicemail+$this->uname@$this->udomain">
-     <proxy /> </location>
+    <location url="sip:ivr+$this->uname@$this->udomain">
+      <proxy />
+    </location>
   </incoming>
- </cpl>
+</cpl>
 XML;
     return $xmlstr ; 
   }
@@ -41,12 +43,24 @@ XML;
     ///      do_debug("_get_forward $this->uname, $this->udomain $forward_number");
   $xmlstr = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE cpl PUBLIC '-//IETF//DTD RFCxxxx CPL 1.0//EN' 'cpl.dtd'>
 <!-- (call_setting=fwd) -->
-<cpl> 
-  <incoming> 
+ 
+<!DOCTYPE cpl PUBLIC '-//IETF//DTD RFCxxxx CPL 1.0//EN' 'cpl.dtd'>
+<cpl>
+  <subaction id="voicemail">
+    <location url="sip:ivr+$this->uname@$this->udomain">
+      <proxy />
+    </location>
+  </subaction>
+  <incoming>
     <location url="sip:$forward_number@$this->udomain">
-    <redirect /> </location> 
+      <proxy>
+        <failure />
+        <default>
+          <sub ref="voicemail" />
+        </default>
+      </proxy>
+    </location>
   </incoming>
 </cpl>
 XML;
@@ -56,19 +70,41 @@ XML;
   function _get_ring_both_xml($rb_number)  {
     ///      do_debug("_get_ring_both_xml $this->uname, $this->udomain $rb_number");
       $xmlstr = <<<XML
+
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE cpl PUBLIC '-//IETF//DTD RFCxxxx CPL 1.0//EN' 'cpl.dtd'>
 <!-- (call_setting=rb) -->
+ 
+<!DOCTYPE cpl PUBLIC '-//IETF//DTD RFCxxxx CPL 1.0//EN' 'cpl.dtd'>
 <cpl>
-   <incoming>
-     <location url="sip:$rb_number@$this->udomain" priority="0.0">
-       <lookup source="registration"> 
-         <success> <proxy /> </success>
-         <notfound> <proxy /> </notfound> 
-         <failure> <proxy /> </failure>
-       </lookup> 
-     </location> 
-</incoming> </cpl>
+  <subaction id="voicemail">
+    <location url="sip:ivr+$this->uname@$this->udomain" clear="yes">
+      <proxy />
+    </location>
+  </subaction>
+  <subaction id="defaultproxy">
+    <proxy>
+      <failure />
+      <default>
+        <sub ref="voicemail" />
+      </default>
+    </proxy>
+  </subaction>
+  <incoming>
+    <location url="sip:$rb_number@$this->udomain" priority="0.0">
+      <lookup source="registration">
+        <success>
+          <sub ref="defaultproxy" />
+        </success>
+        <notfound>
+          <sub ref="defaultproxy" />
+        </notfound>
+        <failure>
+          <sub ref="defaultproxy" />
+        </failure>
+      </lookup>
+    </location>
+  </incoming>
+</cpl>
 XML;
    return $xmlstr ; 
 
@@ -78,36 +114,44 @@ XML;
 
       $xmlstr = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-                                                                                                                                               
-<!DOCTYPE cpl PUBLIC '-//IETF//DTD RFCxxxx CPL 1.0//EN' 'cpl.dtd'>
 <!-- (call_setting=fmfm) -->
-                                                                                                                                               
-<cpl>
-  <subaction id="call-out">
-    <location url="sip:$fmfm_number@$this->udomain" clear="yes">
+ 
+<!DOCTYPE cpl PUBLIC '-//IETF//DTD RFCxxxx CPL 1.0//EN' 'cpl.dtd'>
+<CPL>
+  <subaction id="voicemail">
+    <location url="sip:ivr+$this->uname@$this->udomain" clear="yes">
       <proxy />
     </location>
+  </subaction>
+  <subaction id="defaultproxy">
+    <proxy>
+      <failure />
+      <default>
+        <location url="sip:$fmfm_number@$this->udomain" clear="yes">
+          <proxy>
+            <failure />
+            <default>
+              <sub ref="voicemail" />
+            </default>
+          </proxy>
+        </location>
+      </default>
+    </proxy>
   </subaction>
   <incoming>
     <lookup source="registration">
       <success>
-        <proxy>
-          <noanswer>
-            <sub ref="call-out" />
-          </noanswer>
-          <default>
-            <sub ref="call-out" />
-          </default>
-        </proxy>
+        <sub ref="defaultproxy" />
       </success>
       <notfound>
-        <sub ref="call-out" />
+        <sub ref="defaultproxy" />
       </notfound>
-      <failure />
+      <failure>
+        <sub ref="defaultproxy" />
+      </failure>
     </lookup>
   </incoming>
 </cpl>
-
 XML;
    return $xmlstr ; 
   

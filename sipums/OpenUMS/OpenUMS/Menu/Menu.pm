@@ -1,6 +1,6 @@
 package OpenUMS::Menu::Menu;
 
-### $Id: Menu.pm,v 1.3 2004/07/31 21:51:15 kenglish Exp $
+### $Id: Menu.pm,v 1.4 2004/08/05 09:14:14 kenglish Exp $
 #
 # Menu.pm
 #
@@ -540,7 +540,7 @@ sub xfer_to_extension_old {
   }
   $log->debug("[Menu.pm] : transfering to $ext");
   ## play please hold...
-  $ctport->play(PROMPT_PATH . "pleasehold.vox");
+  $ctport->play(PROMPT_PATH . "pleasehold.wav");
 
   $ctport->clear();
   $self->{STANDALONE} = undef ;
