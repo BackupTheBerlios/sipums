@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: account.php,v 1.4 2004/08/04 04:19:57 kenglish Exp $
+ * $Id: account.php,v 1.5 2004/08/05 08:52:43 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
@@ -75,8 +75,9 @@ class CData_Layer extends CDL_common{
        do_debug("GONNA GET VM INFO");
 
        $vm_info  = $this->get_vm_info() ; 
+       
        if (!$vm_info[extension]) { 
-          if (!$this->create_mailbox()) { 
+          if (!$this->create_mailbox($error)) { 
              $error = "Failed to add mailbox";     
 	     do_debug("create_mailbox failed $error");
              return false ;   
