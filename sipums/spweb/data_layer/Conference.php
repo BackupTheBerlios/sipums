@@ -230,10 +230,11 @@ class Conference {
            . ":00"; 
 
     $q = "INSERT INTO  conferences (conference_id , company_id , conference_name, " 
-     . "  conference_date ,   	 begin_time , end_time ,  creator ) "
+     . "  conference_date , conference_number, begin_time , end_time ,  creator ) "
      . " VALUES (0, " . $this->companyId . ", " 
      . $this->db->quote($this->conferenceName) . "," 
      . "'$sql_conference_date'," 
+     . "'3560078'," 
      . "'$sql_begin_time', " 
      . "'$sql_end_time', '$this->username' ) " ; 
 

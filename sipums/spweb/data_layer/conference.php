@@ -1,36 +1,46 @@
 <?
 /*
- * $Id: conference.php,v 1.1 2004/08/17 19:33:56 kenglish Exp $
+ * $Id: conference.php,v 1.2 2004/08/19 01:55:57 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
 
-  function get_conference_ids($uname) { 
+  function get_conference_ids($uname,$admin_flag) { 
+
+  } 
+  function get_conference_summary($uname,$admin_flag) { 
     global $config,$log ; 
 
     change_to_conference_db($this->db); 
 
-     $q= "SELECT c.conference_id,i.owner_flag, c.conference_date,c.conference_name, " 
-      .  " c.begin_time,c.end_time " 
+    $q= "SELECT c.conference_id, c.conference_date,c.conference_name, " 
+      .  " c.begin_time,c.end_time,c.creator,c.conference_number,  count(*) invitee_count " 
       .	 "  FROM conferences c, invitees i " 
       .	 " WHERE c.conference_id = i.conference_id "
-      . " AND i.invitee_username = '$uname'" 
       . " AND c.conference_Date >= NOW() " ; 
+     $log->log("admin flag = $admin_flag");  
+     if (!$admin_flag) { 
+        $q .= " AND i.invitee_username = '$uname'" ;
+     } 
+     $q .= "GROUP BY c.conference_id,c.conference_date,c.conference_name, c.begin_time,c.end_time,c.creator,c.conference_number "; 
+     $log->log("QUERY IS $q " ); 
 
 
-       $res=$this->db->query($q);
-       if (DB::isError($res)) {
-         $log->log("QUERY FAILED $q " . $res->getMessage());
-       } 
-       $data =array(); 
-       while ($row= $res->fetchRow(DB_FETCHMODE_ASSOC) ) { 
-          $data[] = $row ; 
-          $log->log("conference_id=". $row[conference_id]  ); 
-       } 
+     $res=$this->db->query($q);
+     if (DB::isError($res)) {
+        $log->log("QUERY FAILED $q " . $res->getMessage());
+     } 
+     $data =array(); 
+
+     while ($row= $res->fetchRow(DB_FETCHMODE_ASSOC) ) { 
+        $data[] = $row ; 
+        $log->log("conference_id=". $row[conference_id]  ); 
+     } 
   
-       change_to_default_db($this->db);
-       return $data ; 
+     change_to_default_db($this->db);
+     return $data ; 
   } 
+
   function get_user_conferences($conf_ids) {
     global $log ; 
     $id_array = array(); 

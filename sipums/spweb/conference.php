@@ -48,13 +48,14 @@ if ($perm->have_perm('SUPER')){
 }
 
 $log->log("get_conference_ids " . $auth->auth["uname"] );
-$ids = $data->get_conference_ids($auth->auth["uname"] ); 
-if (!empty($ids)) { 
-   $user_conf = $data->get_user_conferences($ids); 
 
-   $smarty->assign('user_conferences', $user_conf); 
-   
-} 
+$conference_data = $data->get_conference_summary($auth->auth["uname"],$perm->have_perm('ADMIN') ); 
+
+//if (!empty($ids)) { 
+//   $user_conf = $data->get_user_conferences($ids); 
+//   $smarty->assign('user_conferences', $user_conf); 
+//} 
+  $smarty->assign('user_conferences', $conference_data); 
 ##$smarty->assign('user_conferences', $ids); 
 
 $footer_smarty = get_smarty(); 

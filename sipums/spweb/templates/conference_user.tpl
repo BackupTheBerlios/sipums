@@ -14,6 +14,7 @@
         <th align="left">Start Time</td>
         <th align="left">End Time</td>
         <th align="left">Phone Number</td>
+        <th align="left">Creator</td>
         <th align="left" >&nbsp;</td>
       </tr>
      <!--{foreach name=user_conferences item=conf from=$user_conferences}-->
@@ -37,6 +38,16 @@
         <td nowrap="nowrap">
             <span style="overflow:hidden;text-overflow:ellipsis;">
               <a href="cdetails.php?conference_id=<!--{$conf.conference_id}-->&func=view"><!--{$conf.end_time}--></a>
+            </span>
+        </td>
+        <td nowrap="nowrap">
+            <span style="overflow:hidden;text-overflow:ellipsis;">
+              <a href="cdetails.php?conference_id=<!--{$conf.conference_id}-->&func=view"><!--{$conf.conference_number}--></a>
+            </span>
+        </td>
+        <td nowrap="nowrap">
+            <span style="overflow:hidden;text-overflow:ellipsis;">
+              <a href="cdetails.php?conference_id=<!--{$conf.conference_id}-->&func=view"><!--{$conf.creator}--></a>
             </span>
         </td>
         <td nowrap="nowrap">

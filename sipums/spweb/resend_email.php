@@ -17,7 +17,7 @@ $invitee->sendNotify();
 
 put_headers();
 
-header('Location: conference.php');
+header('Location: cdetails.php?conference_id='.$_GET[conference_id].'&func=view');
 exit ;
 
 // get db connect 

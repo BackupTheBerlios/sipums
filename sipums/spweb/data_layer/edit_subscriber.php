@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: edit_subscriber.php,v 1.13 2004/08/17 19:33:56 kenglish Exp $
+ * $Id: edit_subscriber.php,v 1.14 2004/08/19 01:55:57 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{

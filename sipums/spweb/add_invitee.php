@@ -40,7 +40,8 @@ function add_invitee() {
   }
   $invitee->generateInviteeCode();
   $invitee->create();
-  header('Location: conference.php');
+  $invitee->sendNotify();
+  header("Location: cdetails.php?conference_id=$conference_id&func=view");
 
   return $msgs; 
 }
