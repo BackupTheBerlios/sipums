@@ -33,6 +33,7 @@ sub hang_up {
   } 
   syslog('info', "onBye: hang up call "); 
   ivr::wakeUp(); 
+  cleanup();
 
 }
 
