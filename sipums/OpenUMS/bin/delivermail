@@ -84,6 +84,8 @@ $SIG{USR1} = 'IGNORE';
 
 ### Daemonize
 my $pid = fork;
+
+
 exit if $pid;
 unless (defined($pid))
   { die("Could not daemonize : $!"); }
@@ -118,6 +120,7 @@ $SIG{HUP}  = \&RESTART;
 $SIG{TERM} = \&TERMINATE;
 $SIG{USR1} = \&PROCESS;
 my $DB_NAME; ## global variable
+my $DO_DEMO_FLAG = 1;
 
 while(1)
   {
@@ -152,6 +155,11 @@ while(1)
       $log->debug("OpenUMS::SipUmsMwi::update_mwis  for $DB_NAME, " );
       OpenUMS::SipUmsMwi::update_mwis($dbh,$users_mailboxes); 
     } 
+
+    if ($DO_DEMO_FLAG ) { 
+       &send_demo_emails($dbh); 
+    } 
+
     $log->debug("disconnecting dbh...");
     $dbh->disconnect(); 
     ### Unblock signals
@@ -466,11 +474,11 @@ sub subject_string($$)
         {
           # $log->verbose("Delivermail got Caller-ID $caller_id");
           if ($caller_id =~ /^\d{3}$/)
-            { $subject .= "extension $caller_id"; }
+            { $subject .= "$caller_id"; }
           elsif ($caller_id =~ /^(\d{3})(\d{3})(\d{4})$/)
-            { $subject .= "phone number ($1)$2-$3"; }
+            { $subject .= "($1)$2-$3"; }
           else
-            { $subject .= "phone number $caller_id"; }
+            { $subject .= "$caller_id"; }
         }
       else
         {
@@ -651,9 +659,9 @@ sub deliver_email($$)
                Filename => $wavfile);
   $msg->add('X-CPVoicemail' => $wavfile);
 
-  my $email_delivery = OpenUMS::IMAP::get_email_delivery($dbh,$extension);
-  my $store          = OpenUMS::IMAP::get_voicemail_store($dbh, $extension);
-  my $vstore_email   = OpenUMS::IMAP::get_vstore_email($dbh,$extension);
+  my $email_delivery = get_email_delivery($dbh,$extension);
+  my $store          = get_voicemail_store($dbh, $extension);
+  my $vstore_email   = get_vstore_email($dbh,$extension);
 
   my $success;
   if ( ($email_delivery eq 'S') || ($email_delivery eq 'F') ||($vstore_email eq 'C')  )
@@ -1162,7 +1170,7 @@ sub Log::logger($$)
 
 sub get_voicemail_dbs($) {
   my $dbh = shift; 
-  my $q = qq{select voicemail_db from domain};
+  my $q = qq{SELECT DISTINCT voicemail_db FROM clients};
   my $ary_ref = $dbh->selectcol_arrayref($q); 
   return $ary_ref;  
 }
@@ -1189,7 +1197,71 @@ sub get_voicemail_dbs($) {
 #
 #  return \%hash; ## $ary_ref;  
 #}
+sub send_demo_emails {
+  my $dbh = shift ; 
 
+  $log->debug("doing send_demo_emails ");
+  $dbh->do("use  um_demo");
 
+  my $q = qq{SELECT  email , code,message_file,message_datetime,caller_id
+FROM um_demo_message WHERE   message_file IS NOT NULL
+};
+
+  $log->debug("$dbh . gonna do $q ");  
+  my $sth=$dbh->prepare($q);
+  $sth->execute();
+  while (my $hr = $sth->fetchrow_hashref() ) {
+         # get the file name and caller id from the result set   
+         my $filepath = $hr->{message_file};
+         my $caller_id = $hr->{caller_id};
+         my $email = $hr->{email};
+
+         # calculate the duration 
+         my $wavduration = POSIX::ceil(&sound_duration("$filepath"));
+         # create the subject line
+         my $subject = subject_string($caller_id, 0);
+
+         $log->debug("wavduration = $wavduration     ");
+         # get only the filename
+         my (@splitty) = split(/\//,$filepath);
+         my $size = scalar(@splitty); 
+         my $filename = $splitty[$size-1];
+         $log->debug("filepath = $filepath  ");
+         $log->debug("filename = $filename  ");
+         $log->debug("email = $email  ");
+         
+         ## get the body of the e-mail
+         my $body = &email_body($filename, $caller_id, $wavduration , 0,'H'); 
+         $log->debug("body $body");
+         ## create the MIME email
+         my $msg = MIME::Lite->new(
+                  From    => "\"UM Demo\" " .
+                             "<voicemail\@servpac.com>",
+                  To      => $email,
+                  Subject => $subject,
+                  Disposition => 'inline',
+                  Type => 'text/html',
+                  Data => $body);
+         ## attach the wav file
+         $msg->attach(Disposition => 'attachment',
+               Type     => 'audio/wav;' .
+                           'x-unix-mode=0644;' .
+                           'x-mac-type=57415645',
+               Path     => "$filepath",
+               Encoding => 'base64',
+               Filename => $filename);
+
+         ## legacy 
+         $msg->add('X-CPVoicemail' => $filename);
+         ## $msg->send();
+         ## fire off that e-mail
+         &fire_email($email,$msg);
+         my $upd_sql = "UPDATE um_demo_message "
+           . " SET  message_file = NULL WHERE email = " . $dbh->quote($email); 
+         $log->debug("Doing $upd_sql");    
+         $dbh->do($upd_sql);
+         ## delete the file
+         #unlink($filepath);
+   }
+}
 1;
-

@@ -220,8 +220,9 @@ sub get_client_id {
 sub is_client_main_number {
   my ($dbh, $number,$client_id) = @_;
   my $sql = qq{SELECT count(*) FROM clients 
-     WHERE company_number = '$number' 
+     WHERE client_main_number = '$number' 
         AND client_id ='$client_id' } ; 
+  $log->debug(' gonna look for ' . $sql); 
   my $arr = $dbh->selectrow_arrayref($sql);
   my $count = $arr->[0];
   return $count ; 

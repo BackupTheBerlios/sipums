@@ -1212,8 +1212,6 @@ INSERT INTO sound_files VALUES (3281,'veterans_day.wav',NULL,1);
 INSERT INTO sound_files VALUES (3282,'yesterday.wav',NULL,1);
 INSERT INTO sound_files VALUES (3283,'you_have.wav',NULL,1);
 INSERT INTO sound_files VALUES (3284,'youentered.wav',NULL,1);
-INSERT INTO sound_files VALUES (3285,'/var/spool/openums/o-matrix.net/prompts/sound_file_3285.wav','new sound',0);
-INSERT INTO sound_files VALUES (3286,'/var/spool/openums/o-matrix.net/prompts/sound_file_3286.wav','new sound',0);
 
 --
 -- Table structure for table `sound_variables`

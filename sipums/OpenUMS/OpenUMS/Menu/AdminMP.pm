@@ -1,5 +1,5 @@
 package OpenUMS::Menu::AdminMP ; 
-### $Id: AdminMP.pm,v 1.4 2004/09/01 03:16:35 kenglish Exp $
+### $Id: AdminMP.pm,v 1.5 2004/11/25 00:03:52 kenglish Exp $
 #
 # AdminMP.pm
 #
@@ -41,16 +41,24 @@ sub _play_menu () {
   my $user = $self->{USER} ; 
 
   my $sound  ; 
+  $log->debug ("[AdminMP.pm] Starting Play Menu " ); 
 
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
   ## always get the first one... 
-  $sound =   OpenUMS::Common::get_prompt_sound(  $menuSounds->{M}->[0]->{sound_file})  ; 
+  ##  $sound =   OpenUMS::Common::get_prompt_sound(  $menuSounds->{M}->[0]->{sound_file})  ; 
+  if ($menuSounds->{M}->[0]->{PROMPT_OBJ}) { 
+    $sound = $menuSounds->{M}->[0]->{PROMPT_OBJ}->file();
+  }
 
   $log->debug ("[AdminMP.pm] setting_type  = " .  $self->setting_type() ); 
+  $log->debug ("[AdminMP.pm] go sound $sound " ); 
+  $log->debug ("[AdminMP.pm] go sound " . $menuSounds->{M}->[0]->{sound_file}  ); 
 
   ## if the it's RECPLAY, we play back the greeting to them 
   if ($self->setting_type() =~/^RECPLAY/) {
+     $log->debug("[AdminMP.pm] gonna do get_temp_file "); 
      my ($file, $path) = $user->get_temp_file();
+     $log->debug("[AdminMP.pm] RECPLAY got temp file $path $file"); 
      $sound = $main::CONF->get_var('VM_PATH') . TEMP_PATH . $file; 
      if (!$file ) {
         ## if they don't have it... 

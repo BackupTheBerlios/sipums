@@ -1,5 +1,5 @@
 package OpenUMS::Config;
-### $Id: Config.pm,v 1.9 2004/11/18 00:10:18 kenglish Exp $
+### $Id: Config.pm,v 1.10 2004/11/25 00:03:52 kenglish Exp $
 #
 # Config.pm
 #
@@ -127,7 +127,7 @@ use constant PHONE_SYSTEM => 'NECASPIRE' ;
 use constant VT_CARD_TYPE => 'OPENSWITCH' ;
 
 ### Sound file bit rates (CBR)
-use constant WAV_BITRATE  => 8000.0;
+use constant WAV_BITRATE  => 16000.0;
 use constant VOX_BITRATE  => 4000.0;
 
 ### Process unsent messages process

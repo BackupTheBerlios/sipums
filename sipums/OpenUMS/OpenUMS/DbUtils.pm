@@ -1,5 +1,5 @@
 package OpenUMS::DbUtils;
-### $Id: DbUtils.pm,v 1.4 2004/09/01 03:16:35 kenglish Exp $
+### $Id: DbUtils.pm,v 1.5 2004/11/25 00:03:52 kenglish Exp $
 #
 # DbUtils.pm
 #
@@ -472,21 +472,32 @@ sub update_sound_file {
 sub add_sound_file {
   my ($dbh , $file, $path) = @_;
                                                                                                                                                
-  $log->debug( "add_sound_file: creating database record " );
-  my $ins = qq{INSERT INTO sound_files values (0, '$file', 'new sound', 0) };
+  my $ins = qq{INSERT INTO sound_files 
+          (file_id, sound_file, file_description, professional) 
+          VALUES 
+          (0, '$file', 'new sound', 0) };
+  ## create the database record
+  $log->debug( "[DbUtils] add_sound_file: file=$file path=$path" );
   $dbh->do($ins);
+
+  ## Here we rename the file so it has the new file_id
+  ## auto_increment value and is easily idetified
+  #  the user can rename the file later using the web interface
 
   my $file_id = $dbh->{'mysql_insertid'};
 
   my $new_file = "sound_file_$file_id.wav" ;
+  $log->debug( "[DbUtils] new file Id = $file_id, new_file =  $new_file");
+
   if (!(-e "$path$file") )  {
      ## if the file don't exist, return it...
      return 0;
   }
-  $new_file = OpenUMS::Common::get_prompt_sound($new_file) ;  
 
-  move("$path$file", $new_file); 
-  $log->debug( "add_sound_file: new_file  = $new_file " );
+  my $new_file_path = $main::CONF->get_var('VM_PATH') . PROMPT_PATH . $new_file ;  
+
+  $log->debug( "moving $path$file to $new_file_path" );
+  move("$path$file", $new_file_path); 
 
   my $upd = qq{ UPDATE sound_files SET sound_file =  '$new_file' WHERE file_id = $file_id };
   my $affected = $dbh->do($upd)  ;
@@ -525,7 +536,7 @@ sub save_new_greeting {
   my  $affected = 0; 
   if (!$old_sound_file) {
      # we need to create.... 
-     my $ins = qq{INSERT INTO sound_files values (0, '$new_file', 'CUstom Sound for box $box', 0) };
+     my $ins = qq{INSERT INTO sound_files (file_id , sound_file ,  file_description, professional ) VALUES (0, '$new_file', 'Custom Sound for box $box', 0) };
      $affected = $dbh->do($ins)  ; 
      $ins = qq{REPLACE INTO menu_sounds (menu_id, sound_title, sound_file, order_no , sound_type)
         VALUES ($box, 'Greeting for box $box', '$new_file',1,'M') } ; 
