@@ -1,6 +1,6 @@
 package OpenUMS::Menu::IntroMP ; 
 
-### $Id: IntroMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: IntroMP.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
 #
 # .pm
 #
@@ -55,7 +55,7 @@ sub _play_menu () {
   $log->debug("[IntroMP.pm] : user permission_id is " . $user->permission_id() ) ; 
   my @to_play_sounds; 
 #  if ($user->get_value('store_flag') eq 'E') { 
-#    $ctport->play(PROMPT_PATH . "accessing_messages.vox");
+#    $ctport->play(PROMPT_PATH . "accessing_messages.wav");
 #  }
 
 
@@ -87,12 +87,12 @@ sub _play_menu () {
       }  
       elsif ($msound->{var_name} eq 'NEW_MESSAGE_SOUND' ) {
         if (!$new_message_count) { 
-          push @to_play_sounds, PROMPT_PATH . "nonewmessages.vox" ; 
+          push @to_play_sounds, PROMPT_PATH . "nonewmessages.wav" ; 
         } elsif ($new_message_count ==1 )  { 
          ## singular...
-          push @to_play_sounds, PROMPT_PATH . "newmessage.vox" ; 
+          push @to_play_sounds, PROMPT_PATH . "newmessage.wav" ; 
         } else  {
-          push @to_play_sounds, PROMPT_PATH . "newmessages.vox" ; 
+          push @to_play_sounds, PROMPT_PATH . "newmessages.wav" ; 
         } 
       }
       elsif ($msound->{var_name} eq 'SAVED_MESSAGE_COUNT' ) {
@@ -102,12 +102,12 @@ sub _play_menu () {
         } 
       } elsif ($msound->{var_name} eq 'SAVED_MESSAGE_SOUND' ) { 
         if (!$saved_message_count) {
-          push @to_play_sounds, PROMPT_PATH . "nosavedmessages.vox" ;
+          push @to_play_sounds, PROMPT_PATH . "nosavedmessages.wav" ;
         } elsif ($saved_message_count ==1 )  {
          ## singular...
-          push @to_play_sounds, PROMPT_PATH . "savedmessage.vox" ;
+          push @to_play_sounds, PROMPT_PATH . "savedmessage.wav" ;
         } else  {
-          push @to_play_sounds, PROMPT_PATH . "savedmessages.vox" ;
+          push @to_play_sounds, PROMPT_PATH . "savedmessages.wav" ;
         }
       } 
     }

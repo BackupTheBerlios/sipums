@@ -1,5 +1,5 @@
 package OpenUMS::Config;
-### $Id: Config.pm,v 1.3 2004/07/20 03:41:25 richardz Exp $
+### $Id: Config.pm,v 1.4 2004/07/30 20:22:13 kenglish Exp $
 #
 # Config.pm
 #
@@ -29,18 +29,15 @@ our @ISA = ('Exporter');
 use constant SAFE_PATH => "/bin:/usr/bin";
 
 ################################################################# Config
-## YOU MUST CHANGE THIS EVERTIME YOU CHANGE DELIVERMAIL PID
-use constant OPENUMS_DELIVERPID => '/tmp/delivermail.pid';
 
 ### These are the basic paths for the OpenUMS directory tree.
 ### All paths are relative to the BASE_PATH.
 use constant BASE_PATH          => "/var/spool/openums/";
-use constant PROMPT_PATH        => "prompts/";
+use constant PROMPT_PATH        => BASE_PATH . "prompts/";
 use constant TEMP_PATH          => "spool/temp/";
-use constant STORE_PATH         => "spool/store/";
-use constant USER_PATH          => "users/";
-use constant AUTOATTENDANT_PATH => "prompts/autoattendant/";
-use constant DEFAULT_INVALID_SOUND => "invalid.vox";
+use constant STORE_PATH         =>  "spool/store/";
+use constant USER_PATH          => BASE_PATH . "users/";
+use constant DEFAULT_INVALID_SOUND => "invalid.wav";
 
 ### These constants configure the basic box and phone system.
 use constant MAX_PORTS                   => 4;
@@ -133,6 +130,7 @@ use constant WAV_BITRATE  => 8000.0;
 use constant VOX_BITRATE  => 4000.0;
 
 ### Process unsent messages process
+use constant DELIVERPID => '/var/log/openums/delivermail.pid';
 
 our @EXPORT=qw(SAFE_PATH
 
@@ -173,7 +171,7 @@ our @EXPORT=qw(SAFE_PATH
 
                WAV_BITRATE VOX_BITRATE
 
-               OPENUMS_DELIVERPID);
+               DELIVERPID);
 
 our @EXPORT_OK = qw(DEBUG_TEXT_MODE);
 our @EXPORT_TAGS = 

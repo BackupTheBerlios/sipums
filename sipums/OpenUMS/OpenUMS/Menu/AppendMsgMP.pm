@@ -1,5 +1,5 @@
 package OpenUMS::Menu::AppendMsgMP; 
-### $Id: AppendMsgMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: AppendMsgMP.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
 #
 # RecMsgMP.pm
 #
@@ -80,7 +80,7 @@ sub _get_input {
   my ($message_file,$message_path) =  OpenUMS::DbQuery::get_new_message_file_name ($ext_to, $ctport->{HANDLE}); 
   ## add '_append' at the end of the file:
 
-  $message_file =~ s/\.vox$/_append.vox/; 
+  $message_file =~ s/\.wav$/_append.wav/; 
   $log->info("[AppendMsgMP.pm] Gonna record extra $message_file for extension $ext_to"); 
       
   my $menuSounds = $self->{SOUNDS_ARRAY};

@@ -1,5 +1,5 @@
 package OpenUMS::Menu::UserSettingsMP ; 
-### $Id: UserSettingsMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: UserSettingsMP.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
 #
 # UserSettingsMP.pm
 #
@@ -56,9 +56,9 @@ sub _play_menu () {
           my ($greeting_file, $greeting_path) = $user->get_greeting();
           $log->debug("[UserSetting.pm] Got greeting: $greeting_path$greeting_file"); 
           if ($greeting_file) { 
-             $sound .=  " " .  $greeting_path . $greeting_file ; 
+             $sound .=  " " . BASE_PATH .   $greeting_path . $greeting_file ; 
           }  else {
-             $sound =   PROMPT_PATH . "nogreetingrecorded.vox" 
+             $sound =   PROMPT_PATH . "nogreetingrecorded.wav" 
           } 
        } 
      }  elsif ($self->setting_type eq 'PLAYNAME')  {
@@ -70,9 +70,9 @@ sub _play_menu () {
           my ($name_file, $name_path) = $user->get_name();
           $log->debug("[UserSetting.pm] Got name: $name_path$name_file"); 
           if ($name_file) { 
-             $sound .=  " " .  $name_path . $name_file ;
+             $sound .=  " " . BASE_PATH .   $name_path . $name_file ;
           }  else {
-             $sound =   PROMPT_PATH . "nonamerecorded.vox" 
+             $sound =   PROMPT_PATH . "nonamerecorded.wav" 
           } 
        }
     }
@@ -99,9 +99,9 @@ sub _play_menu () {
  
   } elsif ($self->setting_type() =~ /^MOBILESTAT/) {
     if ($user->get_value('mobile_email_flag')  ) { 
-      $sound .= " " . PROMPT_PATH . "activated.vox";   
+      $sound .= " " . PROMPT_PATH . "activated.wav";   
     }  else {
-      $sound .= " " . PROMPT_PATH . "deactivated.vox";   
+      $sound .= " " . PROMPT_PATH . "deactivated.wav";   
     } 
   } 
 
@@ -233,22 +233,22 @@ sub process {
         $log->debug("[UserSetting.pm] Saving new password ");
         $user->save_new_password();
         my $ctport = $self->{CTPORT} ; 
-        $ctport->play(PROMPT_PATH . "password_saved.vox");
+        $ctport->play(PROMPT_PATH . "password_saved.wav");
      } elsif ($item_action eq 'SAVEMOBILE') { 
    
        my $ctport = $self->{CTPORT} ; 
        if ($self->setting_type() eq  'MOBILEDEACT') {
          ## they are trying to deactivate it...
            $user->save_mobile_email_flag(0);         
-           $ctport->play(PROMPT_PATH . "mobile_notification_deactivated.vox");
+           $ctport->play(PROMPT_PATH . "mobile_notification_deactivated.wav");
        } else {
          ## they are tryingt to activate it.
         if ($user->get_value('mobile_email')) { 
            $user->save_mobile_email_flag(1);         
-           $ctport->play(PROMPT_PATH . "mobile_notification_activated.vox");
+           $ctport->play(PROMPT_PATH . "mobile_notification_activated.wav");
           ## make sure they have mobile e-mail defined...
         } else {
-           $ctport->play(PROMPT_PATH . "mobile_notification_error.vox");
+           $ctport->play(PROMPT_PATH . "mobile_notification_error.wav");
         } 
          
        } 
@@ -257,12 +257,12 @@ sub process {
             $log->debug("[UserSetting.pm] SAVING GREETING FOR  USER " . $user->extension());
             $user->save_greeting(); 
             my $ctport = $self->{CTPORT} ; 
-            $ctport->play(PROMPT_PATH . "greeting_activate.vox");
+            $ctport->play(PROMPT_PATH . "greeting_activate.wav");
         } elsif ($item_action eq 'SAVENAME') {
             $log->debug("[UserSetting.pm] SAVING NAME FOR  USER " . $user->extension());
             $user->save_name();
 #           my $ctport = $self->{CTPORT} ;
-#           $ctport->play(PROMPT_PATH . "greeting_activate.vox");
+#           $ctport->play(PROMPT_PATH . "greeting_activate.wav");
         }
         $user->clear_temp_file(); 
      } 

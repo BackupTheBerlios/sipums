@@ -1,5 +1,5 @@
 package OpenUMS::Object::MessageSpool; 
-### $Id: MessageSpool.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: MessageSpool.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
 #
 # MessageSpool.pm
 #
@@ -286,9 +286,9 @@ sub get_current_tds_sound {
   my $sound;
                                                                                                                              
   if ($dd == 0 ) {
-     $sound = PROMPT_PATH . "today.vox";
+     $sound = PROMPT_PATH . "today.wav";
   } elsif ($dd == 1 ) {
-     $sound = PROMPT_PATH . "yesterday.vox";
+     $sound = PROMPT_PATH . "yesterday.wav";
   } else {
     my $dow_name = Date::Calc::Day_of_Week_to_Text(
                 Date::Calc::Day_of_Week($msg_hr->{m_year}, $msg_hr->{m_month}, $msg_hr->{m_day})) ;
@@ -296,20 +296,20 @@ sub get_current_tds_sound {
 #   my $dow = Date::Calc::Day_of_Week($msg_hr->{m_year}, $msg_hr->{m_month}, $msg_hr->{m_day}) ;
                                                                                                                              
     $month_name = lcfirst($month_name);
-    $sound = PROMPT_PATH . $dow_name . ".vox " . PROMPT_PATH . $month_name . ".vox " ; 
+    $sound = PROMPT_PATH . $dow_name . ".wav " . PROMPT_PATH . $month_name . ".wav " ; 
 
     $sound .=  OpenUMS::Common::count_sound_gen($msg_hr->{m_day},1) ;
   }
   if ($msg_hr->{m_hour} > 12) {
     $msg_hr->{m_hour} -= 12;
   }
-  $sound .= " " .  PROMPT_PATH . "at.vox " . PROMPT_PATH .  $msg_hr->{m_hour} . ".vox"  ;
+  $sound .= " " .  PROMPT_PATH . "at.wav " . PROMPT_PATH .  $msg_hr->{m_hour} . ".wav"  ;
   if ($msg_hr->{m_minute} ) {
      if ( $msg_hr->{m_minute} ) {   
        $sound .=  " " . OpenUMS::Common::count_sound_gen ($msg_hr->{m_minute});
      }
   }
-  $sound .= " " . PROMPT_PATH . $msg_hr->{m_am_pm} .".vox" ;
+  $sound .= " " . PROMPT_PATH . $msg_hr->{m_am_pm} .".wav" ;
   return $sound ;
                                                                                                                              
 }

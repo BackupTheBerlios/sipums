@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.3 2004/07/27 01:43:27 kenglish Exp $
+### $Id: Common.pm,v 1.4 2004/07/30 20:22:13 kenglish Exp $
 #
 # Common.pm
 #
@@ -241,7 +241,8 @@ sub add_user($$$$)
 
   return(undef) unless ( (-e BASE_PATH) && (-d BASE_PATH) 
                         && (-w BASE_PATH) && (-x BASE_PATH) );
-  my $full_user_path = BASE_PATH . USER_PATH;
+
+  my $full_user_path = USER_PATH;
   print STDERR " full_user_path $full_user_path\n"; 
   return(0,'User directories do not exists') unless ( (-e $full_user_path) && (-d $full_user_path) 
                         && (-w $full_user_path) && (-x $full_user_path) );
@@ -325,11 +326,8 @@ sub sweep_old($$)
 #################################
 sub get_dbh 
 {
-  my $db_name = shift; 
   use DBI;
-  $db_name = DB_NAME if (!$db_name); 
-
-  my $dsn = "DBI:mysql:database=$db_name;host=localhost";
+  my $dsn = "DBI:mysql:database=" . DB_NAME . ";host=localhost";
   my $user = DB_USER; 
   my $password = DB_PASS; 
   my $dbh = DBI->connect($dsn, $user, $password);
@@ -444,19 +442,19 @@ sub count_sound_gen {
         if ($card_flag && ($i == ($num_files - 1) ) ) {
           $ret_sound .= "card"  ; 
         } 
-        $ret_sound .= ".vox"; 
+        $ret_sound .= ".wav"; 
      } 
   return $ret_sound;
 }
 sub get_no_greeting_sound {
   my $ext = shift; 
-  my $sound = PROMPT_PATH . "imsorry.vox "  ; 
-  $sound .= PROMPT_PATH . "extension.vox"; 
+  my $sound = PROMPT_PATH . "imsorry.wav "  ; 
+  $sound .= PROMPT_PATH . "extension.wav"; 
   my $ext_sound = OpenUMS::Common::ext_sound_gen($ext ); 
   if ($ext_sound ) {
     $sound .= " $ext_sound"; 
   } 
-  $sound .= " " . PROMPT_PATH . "doesnotanswer.vox"; 
+  $sound .= " " . PROMPT_PATH . "doesnotanswer.wav"; 
   return $sound ; 
 }
 
@@ -472,7 +470,7 @@ sub ext_sound_gen {
   for (my $i = 0; $i < $len; $i++ ) {
 
     my $num = substr($ext, $i, 1 ); 
-    my $num_file = PROMPT_PATH . $num . ".vox"; 
+    my $num_file = PROMPT_PATH . $num . ".wav"; 
     push @sounds, $num_file; 
   }  
 
@@ -634,7 +632,9 @@ sub cat_wav ($$)
   my $files_aref = shift;
                                                                                 
   ### This is the native output format of the Voicetronix boards.
-  my $details = { 'bits_sample' => 8, 'sample_rate' => 8000, 'channels' => 1 };
+  ## my $details = { 'bits_sample' => 16, 'bytes_sec' => 16000, 'sample_rate' => 8000, 'channels' => 1 };
+  $log->debug( "cat_wav was called for $outwav");
+   my $details = { 'bits_sample' => 16, 'sample_rate' => 8000, 'channels' => 1 };
   use Audio::Wav ; 
   use File::Temp ; 
   my $wav = new Audio::Wav;
@@ -652,7 +652,8 @@ sub cat_wav ($$)
 
       my $handle = new File::Temp(UNLINK => 1, SUFFIX => '.wav');
       my $soxout = $handle->filename;
-      system("/usr/bin/sox -U $file -u $soxout");
+      ## system("/usr/bin/sox -U $file -u $soxout");
+      system("cp $file $soxout");
       $log->debug("Common::cat_wav is appending $file to $tempname");
 
       my $read = $wav->read($soxout);
@@ -671,7 +672,7 @@ sub cat_wav ($$)
     }
 
   $log->debug("Common::cat_wav is returning concatinated file as $outwav");
-  my $test = system("/usr/bin/sox -u $tempname -U $outwav");
+  my $test = system("cp $tempname $outwav");
   return($outwav) unless ($test >> 8);
   return(undef);
 }
@@ -1022,13 +1023,13 @@ sub sound_duration($)
 ########################################################### signal_delivermail
 sub signal_delivermail
 {
-  unless (-e OPENUMS_DELIVERPID)
+  unless (-e DELIVERPID)
     {
       $log->err("Delivermail lock file does not exist!");
       return(undef);
     }
 
-  unless (open(FILE, "<" . OPENUMS_DELIVERPID))
+  unless (open(FILE, "<" . DELIVERPID))
     {
       $log->err("Unable to access delivermail lock file : $!");
       return(undef);
@@ -1063,10 +1064,9 @@ sub REAPER
   1 until (waitpid(-1, &WNOHANG) == -1);
   $SIG{CHLD} = \&REAPER;
 }
+sub ser_to_extension { 
+  my ($dbh, $ser_from ) =@_; 
 
-sub ser_to_extension {
-  my ($dbh, $ser_from ) =@_;
-                                                                                                                                               
   $ser_from =~ s/^<sip://g;
   $ser_from =~ s/>$//g;
   print "$ser_from\n";
@@ -1074,14 +1074,14 @@ sub ser_to_extension {
   my ($user,$domain) = split('@',$ser_from);
   print "$user $domain\n";
   $dbh->do(" use ser");
-  my $sql = qq{SELECT extension FROM subscriber WHERE username ='$user' AND domain = '$domain'};
+  my $sql = qq{SELECT extension FROM subscriber WHERE username ='$user' AND domain = '$domain'}; 
   my $arr = $dbh->selectrow_arrayref($sql);
   my $ext = $arr->[0];
   print "$sql\n";
   $dbh->do("use voicemail");
+  
+  return  $ext; 
 
-  return  $ext;
-}
-
+} 
 
 1; 

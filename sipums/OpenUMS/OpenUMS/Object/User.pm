@@ -1,5 +1,5 @@
 package OpenUMS::Object::User;
-### $Id: User.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: User.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
 #
 # User.pm
 #
@@ -173,9 +173,8 @@ sub authenticated {
 
 #######################################
 ##  sub auto_login($extension)
-##    Returns 1 if the password is correct
+##    Returns 1 
 ##    Sets the user to AUTHENTICATED flag
-##    returns 0 if the password is invalid
 #######################################
                                                                                                                                                
 sub auto_login {
@@ -558,9 +557,9 @@ sub create_temp_file {
   my $self = shift;  
   my $prefix = shift;  
   my $val = int (rand 998877 ) + 1 ;
-  $self->{TEMP_FILE} = "$prefix$val.vox"; 
+  $self->{TEMP_FILE} = "$prefix$val.wav"; 
 
-  return ($self->{TEMP_FILE} , BASE_PATH . TEMP_PATH ); 
+  return ($self->{TEMP_FILE} , BASE_PATH .  TEMP_PATH ); 
 } 
 
 #######################################
@@ -575,10 +574,10 @@ sub get_temp_file {
   my $prefix = shift;  
  # if (!$self->{TEMP_FILE} ) {
  #    my $val = int (rand 998877 ) + 1 ; 
- #    $self->{TEMP_FILE} = "$val.vox"   
+ #    $self->{TEMP_FILE} = "$val.wav"   
  # }     
   if (defined($self->{TEMP_FILE} ) && ($self->{TEMP_FILE} =~/^$prefix/ || (!$prefix))  ) { 
-    return ($self->{TEMP_FILE} , BASE_PATH . TEMP_PATH ); 
+    return ($self->{TEMP_FILE} ,  BASE_PATH .  TEMP_PATH ); 
   } else {
      return (undef,undef); 
   } 
@@ -590,7 +589,7 @@ sub get_temp_file {
 #######################################
 sub clear_temp_file { 
   my $self = shift; 
-  unlink ( BASE_PATH . TEMP_PATH . $self->{TEMP_FILE} ); 
+  unlink ( TEMP_PATH . $self->{TEMP_FILE} ); 
   $self->{TEMP_FILE}  = undef; 
 }
 
@@ -724,13 +723,13 @@ sub append_file {
   my $file2  = shift ;
   my ($file1,$gibber) =  $self->get_message_file(); 
   
-  $file1   = BASE_PATH . TEMP_PATH . $file1; 
-  $file2   = BASE_PATH . TEMP_PATH . $file2; 
+  $file1   =  BASE_PATH . TEMP_PATH . $file1; 
+  $file2   =  BASE_PATH . TEMP_PATH . $file2; 
   
   my @array = ($file1, $file2);
   $log->debug("calling append : $file1  $file2 "); 
   ## call dean's brilliant discovery
-  OpenUMS::Common::cat_vox($file1, \@array); 
+  OpenUMS::Common::cat_wav($file1, \@array); 
 
 }
 

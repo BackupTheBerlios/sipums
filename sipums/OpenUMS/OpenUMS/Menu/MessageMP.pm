@@ -1,5 +1,5 @@
 package OpenUMS::Menu::MessageMP; 
-### $Id: MessageMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: MessageMP.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
 #
 # MessagePresenter.pm
 #
@@ -123,7 +123,7 @@ sub _play_menu () {
   } 
 
   my $msg_obj = $message_spool->get_current_message(); 
-  my $msg_sound = $msg_obj->get_sound(); 
+  my $msg_sound =BASE_PATH . $msg_obj->get_sound(); 
 
 
   if (!$msg_obj->heard()) { 

@@ -1,5 +1,5 @@
 package OpenUMS::DbQuery;
-### $Id: DbQuery.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: DbQuery.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
 #
 # DbQuery.pm
 #
@@ -176,7 +176,7 @@ sub get_new_name_file {
   my $now = OpenUMS::Common::get_timestamp();
   ## for now we'll just put them in the greeeting dir..
   my $name_wav_path = USER_PATH . "$ext/greetings/";
-  my $name_wav_file = $ext . "_name_" . $now . ".vox";
+  my $name_wav_file = $ext . "_name_" . $now . ".wav";
                                                                                                                              
   return ($name_wav_file, $name_wav_path );
 }
@@ -215,7 +215,7 @@ sub get_new_greeting_file {
   my $ext = shift;
   my $now = OpenUMS::Common::get_timestamp();
   my $greeting_wav_path = "users/$ext/greetings/";
-  my $greeting_wav_file =  $ext . "_greeting_" . $now . ".vox";
+  my $greeting_wav_file =  $ext . "_greeting_" . $now . ".wav";
                                                                                                                              
   return ($greeting_wav_file , $greeting_wav_path);
 }
@@ -391,7 +391,7 @@ sub get_new_message_file_name {
 
   my $filename = "$ext" . "_" . OpenUMS::Common::get_timestamp();
   $filename .= "_" . $ctport_handle;
-  $filename .= ".vox";
+  $filename .= ".wav";
 
   return ($filename,"users/$ext/messages/");
 }
@@ -1193,7 +1193,7 @@ sub get_menu_sound {
   my $dbh = shift;
   my $menu_id = shift;
 
-  return "invalid.vox" if (!$menu_id);
+  return "invalid.wav" if (!$menu_id);
 
   my $sql  = qq{SELECT sound_file FROM menu_sounds
                 WHERE menu_id = ? AND order_no = 1 AND sound_type = 'M'};

@@ -1,5 +1,5 @@
 package OpenUMS::Menu::MenuProcessor;
-### $Id: MenuProcessor.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: MenuProcessor.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
 #
 # MenuProcessor.pm
 #
@@ -87,6 +87,7 @@ use strict;
 
 use OpenUMS::Config; 
 use OpenUMS::Log; 
+use Telephony::SemsIvr; 
 
 ######################################
 ## sub new
@@ -288,7 +289,7 @@ sub _play_menu () {
   my $sound =  PROMPT_PATH . $menuSounds->{M}->[0]->{sound_file}  ; 
   if (defined($sound) ) { 
     ## hey, if there, let 'em hear it
-    $ctport->play($sound); 
+      $ctport->play($sound); 
   } 
   return ;
 } 
@@ -353,6 +354,7 @@ sub user_hung_up {
   my $self  = shift ;
   ## returns 1 if the user hung up, returns 0 if he's still around...
   my $flag ; 
+
   if ($self->{LOST_CALL_FLAG} ) {
     $log->normal("----------------USER HUNG UP-------------"); 
     $flag = 1; 
@@ -446,6 +448,7 @@ sub _get_input {
   my $ctport = $self->{CTPORT}; 
   my $input ; 
   ## phone mode here dood...
+  $log->debug("__get_input + $self->{COLLECT_TIME} "); 
   $input = $ctport->collect(1,$self->{COLLECT_TIME});
   $self->{INPUT_COLLECTED} = $input ;
   if (OpenUMS::Common::is_phone_input($input) ) {
