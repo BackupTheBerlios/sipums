@@ -14,13 +14,13 @@ function delete_mailbox () {
   if ($_POST[do_delete] == $DELETE_KEYWORD){ 
     if($vmUser->delete()) { 
        header("Location: mailboxes.php?msg=Mailbox $_POST[ext] deleted");
-       exit;
+       exit; 
      } else {
         return "delete mailbox failed"; 
      }
   } else {  
     header("Location: mailboxes.php?msg=Delete mailbox cancelled");
-    exit;
+    exit; 
   } 
    
     
@@ -53,7 +53,7 @@ function save_perm() {
   }  elseif ($_POST[perm] ==  "ADMIN" && !$perm->have_perm('ADMIN')) { 
     $msg = "Invalid Permission";
   } else {
-   $vmUser->savePerm($_POST[perm]);
+    $vmUser->savePerm($_POST[perm]);
     header("Location: mailboxes.php?msg=Permssion changed $_POST[ext] ");
     exit ;
   }
@@ -175,6 +175,8 @@ $log->log("maibox is $mailbox");
 $log->log("ad domain = $adomain, self = $body_template" );
 $vmUser = new vmUser($data->db,null, $adomain, $mailbox ); 
 $vmUser->get(); 
+$log->log("vmUser-mailbox = " . $vmUser->mailbox  );
+
 
 // $data->init($FORM_VARS[ext], $adomain); 
 

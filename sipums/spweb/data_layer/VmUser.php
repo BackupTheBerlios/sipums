@@ -312,9 +312,11 @@ class VmUser {
 
   function savePerm($new_perm) {
     global $log ;
-    if ($this->mailbox && preg_match("/SUPER|ADMIN/USER/", $new_perm))  {
-       $voicemail_db = $this->get_voicemail_db($this->udomain);
-       $this->change_db($voicemail_db );
+    if ($this->mailbox && preg_match("/SUPER|ADMIN|USER/", $new_perm))  {
+       if (!$this->voicemail_db ) {
+         $this->voicemail_db = get_voicemail_db($this->udomain);
+       }
+       change_db($this->db,$this->voicemail_db );
 
        $q="UPDATE VM_Users SET permission_id = '$new_perm' WHERE "
           . " extension=  ". $this->mailbox;
@@ -325,7 +327,7 @@ class VmUser {
        change_to_default_db($this->db);
 
     } else {
-      $log->log("ERRROR: Tried to savePerm with no extension or invalid perm $new_perm");
+      $log->log("ERRROR: Tried to savePerm with no extension " . $this->mailbox . " or invalid perm $new_perm");
     }
   }
 
