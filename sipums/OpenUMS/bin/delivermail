@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.13 2004/09/02 00:59:56 kenglish Exp $
+### $Id: delivermail,v 1.14 2004/10/03 00:40:15 kenglish Exp $
 #
 # delivermail
 #
@@ -42,10 +42,9 @@ sub TERMINATE;
 sub RESTART;
 sub PROCESS;
 
-#sub Log::logger($$);
-#sub Log::log($);
-#sub Log::new();
-my $log = new OpenUMS::Log();
+## sub Log::logger($$);
+## sub Log::log($);
+## sub Log::new();
 
 sub validate_pidfile($);
 sub process_unsent_messages;
@@ -96,7 +95,7 @@ unless (POSIX::setsid())
   { die("Could not resessionize daemon : $!"); }
 
 ### Initialize the log.
-## my $log = $log = new OpenUMS::Log(); 
+my $log = $log = new OpenUMS::Log(); 
 unless (open(FILE, ">" . DELIVERMAIL_PIDFILE))
   {
     $log->error("!!!Unable to open lockfile: $!");
@@ -134,7 +133,7 @@ while(1)
 
     foreach $DB_NAME (@{$dbs} ) {  
       $main::CONF->load_settings($DB_NAME);
-      $log->debug("_______________________ NEW VM_DB $DB_NAME ___________ ");
+      $log->debug("process_unsent_messages for $DB_NAME");
       $dbh->do("use " . $DB_NAME);
       my $sent = &process_unsent_messages($dbh);
       ##  update the MWIs
@@ -216,7 +215,8 @@ sub send_error_email($$)
                WHERE extension = $extension);
   my $sth = $dbh->prepare($sql);
   $sth->execute();
-  my ($email_address, $first_name, $last_name, $email_type) = $sth->fetchrow_array();
+  my ($email_address, $first_name,
+      $last_name, $email_type) = $sth->fetchrow_array();
   $sth->finish();
 
   ### Get the error mail queue
@@ -262,13 +262,13 @@ sub send_error_email($$)
   $log->info('Spawning child mailer process');
   local $SIG{CHLD} = 'IGNORE';
   my $db_name = $DB_NAME; 
-  unless (my $pid = fork)
-    {
+#  unless (my $pid = fork)
+#    {
       my $dbh_new = OpenUMS::Common::get_dbh($db_name );
       unless (defined($email_address))
         {
           $log->err("Undefined email_address for extension $extension.  No warning sent!");
-          exit;
+          #exit;
         }
 
       my $hostname = OpenUMS::Common::get_ip();
@@ -287,8 +287,8 @@ sub send_error_email($$)
 
       $dbh_new->disconnect;
       ### The child process _cannot_ return
-      exit;
-    }
+#      exit;
+#    }
 }
 
 
@@ -465,9 +465,9 @@ sub subject_string($$)
           if ($caller_id =~ /^\d{3}$/)
             { $subject .= "extension $caller_id"; }
           elsif ($caller_id =~ /^(\d{3})(\d{3})(\d{4})$/)
-            { $subject .= "($1)$2-$3"; }
+            { $subject .= "phone number ($1)$2-$3"; }
           else
-            { $subject .= "$caller_id"; }
+            { $subject .= "phone number $caller_id"; }
         }
       else
         {
@@ -498,6 +498,7 @@ sub email_body($$$$$)
   my $return = "$MARKUP{'HEADER'}{$email_type}Hello,$MARKUP{'P'}{$email_type}";
 #  my $callout_link = "To hear this message over the phone, click ";
 #  $callout_link .=  &html_link(OpenUMS::Common::get_callout_url($file) );
+
   if ($recorded_call)
     {
 $return .= <<EOF;
@@ -521,6 +522,9 @@ $MARKUP{'TSIL'}{$email_type}
 $MARKUP{'REDAEH'}{$email_type}
 
 EOF
+
+
+### $MARKUP{'P'}{$email_type}$callout_link 
 
 
   return ($return);
@@ -600,28 +604,26 @@ sub deliver_email($$)
 
   ### Get the email_address.
   ##  my $dbh = OpenUMS::Common::get_dbh($db);
-  #my $sql = qq(SELECT email_address, email_type
-  #             FROM VM_Users
-  #             WHERE extension = $extension);
-  #$log->debug("Querying for e-mail $sql");
-  #my $sth = $dbh->prepare($sql);
-#
-#  $sth->execute();
-#  my ($email_address, $email_type) = $sth->fetchrow_array();
-#  $log->debug("GOT $email_address, $email_type");
-#  my ($email_address, $email_type) = $sth->fetchrow_array();
-#  $sth->finish();
-  my ($email_address, $email_type) = ($msg_href->{email_address},$msg_href->{email_type}); 
+  my $sql = qq(SELECT email_address, email_type
+               FROM VM_Users
+               WHERE extension = $extension);
+  my $sth = $dbh->prepare($sql);
+
+  $sth->execute;
+  my ($email_address, $email_type) = $sth->fetchrow_array();
+  $sth->finish();
 
   unless (defined($email_address))
     {
       $log->err("No email_address defined for extension $extension");
       return(undef);
-  }
+    }
+  $log->debug("Found email=$email_address");
+  $log->debug("Found email=$email_address");
+  $log->debug("Found email=$email_address");
 
   $log->debug("Building message for $email_address");
   my $subject = subject_string($caller_id, 0) . " - ($wavduration seconds)";
-  $log->debug("Subject is $subject ");
 
   ## &OpenUMS::Common::vox_to_wav("$path$file");
   my $wavfile = $file;
@@ -646,59 +648,47 @@ sub deliver_email($$)
                Filename => $wavfile);
   $msg->add('X-CPVoicemail' => $wavfile);
 
+  my $email_delivery = get_email_delivery($dbh,$extension);
+  my $store = get_voicemail_store($dbh, $extension);
+  my $vstore_email = get_vstore_email($dbh,$extension);
+
   my $success;
-
-  if ($msg_href->{'store_flag'} eq 'V') {
-    ## they have voicemail store
-    if ($msg_href->{'vstore_email'} eq 'C' || $msg_href->{'vstore_email'} eq 'S' ) { 
-      $log->debug(" $extension uses VOICEMAIL STORE with vstore_email=" . $msg_href->{'vstore_email'} )  ;
-      $log->debug(" calling fire_email($email_address) ");
-      $success = &fire_email($email_address, $msg);
-      $log->err("fire_email result $success");
-    } 
-  } else  { 
-    $log->err("$extension HAS EMAIL STORE BUT SHOULD NOT, WE HAVEN'T ENABLED THIS YET");
-  } 
-   
-
-#  if ( ($email_delivery eq 'S') || ($email_delivery eq 'F') )
-#    {
-#      $log->debug("Sending message to $email_address");
-#      if ($email_address) { 
-#        $success = &fire_email($email_address, $msg);
-#      } 
-#    }
-#  else ### ($email_delivery eq 'I')
-#    {
-#      $log->debug("WANT TO Append email_delivery=$email_delivery $wavfile to $email_address");
-#      if ($email_address) {
-#        # $success = &append_email($dbh,$extension, $email_address, $msg);
-#      }
-#    }
-
-  ## If it was sent 
-  if ($success) { ##  || ($vstore_email eq 'C') )
-      $log->debug("Message sent via e-mail .");
-      ## my $dbh = OpenUMS::Common::get_dbh();
-
-      my $sql = "UPDATE VM_Messages " ; 
-      if ($msg_href->{vstore_email} eq 'S') {
-         $sql .= " SET message_status_id = 'D' "; 
-      }  else { 
-         $sql .= " SET message_status_id = 'N' "; 
+  if ( ($email_delivery eq 'S') || ($email_delivery eq 'F') ||($vstore_email eq 'C')  )
+    {
+      $log->debug("Sending message to $email_address");
+      if ($email_address) { 
+        $success = &fire_email($email_address, $msg);
+      } 
+    }
+  elsif ($email_delivery eq 'I')
+    {
+      $log->debug("Appending $wavfile to $email_address");
+      if ($email_address) {
+        $success = &append_email($dbh,$extension, $email_address, $msg);
       }
-      $sql .= " WHERE message_id = " . $msg_href->{'message_id'} ;
-      $log->debug(" GONNA DO $sql"); 
-      $dbh->do($sql); 
+    }
+
+  if ( ($success) || ($vstore_email eq 'C') )
+    {
+      $log->debug("Updating database.");
+      ## my $dbh = OpenUMS::Common::get_dbh();
+      my $sql = qq(UPDATE VM_Messages
+                   SET message_status_id = ?
+                   WHERE message_id = ?);
+      my $sth = $dbh->prepare($sql);
+      if (($msg_href->{store_flag} eq 'V') && ($email_delivery eq 'F'))
+        { $sth->execute('D', $msg_href->{'message_id'}); }
+      else
+        { $sth->execute('N', $msg_href->{'message_id'}); }
+      $sth->finish();
 
       ### Do they want a mobile notice?
+      #if ( defined(my $mobile_email = get_mobile_email_flag($dbh, $extension)) )
+      #  { send_mobile_notice($dbh,$msg_href, $mobile_email); }
 
     } 
    else
     { $log->debug("Error delivering email.  Database unchanged."); }
-
-  #if ( defined(my $mobile_email = get_mobile_email_flag($dbh, $extension)) )
-  #   { send_mobile_notice($msg_href, $mobile_email); }
 
   return(1);
 }
@@ -776,8 +766,8 @@ sub send_recorded_call($$)
   $sth->finish();
 
   my $db_name = $DB_NAME; 
-  unless (my $pid = fork)
-    {
+#  unless (my $pid = fork)
+#    {
       $log->info("Building recorded_call for $email_address");
 
       #  &OpenUMS::Common::vox_to_wav("$path$file");
@@ -819,8 +809,8 @@ sub send_recorded_call($$)
           $sth->finish();
           $dbh_new->disconnect;
         }
-      exit;
-    } 
+#      exit;
+#    } 
 }
 
 
@@ -847,10 +837,9 @@ sub send_mobile_notice($$$)
   my $db_name = $DB_NAME; 
 #  unless (my $pid = fork)
 #    {
-# my $dbh_new = OpenUMS::Common::get_dbh($DB_NAME);
-
-   $log->info("Building notice for $mobile_email");
-   my $msg = MIME::Lite->new(From    =>'Voicemail',
+      #my $dbh_new = OpenUMS::Common::get_dbh($DB_NAME);
+      $log->info("Building notice for $mobile_email DB_NAME=$DB_NAME");
+      my $msg = MIME::Lite->new(From    =>'Voicemail',
                                 To      =>$mobile_email,
                                 Subject =>$subject,
                                 Type    =>'TEXT',
@@ -861,8 +850,6 @@ sub send_mobile_notice($$$)
       eval { $msg->send; };
       ($@) ? $log->err("Unable to send notice to $mobile_email")
            : $log->verbose("Done sending notice to $mobile_email");
-
-#      $dbh_new->disconnect;
 
 #      exit;
       ### This exit is very important
@@ -893,13 +880,7 @@ sub process_unsent_messages($)
                       m.extension_to      extension_to,
                       m.extension_from    extension_from, 
                       m.record_call_flag  record_call_flag,
-                      u.store_flag        store_flag,
-                      u.email_address     email_address,
-                      u.email_delivery    email_delivery,
-                      u.vstore_email      vstore_email, 
-                      u.email_type      email_type,
-                      u.mobile_email_flag      mobile_email_flag,
-                      u.mobile_email       mobile_email
+                      u.store_flag        store_flag
                FROM VM_Messages m INNER JOIN VM_Users u
                ON (m.extension_to = u.extension)
                WHERE message_status_id = 'V');
@@ -960,22 +941,15 @@ sub process_unsent_messages($)
       else
         {
           ### If it's a recorded call
-          if ($msg_href->{'email_address'} ) { 
-            if ($msg_href->{'record_call_flag'})
-              { send_recorded_call($dbh, $msg_href); }
-            ### It's a message.
-            else
-              { deliver_email($dbh, $msg_href); }
-          } else {
-            $log->err("User " . $msg_href->{'extenion_to'} . " has no e-mail");
-          } 
-       }
+          if ($msg_href->{'record_call_flag'})
+            { send_recorded_call($dbh, $msg_href); }
+          ### It's a message.
+          else
+            { deliver_email($dbh, $msg_href); }
+        }
        ### Do they want a mobile notice?
-
-       if ( $msg_href->{mobile_email_flag} && $msg_href->{mobile_email} ) {
-          $log->debug("Sending MObile email to $msg_href->{mobile_email}.");
-          send_mobile_notice($dbh, $msg_href, $msg_href->{mobile_email}) 
-       }
+       if ( defined(my $mobile_email = get_mobile_email_flag($dbh,$extension)) )
+         { send_mobile_notice($dbh,$msg_href, $mobile_email); }
        $unsent_count++; 
     }
 

@@ -1,20 +1,20 @@
-### $Id: SipUmsMwi.pm,v 1.7 2004/09/01 03:16:35 kenglish Exp $
+### $Id: SipUmsMwi.pm,v 1.8 2004/10/03 00:41:58 kenglish Exp $
 #
-# Copyright (C) 2004 Servpac Inc.
-# 
-#  This library is free software; you can redistribute it and/or modify it
-#  under the terms of the GNU Lesser General Public License as published by the
-#  Free Software Foundation; either version 2.1 of the license, or (at your
-#  option) any later version.
-# 
-#  This library is distributed in the hope that it will be useful, but WITHOUT
-#  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-#  FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
-#  details.
-# 
-#  You should have received a copy of the GNU Lesser General Public License
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  US
+# Copyright (C) 2003 Comtel
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 package OpenUMS::SipUmsMwi;
 
@@ -111,10 +111,7 @@ sub get_data {
 
    my $sth_saved = $dbh->prepare("SELECT count(*) FROM VM_Messages WHERE extension_to = ? AND message_status_id = 'S'");
 
-   my %data;
-                                                                                                                                               
    my $data;
-                                                                                                                                               
    while (my ($ext,$last_new_msg_count, $last_sent_uts, $last_visit_uts) = $sth->fetchrow_array() ) {
 
                                                                                                                                                
@@ -126,7 +123,7 @@ sub get_data {
       my $saved_msg_count = $sth_saved->fetchrow();
       $sth_saved->finish();
 
-      $log->debug("in while $ext $saved_msg_count $last_new_msg_count $new_msg_count"); 
+      $log->debug("in SipUmsMwi->get_data() $ext last_new_msg_count=$last_new_msg_count new_msg_count=$new_msg_count"); 
 
       ## if they have no new messages and they had new messages before, we turn it off...
       if (!$new_msg_count && $last_new_msg_count) {
@@ -141,14 +138,22 @@ sub get_data {
           $data->{$ext}->{new_message_count} = $new_msg_count ; 
           $data->{$ext}->{action} = 'A'; ## activate
       }
-      my $last_visit_flag =  ($last_visit_uts > $last_sent_uts ); 
-
-      ## if they logged in and still have new messages
-      if ($last_visit_flag && $new_msg_count) {
+      
+      ## if they have more new messages now than they had before, we turn it on
+     if ($new_msg_count > $last_new_msg_count) {
           $data->{$ext}->{saved_message_count} = $saved_msg_count ; 
           $data->{$ext}->{new_message_count} = $new_msg_count ; 
           $data->{$ext}->{action} = 'A'; ## activate
       }
+
+      #my $last_visit_flag =  ($last_visit_uts > $last_sent_uts ); 
+#
+#      ## if they logged in and still have new messages
+#      if ($last_visit_flag && $new_msg_count) {
+#          $data->{$ext}->{saved_message_count} = $saved_msg_count ; 
+#          $data->{$ext}->{new_message_count} = $new_msg_count ; 
+#          $data->{$ext}->{action} = 'A'; ## activate
+#      }
 
    }
    $sql = qq{select extension, unix_timestamp(last_visit) last_visit ,
@@ -166,7 +171,7 @@ sub get_data {
 #          $data->{$ext}->{action} = 'A'; ## activate
 #      } 
 #   } 
-   
+  
 
    return $data ;
 }
@@ -229,6 +234,7 @@ sub save {
    my $sql = qq{UPDATE mwi_status SET last_sent = NOW()  , 
     last_new_message_count = $new_message_count 
     WHERE  extension = $ext }; 
+  $log->debug("update mwi_status $ext  $new_message_count   ");
   $dbh->do($sql); 
   return 
 } 
