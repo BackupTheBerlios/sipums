@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: functions.php,v 1.3 2004/08/03 09:14:40 kenglish Exp $
+ * $Id: functions.php,v 1.4 2004/08/06 07:29:21 kenglish Exp $
  */
 
 
@@ -639,5 +639,50 @@ function do_debug($msg) {
     return $caller_id; 
 
  } 
+  function get_voicemail_db(&$db, $domain) {
+    global $log; 
+    if ($domain && $db) {
+      $q = "SELECT voicemail_db FROM domain WHERE domain='$domain' " ;
+      $res=$db->query($q);
+      if (DB::isError($res)) {
+           $log->log("FAILED QUERY : $q",LOG_ERR);
+      }
+      while ($row=$res->fetchRow(DB_FETCHMODE_ORDERED) ) {
+         $voicemail_db=$row[0];
+         $log->log("voicemail_Db $voicemail_db");
+      }
+      $res->free();
+      return $voicemail_db;
+    } else {
+      $log->log("get_voicemail_db : no domain not set ");
+      return 0;
+    }
+  }
+
+  function change_db(&$db, $db_name) { 
+    global $log; 
+
+    $log->log("change db to $name",LOG_DEBUG);
+
+    $db->_db = $db_name ;
+
+    if (!@mysql_select_db($db_name, $db->connection)) {
+      $log->log("failed to change db to $db_name",LOG_ERR);
+      return false ;
+    } else {
+      $log->log("CHANGED DB TO " .$db->_db);
+      return true;
+    }
+  } 
+
+  function change_to_default_db(&$db) { 
+    global $log; 
+    global $config;
+ 
+    $log->log("CHANGING BACK  TO " . $config->data_sql->db_name); 
+    $config->data_sql->db_name ;
+    return change_db($db, $config->data_sql->db_name ); 
+  } 
+
 
 ?>

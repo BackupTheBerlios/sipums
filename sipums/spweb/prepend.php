@@ -1,7 +1,14 @@
 <?php
 /*
- * $Id: prepend.php,v 1.3 2004/08/03 09:14:40 kenglish Exp $
+ * $Id: prepend.php,v 1.4 2004/08/06 07:29:21 kenglish Exp $
  */ 
+
+require_once 'Log.php';
+$conf = array('mode' => 0660, 'timeFormat' => '%X %x');
+$log = &Log::singleton('file', '/tmp/spweb.log', 'spW', $conf, LOG_INFO);
+
+$log->log("!!!+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-!!!",LOG_ERR);
+
 
 $_SERWEB = array();
 $_PHPLIB = array();
@@ -20,8 +27,8 @@ require($_SERWEB["serwebdir"] . "load_phplib.php");
 require("page_attributes.php");
 if ($config->debug) { 
   $FDEBUG = fopen("/tmp/sp_web_debug2.log","a+");
-  do_debug("!!!+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-!!!");
 }
+
 global $FORM_VARS ;
 $FORM_VARS = array_merge($_POST,$_GET);
 

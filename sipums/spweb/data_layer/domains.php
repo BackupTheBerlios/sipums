@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: domains.php,v 1.2 2004/08/05 09:14:14 kenglish Exp $
+ * $Id: domains.php,v 1.3 2004/08/06 07:29:21 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{

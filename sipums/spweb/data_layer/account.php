@@ -1,14 +1,41 @@
 <?
 /*
- * $Id: account.php,v 1.6 2004/08/05 09:14:14 kenglish Exp $
+ * $Id: account.php,v 1.7 2004/08/06 07:29:21 kenglish Exp $
  */
 
 class CData_Layer extends CDL_common{
 
   var $uname; var $udomain; 
+
   function init($uname, $udomain) {
      $this->uname=$uname;$this->udomain=$udomain;
   }   
+
+  function mailbox_exists ($mailbox) {
+    global $log; 
+    $voicemail_db = get_voicemail_db($this->db, $this->udomain);
+    change_db($this->db, $voicemail_db);
+    $q = "SELECT count(extension) " . 
+         " FROM VM_Users  WHERE extension = " . $mailbox;
+                                                                                                                                               
+     $res = $this->db->query($q);
+                                                                                                                                               
+     if (DB::isError($res)) {
+          $log->log("FAILED QUERY : $q",LOG_ERR);
+          return false;
+     }
+     $row =  $res->fetchRow(DB_FETCHMODE_ORDERED) ;
+     $res->free();
+     change_to_default_db($this->db);
+
+     $count = $row[0]; 
+     if ($count == 1)  {
+       return true; 
+     } else {
+       return false; 
+     } 
+  } 
+
 
   function get_edit_users($domains) { 
       $q="";
@@ -28,7 +55,7 @@ class CData_Layer extends CDL_common{
 
       $q = "SELECT concat(s.username,'@',s.domain) edit_user FROM subscriber s 
             $where order by s.domain,s.username"; 
-      $res=$this->db->query($q);
+      $res= $this->db->query($q);
       do_debug("get_edit_users = $q ");
       $out=array();
       while ($row=$res->fetchRow(DB_FETCHMODE_ORDERED) ) {
@@ -50,6 +77,7 @@ class CData_Layer extends CDL_common{
 
       do_debug("get_user_info $q");
       $res=$this->db->query($q);
+
       $row=$res->fetchRow(DB_FETCHMODE_ASSOC) ;
       $res->free();
 
@@ -186,40 +214,6 @@ class CData_Layer extends CDL_common{
   } 
 
 
-  function create_mailbox($p_user_info) {
-    do_debug("called create_mailbox($mailbox)");  
-
-    if ($p_user_info[mailbox]) { 
-       $voicemail_db = $this->get_voicemail_db($this->udomain);
-       $cmd = "perl /usr/local/openums/addvmuser " .   
-              $p_user_info[mailbox] . " \"" .
-              $p_user_info[first_name]. "\" \"" .$p_user_info[last_name] . "\" " . $voicemail_db  ;
-
-       $output = `$cmd` ;
-
-       do_debug("\ndid $cmd: $output ");
-       if (preg_match("/Success/", $output) ) {
-          do_debug("ADD VM USER SUCCESS");
-	  return true ; 
-       } else { 
-          do_debug("ADD VM USER FAILED");
-          return false; 
-       } 
-     } else {
-      do_debug("create_mailbox faild, no mailbox specified");
-     } 
-
-  } 
-
-  function create_new_voicemail($user_info) {
-    do_debug("called create_new_voicemail");  
-    $cmd = "perl /usr/local/openums/addvmuser $user_info[mailbox] \"$user_info[first_name]\" \"$user_info[last_name]\" "  ; 
- 
-    do_debug("gonna do $cmd ");  
-    $output = `$cmd` ;
-    do_debug("\n\ndid iT: $output ");  
-    
-  } 
   function update_mailbox() {
     if ($this->user_info[mailbox]) {
        do_debug("update_mailbox() $this->user_info[mailbox] ");
@@ -251,8 +245,8 @@ class CData_Layer extends CDL_common{
            do_debug("FAILED QUERY : $q");
         }
 
-       global $config; 
        do_debug("Changeing back to " . $config->data_sql->db_name ); 
+       global $config; 
        $res=$this->db->_db=$config->data_sql->db_name;
        $this->change_db($this->db->_db) ; 
 

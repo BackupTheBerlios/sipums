@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: domains.php,v 1.1 2004/08/01 20:06:13 kenglish Exp $
+ * $Id: domains.php,v 1.2 2004/08/06 07:29:21 kenglish Exp $
  */
 
 require 'prepend.php';
@@ -40,4 +40,6 @@ $footer_smarty->display('app_footer.tpl');
 
 // freeze the session 
 page_close(); 
+// please close the log
+$log->close(); 
 ?>

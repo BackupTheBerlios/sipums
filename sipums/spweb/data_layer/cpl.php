@@ -193,8 +193,9 @@ XML;
   *****************************/
 
   function set_ring_both($rb_number){
+    global $log;
     $xml = $this->_get_ring_both_xml($rb_number);
-    ///      do_debug("set_ring_both xml $xml");
+    $log->log("set_ring_both xml $xml");
     return $this->_load_cpl($xml);
   }
 
@@ -205,22 +206,27 @@ XML;
   *****************************/
   function _load_cpl($xml) {
      
+    global $log;
     $tmpfilename="cpl_".rand() . ".xml";
     $tmppath="/tmp/".$tmpfilename;
     $CPL_FILE=fopen($tmppath,"w");
     fwrite($CPL_FILE,$xml);
     fclose($CPL_FILE);
-          do_debug("wrote to $tmppath");
+          $log->log("wrote to $tmppath");
 
     global $config; 
     $fifo_cmd=":LOAD_CPL:" . $config->reply_fifo_filename ."\n$this->uname@$this->udomain\n$tmppath\n\n";
-          do_debug("writing to fifo:--\n$fifo_cmd---");
+          $log->log("writing to fifo:--\n$fifo_cmd---");
 
     write2fifo($fifo_cmd, $errors, $status);
     @unlink($tmppath); 
-          do_debug("wrote to fifo  $status:$error");
+    $log->log("wrote to fifo  $status:$error");
 
-    return "$status";
+    if (preg_match("/OK/", $status)) { 
+      return true ;
+    } else { 
+      return false ;
+    } 
   } 
   function _cpl_get() {
     global $config; 
@@ -247,6 +253,8 @@ XML;
        $this->get_rb_number($xml); 
     }  elseif ($this->call_setting == 'fmfm') {
        $this->get_fmfm_number($xml); 
+    } else  { 
+       $this->call_setting = "default"; 
     } 
      
   }  
@@ -262,6 +270,12 @@ XML;
          if ($key2 =="tag" && $val2 == "LOCATION"){
             $isloc =1;
             $fmfm_number =$val[attributes][URL];
+            if (preg_match('/ivr/',$fmfm_number)) {
+               $fmfm_number="";
+            }  else {
+               break ;
+            }
+
              break ;
          }
       }
@@ -312,8 +326,14 @@ XML;
       foreach ($val as $key2=>$val2) {
          if ($key2 =="tag" && $val2 == "LOCATION"){
             $isloc =1;    
+             
             $fwd_number =$val[attributes][URL]; 
-             break ; 
+            if (preg_match('/ivr/',$fwd_number)) { 
+               $fwd_number="";
+            }  else { 
+               break ; 
+            }
+             
          } 
       }
       if ($fwd_number) break ; 
@@ -354,12 +374,20 @@ XML;
   function _remove_cpl()  {
     do_debug("call _remove_cpl");
                                                                                                                                                
-    global $config;
+    global $config,$log;
     $fifo_cmd=":REMOVE_CPL:" . $config->reply_fifo_filename ."\n$this->uname@$this->udomain\n\n";
-    do_debug("writing to fifo:--\n$fifo_cmd---");
+
+    $log->log("writing to fifo:--\n$fifo_cmd--- ",LOG_DEBUG);
 
     write2fifo($fifo_cmd, $errors, $status);
-    do_debug("wrote to fifo  $status:$error");
+
+    $log->log("wrote to fifo  $status:$error",LOG_DEBUG);
+    if (preg_match("/OK/", $status)) {
+      return true ;
+    } else {
+      return false ;
+    }
+
 
   } 
 
