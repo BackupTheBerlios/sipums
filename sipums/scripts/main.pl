@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #main.pl
-#open STDERR, ">>/var/log/openums/script.err";
+open STDERR, ">>/var/log/openums/script.err";
 
 use strict; 
 

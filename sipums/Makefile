@@ -60,4 +60,3 @@ install:  .compiledok
 	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.org/
 	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.com/
 	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.net/
-	$(INSTALL) -v -m 744 $(CONF_SCRIPT) $(BASEDIR)/scripts/o-matrix.org/
