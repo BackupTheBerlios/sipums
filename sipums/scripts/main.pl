@@ -51,9 +51,10 @@ $domain = ivr::getDomain();
 
 
 #my ($uname,$domain) = &get_user_domain($ser_to); 
-my ($caller,$caller_domain); ## = &get_caller_id($ser_from); 
+my ($caller,$caller_domain,$caller_number); ## = &get_caller_id($ser_from); 
 
 $caller = &get_caller_id($ser_from); 
+$caller_number = &get_caller_number($ser_from); 
 
 $log->debug("-----------------------------------");
 $log->debug("NEW CALL");
@@ -69,35 +70,28 @@ my $main_number_flag = &is_client_main_number($dbh, $uname,$client_id);
 
 $log->debug("$uname client_id is $client_id");
 my $extension  = &get_user_extention($dbh,$uname,$domain); 
-my $client_vm_db =  &change_client_db($dbh,$client_id); 
 
 
 ## create a ctport, a phonesys and load global settings
 my $ctport    = new Telephony::CTPortJr($PORT);
 my $phone_sys = new OpenUMS::PhoneSystem::SIP;
-$CONF->load_settings($client_vm_db);
 
-  syslog('info', "NEW CALL ON IS $PORT"); 
+ syslog('info', "NEW CALL ON IS $PORT"); 
 
 
-  $log->debug("User $ser_to is extension $extension ");
+ $log->debug("User $ser_to is extension $extension ");
 
-#  my $TEST = 0 ; 
-#   if ($TEST){ 
-#
-#      $ctport->play("/var/spool/openums/prompts/7.wav /var/spool/openums/prompts/2.wav /var/spool/openums/prompts/3.wav /var/spool/openums/prompts/3.wav /var/spool/openums/prompts/4.wav /var/spool/openums/prompts/5.wav /var/spool/openums/prompts/6.wav /var/spool/openums/prompts/7.wav /var/spool/openums/prompts/8.wav /var/spool/openums/prompts/9.wav /var/spool/openums/prompts/1000.wav");
-#
-#      my $keys = $ctport->collect(5,10); 
-#      $ctport->play("/var/spool/openums/prompts/goodbye.wav"); 
-#      $log->debug("GOT BACK $keys ");
-#
-#     sleep(10);
-#     exit ;
-#  } 
- ## this figures out what menu to play
  my $action = 'auto_attendant';  ## default is always auto_attendant
+ $log->log('action = ' . $action); 
+ my $login_ext;  
  if  (!$extension || $main_number_flag) {
    $action = 'auto_attendant';  
+   $log->log('no extension or main_number_flag, action = ' . $action); 
+   if (&is_user_calling($dbh,$caller_number,$domain) ) {
+      $action    = 'station_login';  
+      $extension = $caller_number;
+      $log->log('station_login extension or main_number_flag, action = ' . $action); 
+   } 
  }  elsif ($caller eq $uname){
    ## if the phone called from is the same as the number, they are checking voicemail
    $action = 'station_login'; 
@@ -105,9 +99,17 @@ $CONF->load_settings($client_vm_db);
    ## default, take a message for that extension
    $action = 'take_message';
  }  
- # $action = 'auto_attendant';
 
- my $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, $action);
+ my $client_vm_db =  &change_client_db($dbh,$client_id); 
+ $CONF->load_settings($client_vm_db);
+
+  my $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, $action);
+  
+
+
+
+
+ 
 
 ## force them to leave a mesasge...
 
@@ -118,15 +120,30 @@ my $menu = new OpenUMS::Menu::Menu($dbh, $ctport, $phone_sys, $data1, $data2);
 $log->debug("CALLING CREATE MENU");
 $menu->create_menu(); 
 
+## check the auto login 
+if ($action eq 'station_login') { 
+  my ($auto_login_flag,$new_user_flag,$auto_new_messages) = OpenUMS::DbQuery::is_auto_login_new_user($dbh,$extension);
+  if ($auto_login_flag) {
+     $log->debug("User is auto_login\n");
+     $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, "auto_login");
+     my $user = $menu->get_user();
+     $user->auto_login($extension);
+  }
+  if($new_user_flag) {
+    $log->debug("User is new_user \n");
+    $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, "user_tutorial");
+  }
+}
 ## dupe the shit!
 $menu->run_menu($menu_id, $data1, $data2); 
+
 $log->debug("Signalling delivermail");
 &OpenUMS::Common::signal_delivermail;
 
 $log->debug("finalize");
 $ctport->finalize();
 $log->debug("exit");
-ivr::sleep(3); 
+sleep(5); 
 exit; 
 
 ## open the sys log
@@ -191,6 +208,30 @@ sub get_caller_id {
   }
                                                                                                                                                
 }
+sub get_caller_number {
+  my $sip_from = shift;
+  if ($sip_from =~ /unknown/){
+     return "unknown";
+  }
+
+  if ($sip_from =~ /^<sip:/) {
+    $sip_from =~ s/^<sip://g;
+    $sip_from =~ s/>$//g;
+    my ($num,$d) = split(/\@/,$sip_from);
+    return $num;
+  } elsif ($sip_from =~ /"/) {
+    $sip_from =~ s/>$//g;
+    my ($name,$sip_from) = split(/\<sip:/,$sip_from);
+    my ($num,$d) = split(/\@/,$sip_from);
+    $name =~ s/\"//g;
+    $log->debug("$name ");
+    $name =~ s/\s+$//;
+    $log->debug("$name ");
+    return $num;
+  }
+
+}
+
 
 sub get_user_extention {
   my ($dbh,$uname,$domain) = @_; 
@@ -203,6 +244,15 @@ sub get_user_extention {
   } else { 
     return $ext ;
   }
+
+}
+sub is_user_calling{
+  my ($dbh,$caller,$domain) =@_; 
+  my $sql = qq{SELECT count(*) FROM subscriber WHERE username ='$caller' AND domain = '$domain'};
+  $log->debug('is_user_calling ' . $sql);
+  my $arr = $dbh->selectrow_arrayref($sql);
+  my $count = $arr->[0];
+  return $count; 
 
 }
 sub get_client_id {
@@ -222,6 +272,7 @@ sub is_client_main_number {
   my $sql = qq{SELECT count(*) FROM clients 
      WHERE client_main_number = '$number' 
         AND client_id ='$client_id' } ; 
+
   $log->debug(' gonna look for ' . $sql); 
   my $arr = $dbh->selectrow_arrayref($sql);
   my $count = $arr->[0];

@@ -1,5 +1,5 @@
 package OpenUMS::PhoneSystem::SIP ; 
-### $Id: SIP.pm,v 1.10 2004/08/31 06:49:35 kenglish Exp $
+### $Id: SIP.pm,v 1.11 2004/12/15 19:18:54 kenglish Exp $
 #
 # SIP.pm
 #
@@ -108,11 +108,11 @@ sub do_transfer {
   } 
 
   my $dbh_ser = OpenUMS::Common::get_dbh(SER_DB_NAME); 
-  my $sql = "SELECT  s.username, d.domain, d.voicemail_db,s.mailbox
-      FROM subscriber s, domain d
-      WHERE d.domain = s.domain
-        AND d.voicemail_db = '$voicemail_db'
-        AND mailbox = $ext" ; 
+  my $sql = "SELECT  s.username, s.domain, c.voicemail_db,s.mailbox
+      FROM subscriber s, clients c
+      WHERE s.client_id = c.client_id 
+        AND c.voicemail_db = '$voicemail_db'
+        AND s.mailbox = $ext" ; 
 
   $log->debug("$voicemail_db : $sql "); 
   my ($username,$domain) = $dbh_ser->selectrow_array($sql);

@@ -270,7 +270,7 @@ sub send_mwi {
 NOTIFY
 sip:$ser_user
 .
-From:sip:sipums\@o-matrix.org
+From:sip:sipums\@servpac.com
 To:sip:$ser_user
 Event: message-summary
 Content-Type: application/simple-message-summary
@@ -296,24 +296,24 @@ Voicemail: $new_count/$saved_count
 sub get_user_mailboxes($$) {
   my ($dbh,$db_name) = @_; ##  = OpenUMS::Common::get_dbh("ser") ;
                                                                                                                                                
-  my $sql = qq{SELECT s.mailbox, s.username, d.domain, d.voicemail_db
-      FROM subscriber s, domain d
-      WHERE d.domain = s.domain
-        AND d.voicemail_db = '$db_name'
-        AND mailbox IS NOT NULL
-        AND mailbox <> 0 };
+  my $sql = qq{SELECT s.mailbox, s.username,s.domain,  c.voicemail_db
+FROM subscriber s, clients c
+WHERE s.client_id = c.client_id
+AND c.voicemail_db = '$db_name'
+AND mailbox IS NOT NULL
+AND mailbox <> 0} ; 
                                                                                                                                                
-  $log->debug("get_user_mailboxes( sql= "  . $sql . ") ");
                                                                                                                                                
   my $sth = $dbh->prepare($sql);
   $sth->execute();
   my %hash;
 
   while (my ($mailbox, $username,$domain) = $sth->fetchrow_array() ) {
-    $log->debug("mailbox $mailbox ");
     $hash{$mailbox} = "$username\@$domain";
   }
-                                                                                                                                               
+  $log->debug("get_user_mailboxes(  "  . $db_name . ") == " . scalar(keys %hash) . " mailboxes  " );
+    
+  
   return \%hash; ## $ary_ref;
 }
 1; 
