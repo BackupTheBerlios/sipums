@@ -47,15 +47,19 @@ $GLOBAL_SETTINGS->load_settings();
 
   ## find out who they are calling...translate that to an extension
 
-  my $ser_to = ivr::getTo; 
-  my $ext = OpenUMS::Common::ser_to_extension($dbh, $ser_to); 
-  $log->debug("User $ser_to is extension $ext ");
+  ##  my $ser_to = ivr::getTo; 
+    ##my $ext = OpenUMS::Common::ser_to_extension($dbh, $ser_to); 
+  ##  $log->debug("User $ser_to is extension $ext ");
+  ##  
   
+  my $ext = 799 ; 
+
   $log = new OpenUMS::Log($PORT);
   $log->debug("User $ser_to is extension $ext ");
   $log->debug("PLEASE WRITE TO SYS LOG");
   
   # set to 1 to test , if this doesn't work we can guarentee that nothing else will 
+  # Once this works, set it to zero 
 
   my $TEST = 1 ; 
   if ($TEST){ 
