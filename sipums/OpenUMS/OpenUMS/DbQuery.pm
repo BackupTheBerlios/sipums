@@ -1,5 +1,5 @@
 package OpenUMS::DbQuery;
-### $Id: DbQuery.pm,v 1.6 2004/12/17 00:56:59 kenglish Exp $
+### $Id: DbQuery.pm,v 1.7 2005/01/15 19:55:41 kenglish Exp $
 #
 # DbQuery.pm
 #
@@ -1341,4 +1341,15 @@ sub is_auto_login {
   $log->debug("[DbQuery] is_auto_login for $extension = $auto_login");
   return $auto_login; 
 } 
+sub get_deleted_messages_to_purge {
+  my ($dbh, $days) = @_;
+  my $key_field = 'message_id';
+  my $sql = qq{SELECT message_id,message_status_changed, message_wav_path,message_wav_file 
+               FROM VM_Messages 
+               WHERE message_status_changed < NOW() - INTERVAL $days DAY};
+  
+  my $hr = $dbh->selectall_hashref($sql, $key_field); 
+  return $hr; 
+ 
+}
 1; 
