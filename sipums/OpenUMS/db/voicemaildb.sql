@@ -242,8 +242,8 @@ INSERT INTO global_settings VALUES ('RC_TIMEOUT','Maximum length of a recorded c
 INSERT INTO global_settings VALUES ('OPERATOR_EXTENSION','Operator extension','301','INTEGER',0,100000,'');
 INSERT INTO global_settings VALUES ('REWIND_SECS','Number of Seconds rewind/fast forward will jump','5','INTEGER',1,25,'');
 INSERT INTO global_settings VALUES ('INTERGRATION_WAIT','Time to wait for Intergration Digits','4','INTEGER',1,10,'');
-INSERT INTO global_settings VALUES ('VOICEMAIL_DB','Voicemail Database','vm_omatrix_net','CHAR',0,100000,'');
-INSERT INTO global_settings VALUES ('VM_PATH','Voicemail Directory','o-matrix.net','CHAR',0,100000,'');
+INSERT INTO global_settings VALUES ('VOICEMAIL_DB','Voicemail Database','voicemai','CHAR',0,100000,'');
+INSERT INTO global_settings VALUES ('VM_PATH','Voicemail Directory','voicemail','CHAR',0,100000,'');
 
 --
 -- Table structure for table `holiday_names`
