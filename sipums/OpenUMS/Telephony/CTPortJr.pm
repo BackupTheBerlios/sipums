@@ -375,7 +375,7 @@ sub record($$$$$) {
    
    syslog('debug', "Going to Read WAV");
 
-   ivr::msleep(20);
+   ivr::msleep(500);
    $read = $wav->read($file); 
    syslog('debug', "Read Wave file");
 

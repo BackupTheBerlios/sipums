@@ -39,7 +39,7 @@ sub do_callout {
   my $input = undef;
   ## keep looping till the press 1
   # while ( $played < $MAX_INTRO_PROMPT_PLAY  && $input ne '*' && $input ne '9') {
-  #  $ctport->play(PROMPT_PATH .  'callout_menu_intro.vox');
+  #  $ctport->play(PROMPT_PATH .  'callout_menu_intro.wav');
   #  $input = $ctport->collect(1,3) ;
   #  $log->debug("input =  $input\n");
   #  $played++;

@@ -5,7 +5,7 @@ INSTALL=/usr/bin/install
 OPENUMS_LIBS= OpenUMS/CallOut.pm OpenUMS/Common.pm OpenUMS/DbQuery.pm OpenUMS/GlobalSettings.pm \
               OpenUMS/Holidays.pm OpenUMS/Log.pm OpenUMS/PhoneSystem.pm \
               OpenUMS/CallRecorder.pm OpenUMS/Config.pm OpenUMS/DbUtils.pm OpenUMS/Greeting.pm \
-              OpenUMS/IMAP.pm OpenUMS/Mwi.pm OpenUMS/Permissions.pm
+              OpenUMS/IMAP.pm OpenUMS/SipUmsMwi.pm OpenUMS/Permissions.pm
                                                                                                                                                
 MENU_LIBS =  OpenUMS/Menu/AAGMP.pm OpenUMS/Menu/AdminMP.pm OpenUMS/Menu/AppendMsgMP.pm \
              OpenUMS/Menu/AutoAttendantMP.pm OpenUMS/Menu/DbnmMP.pm OpenUMS/Menu/DbnmResultMP.pm \
@@ -32,6 +32,7 @@ compile: $(LIBS)
 	rm -f .compiledok
 	touch .compiledok
 	perl -wc  bin/useall
+	perl -wc -I .  bin/delivermail
 install: $(LIBS)  .compiledok
 	mkdir -p $(LIBDIR)
 #	cd OpenUMS && make install
@@ -46,5 +47,5 @@ install: $(LIBS)  .compiledok
 	$(INSTALL) -D -v -m 644 $(OBJ_LIBS) $(LIBDIR)/OpenUMS/Object
 	$(INSTALL) -D -v -m 644 $(PHONESYS_LIBS) $(LIBDIR)/OpenUMS/PhoneSystem
 	$(INSTALL) -D -v -m 644 $(CTPORT_LIBS) $(LIBDIR)/Telephony
-	$(INSTALL) -v -m 744 $(DELIVER_MAIL) $(BASEDIR)/
+	$(INSTALL) -v -m 774 $(DELIVER_MAIL) $(BASEDIR)/
 	rm -f .compiledok

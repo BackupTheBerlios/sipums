@@ -1,8 +1,10 @@
 DISTDIR=/home/kenglish/dist/sipums
+BASEDIR=/usr/local/openums
+LIBDIR=$(BASEDIR)/lib
+INSTALL=/usr/bin/install
 
-
-
-DIRS = $(DISTDIR) 
+DOMAIN_DIRS = $(BASEDIR)/scripts/o-matrix.org $(BASEDIR)/scripts/o-matrix.net $(BASEDIR)/scripts/o-matrix.com
+SEMS_SCRIPT= scripts/main.pl
 
 default: compile
 .compiledok : compile
@@ -47,8 +49,13 @@ dist:  .compiledok
 	cp cgi-bin/templates/*.html $(DISTDIR)/cgi-bin/templates
 	cp cgi-bin/templates/reports/*.html $(DISTDIR)/cgi-bin/templates/reports
 	cp cgi-bin/OpenUMS/WWW/*.pm $(DISTDIR)/cgi-bin/OpenUMS/WWW
-	cp scripts/*.pl $(DISTDIR)/scripts/
-
+	cp scripts/main.pl $(DISTDIR)/scripts/o-matrix.org
+	cp scripts/main.pl $(DISTDIR)/scripts/o-matrix.com
+	cp scripts/main.pl $(DISTDIR)/scripts/o-matrix.net
 
 	rm -f .compiledok
-
+install:  .compiledok
+	cd OpenUMS && make install
+	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.org/
+	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.com/
+	$(INSTALL) -v -m 744 $(SEMS_SCRIPT) $(BASEDIR)/scripts/o-matrix.net/

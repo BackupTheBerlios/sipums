@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.4 2004/07/30 20:22:13 kenglish Exp $
+### $Id: Common.pm,v 1.5 2004/07/31 20:27:05 kenglish Exp $
 #
 # Common.pm
 #
@@ -326,8 +326,13 @@ sub sweep_old($$)
 #################################
 sub get_dbh 
 {
+  my $db_name = shift; 
+  if (!$db_name) {
+     $db_name = DB_NAME; 
+  } 
   use DBI;
-  my $dsn = "DBI:mysql:database=" . DB_NAME . ";host=localhost";
+  
+  my $dsn = "DBI:mysql:database=$db_name;host=localhost";
   my $user = DB_USER; 
   my $password = DB_PASS; 
   my $dbh = DBI->connect($dsn, $user, $password);
@@ -1023,13 +1028,14 @@ sub sound_duration($)
 ########################################################### signal_delivermail
 sub signal_delivermail
 {
-  unless (-e DELIVERPID)
+  $log->debug("some one called signal_delivermail");
+  unless (-e DELIVERMAIL_PIDFILE)
     {
       $log->err("Delivermail lock file does not exist!");
       return(undef);
     }
 
-  unless (open(FILE, "<" . DELIVERPID))
+  unless (open(FILE, "<" . DELIVERMAIL_PIDFILE))
     {
       $log->err("Unable to access delivermail lock file : $!");
       return(undef);

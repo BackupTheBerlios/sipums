@@ -1,4 +1,4 @@
-### $Id: SipUmsMwi.pm,v 1.1 2004/07/31 01:00:49 kenglish Exp $
+### $Id: SipUmsMwi.pm,v 1.2 2004/07/31 20:27:05 kenglish Exp $
 #
 # Copyright (C) 2003 Comtel
 #
@@ -46,8 +46,6 @@ Dean Kramer, support@voicetronix.com.au
 use strict;
 ## libaries we're using
 
-use Telephony::CTPort;
-
 use OpenUMS::Config;
 use OpenUMS::Log;
 my $DEBUG = 1;
@@ -57,18 +55,18 @@ my $DEBUG = 1;
 #################################
 ## sub update_mwis($$)
 #################################
-sub update_mwis($)
+sub update_mwis($$)
 {
-  my ($dbh) = @_;
+  my ($dbh,$user_mailboxes) = @_;
   ## populate for new users...
-  OpenUMS::Mwi::populate($dbh); 
+  populate($dbh); 
   ## these are all the guys we turn it on for...
   
-  my $data = OpenUMS::Mwi::get_data($dbh) ; 
+  my $data = get_data($dbh) ; 
   my @exts = sort keys %{$data} ; 
   foreach my $ext (@exts ) { 
-     OpenUMS::Mwi::send_mwi($ext, $data->{$ext}->{action} );
-     OpenUMS::Mwi::save($dbh,$ext,$data->{$ext}->{new_message_count});
+     send_mwi($user_mailboxes->{$ext}, $data->{$ext}->{action} );
+     save($dbh,$ext,$data->{$ext}->{new_message_count});
   } 
   if (scalar(@exts ) ) { 
      $log->debug(scalar(@exts )  . " Mwis processed\n"); 
@@ -189,30 +187,36 @@ sub save {
   $dbh->do($sql); 
   return 
 } 
+#################################
+## sub send_mwi
+#################################
 sub send_mwi {
-  my ($ext, $action) = @_;
+  my ($ser_user, $mwi_action) = @_;
+  my $flash; 
+
   if ($mwi_action eq 'A') {
      $flash =  "yes" ; 
   }  else {
      $flash =  "no"; 
   }
-    my $resp = (int(rand(10000)) + 1) .  ".fifo";
+
+  $log->debug("send_mwi :: ser_user = $ser_user flash = $flash action=$mwi_action ");
+  return ;
+
+  my $resp = (int(rand(10000)) + 1) .  ".fifo";
   my $FIFO = "/tmp/$resp";
-                                                                                                                                               
-  print "$FIFO...\n";
-                                                                                                                                               
-  $val = `mkfifo -m 666 $FIFO`;
-  print "mkfifo $val";
+
+  my $val = `mkfifo -m 666 $FIFO`;
                                                                                                                                                
   my $handle = new File::Temp(UNLINK => 1, SUFFIX => '.fifo');
   my $cmd_file = $handle->filename;
                                                                                                                                                
   my $mwi_fifo_cmd = qq(:t_uac_dlg:$resp
 NOTIFY
-sip:$user
+sip:$ser_user
 .
 From:sipums\@o-matrix.org
-To:$user
+To:$ser_user
 Event: message-summary
 Content-Type: application/simple-message-summary
                                                                                                                                                
@@ -221,9 +225,7 @@ Voicemail: 2/5
 .
                                                                                                                                                
 );
-  print "$mwi_fifo_cmd";
-  my $val = `cat $cmd_file >/tmp/ser_fifo`;
-
+  ## my $val = `cat $cmd_file >/tmp/ser_fifo`;
   
 
 }

@@ -1,5 +1,5 @@
 package OpenUMS::Config;
-### $Id: Config.pm,v 1.4 2004/07/30 20:22:13 kenglish Exp $
+### $Id: Config.pm,v 1.5 2004/07/31 20:27:05 kenglish Exp $
 #
 # Config.pm
 #
@@ -80,6 +80,7 @@ use constant REPEAT_MENU_FLAG => "100"; ## used by the menus to go back in the m
 
 ## Database Values
 use constant DB_NAME => 'voicemail' ; 
+use constant SER_DB_NAME => 'ser' ; 
 use constant DB_USER => 'ser' ; 
 use constant DB_PASS => 'olseh' ; 
 
@@ -130,7 +131,10 @@ use constant WAV_BITRATE  => 8000.0;
 use constant VOX_BITRATE  => 4000.0;
 
 ### Process unsent messages process
-use constant DELIVERPID => '/var/log/openums/delivermail.pid';
+use constant DELIVERMAIL_PIDFILE => '/var/log/openums/delivermail.pid';
+use constant DELIVERMAIL_LOGFILE => '/var/log/openums/delivermail.log';
+use constant DELIVERMAIL_ERRFILE => '/var/log/openums/delivermail.err';
+
 
 our @EXPORT=qw(SAFE_PATH
 
@@ -156,7 +160,7 @@ our @EXPORT=qw(SAFE_PATH
 
                IMAP_PORT IMAP_AUTH_MODE IMAP_DEBUG IMAP_TIMEOUT
              
-               DB_NAME DB_USER DB_PASS
+               DB_NAME SER_DB_NAME DB_USER DB_PASS
 
                EMAIL_ON_ERROR 
 
@@ -171,7 +175,8 @@ our @EXPORT=qw(SAFE_PATH
 
                WAV_BITRATE VOX_BITRATE
 
-               DELIVERPID);
+               DELIVERMAIL_PIDFILE DELIVERMAIL_LOGFILE DELIVERMAIL_ERRFILE);
+
 
 our @EXPORT_OK = qw(DEBUG_TEXT_MODE);
 our @EXPORT_TAGS = 

@@ -195,7 +195,7 @@ sub record {
 
    ## make sure we are blocking everything else with the MEDIA State
    $Telephony::SemsIvr::MEDIA_STATE = MEDIA_RECORDING; 
-   syslog('info', "STARTING RECORD (MEDIA STATE = $Telephony::SemsIvr::MEDIA_STATE) "); 
+   syslog('info', "STARTING RECORD $file (MEDIA STATE = $Telephony::SemsIvr::MEDIA_STATE) "); 
    ivr::startRecording($file) ; 
    $Telephony::SemsIvr::MEDIA_STATE = MEDIA_RECORDING; 
    ivr::sleep($length); 

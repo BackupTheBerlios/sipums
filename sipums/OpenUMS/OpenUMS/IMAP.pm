@@ -1,5 +1,5 @@
 package OpenUMS::IMAP;
-### $Id: IMAP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: IMAP.pm,v 1.2 2004/07/31 20:27:05 kenglish Exp $
 #
 # IMAP.pm
 #
@@ -249,7 +249,7 @@ sub new_imap_messages ($$)
    $imap->logout;
 
    return(undef) unless (@files);
-   my $delivery_option = get_email_delivery($extension);
+   my $delivery_option = get_email_delivery($dbh,$extension);
    if ( ($delivery_option eq 'I') || ($delivery_option eq 'S') )
      { update_database($dbh, 'N', \@files); }
    return(\@files);
@@ -299,7 +299,7 @@ sub saved_imap_messages($$)
   $imap->logout;
 
   return(undef) unless (@files);
-  my $delivery_option = get_email_delivery($extension);
+  my $delivery_option = get_email_delivery($dbh, $extension);
   if ( ($delivery_option eq 'I') || ($delivery_option eq 'S') )
     { update_database($dbh, 'S', \@files); }
   return(\@files);
@@ -433,7 +433,7 @@ sub delete_imap_message($$$)
 ###  unless (my $pid = fork)
     {
       $log->verbose('Deleting queued messages.');
-      my $dbh = OpenUMS::Common::get_dbh();
+      #my $dbh = OpenUMS::Common::get_dbh();
       my $imap = open_imap_connection($dbh, $extension);
       return(undef) unless defined($imap);
       foreach my $folder (&VMINBOX($dbh, $extension), VMSAVED)
@@ -559,7 +559,7 @@ sub get_status
 
 
 ##################################################### move_to_folder($$)
-sub move_to_folder($$$$)
+sub move_to_folder($$$)
 {
   my $imap = shift;
   my $folder = shift;
@@ -572,12 +572,13 @@ sub move_to_folder($$$$)
 }
 
 
-####################################################### get_email_delivery($)
-sub get_email_delivery($)
+####################################################### get_email_delivery($$)
+sub get_email_delivery($$)
 {
+  my $dbh = shift; 
   my $extension = shift;
 
-  my $dbh = OpenUMS::Common::get_dbh();
+  #my $dbh = OpenUMS::Common::get_dbh();
   my $sql = qq(SELECT email_delivery FROM VM_Users WHERE extension = ?);
   my $sth = $dbh->prepare($sql);
   $sth->execute($extension);

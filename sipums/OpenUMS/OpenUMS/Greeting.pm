@@ -1,5 +1,5 @@
 package OpenUMS::Greeting;
-### $Id: Greeting.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: Greeting.pm,v 1.2 2004/07/31 20:27:05 kenglish Exp $
 # Greeting.pm
 #
 # Greets
@@ -44,35 +44,35 @@ sub user_is_on_vacation {
 }
 sub get_no_greeting_sound {
   my $ext = shift;
-  my $sound = PROMPT_PATH . "imsorry.vox "  ;
-  $sound .= PROMPT_PATH . "extension.vox";
+  my $sound = PROMPT_PATH . "imsorry.wav "  ;
+  $sound .= PROMPT_PATH . "extension.wav";
   my $ext_sound = OpenUMS::Common::ext_sound_gen($ext );
   if ($ext_sound ) {
     $sound .= " $ext_sound";
   }
-  $sound .= " " . PROMPT_PATH . "doesnotanswer.vox";
+  $sound .= " " . PROMPT_PATH . "doesnotanswer.wav";
   return $sound ;
 }
 
 sub get_greeting_sound {
   my ($dbh, $ext ) = @_ ; 
   if (!$ext) {
-    return PROMPT_PATH . "invalid_mailbox.vox"; 
+    return PROMPT_PATH . "invalid_mailbox.wav"; 
   } 
 
   if (OpenUMS::Greeting::user_is_on_vacation($dbh,$ext) ) {
 
-     my $ret_sound ; ##= PROMPT_PATH . "imsorry.vox" ; 
+     my $ret_sound ; ##= PROMPT_PATH . "imsorry.wav" ; 
      my $name_sound = OpenUMS::Greeting::get_name_sound($dbh, $ext);
      my $dayback_sound = OpenUMS::Greeting::get_dayback_sound($dbh,$ext); 
-     $ret_sound .= "$name_sound " . PROMPT_PATH . "out_of_office_until.vox $dayback_sound ". PROMPT_PATH . "record_message_after_tone.vox";   
+     $ret_sound .= "$name_sound " . PROMPT_PATH . "out_of_office_until.wav $dayback_sound ". PROMPT_PATH . "record_message_after_tone.wav";   
      return $ret_sound ; 
   }  else {
-     my ($greeting_vox_file, $greeting_vox_path) = OpenUMS::Greeting::get_current_greeting_file($dbh,$ext) ; 
-     if (!$greeting_vox_file) {
+     my ($greeting_wav_file, $greeting_wav_path) = OpenUMS::Greeting::get_current_greeting_file($dbh,$ext) ; 
+     if (!$greeting_wav_file) {
        return OpenUMS::Greeting::get_no_greeting_sound($ext);    
      } else { 
-       return "$greeting_vox_path$greeting_vox_file"; 
+       return "$greeting_wav_path$greeting_wav_file"; 
      }
   } 
   return "hi";

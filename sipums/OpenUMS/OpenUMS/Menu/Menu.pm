@@ -1,6 +1,6 @@
 package OpenUMS::Menu::Menu;
 
-### $Id: Menu.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: Menu.pm,v 1.2 2004/07/31 20:27:05 kenglish Exp $
 #
 # Menu.pm
 #
@@ -437,7 +437,7 @@ sub run_menu {
   if ($rotary_flag && !($hung_up_flag) ) {
     $self->xfer_to_extension(); 
   } else { 
-    $self->{CTPORT}->play(PROMPT_PATH . "goodbye.vox"); 
+    $self->{CTPORT}->play(PROMPT_PATH . "goodbye.wav"); 
     $log->debug("call done, going on hook....");
     $self->{CTPORT}->on_hook(); 
   }
