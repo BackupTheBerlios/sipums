@@ -1,5 +1,5 @@
 package OpenUMS::Config;
-### $Id: Config.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: Config.pm,v 1.2 2004/07/20 03:38:33 richardz Exp $
 #
 # Config.pm
 #
@@ -81,8 +81,8 @@ use constant REPEAT_MENU_FLAG => "100"; ## used by the menus to go back in the m
 
 ## Database Values
 use constant DB_NAME => 'voicemail' ; 
-use constant DB_USER => 'voicemail' ; 
-use constant DB_PASS => 'commail' ; 
+use constant DB_USER => 'ser' ; 
+use constant DB_PASS => 'helso' ; 
 
 #use constant "VMINBOX"       => "Inbox";
 #use constant "VMINBOX"       => "\"In Box Voicemail\"";
