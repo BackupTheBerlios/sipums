@@ -22,7 +22,7 @@ PHONESYS_LIBS = OpenUMS/PhoneSystem/PhoneSystemBase.pm OpenUMS/PhoneSystem/SIP.p
 
 CTPORT_LIBS = Telephony/CTPortJr.pm Telephony/SemsIvr.pm
 
-DELIVER_MAIL = bin/delivermail
+eELIVER_MAIL = bin/delivermail
 ADD_VM_USER = bin/addvmuser
 DEL_VM_USER = bin/deletevmuser
 

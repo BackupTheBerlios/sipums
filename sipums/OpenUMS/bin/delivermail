@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.15 2004/10/05 10:05:54 kenglish Exp $
+### $Id: delivermail,v 1.16 2004/10/23 02:38:23 kenglish Exp $
 #
 # delivermail
 #
@@ -8,6 +8,7 @@
 # Copyright (C) 2004 Integrated Comtel Inc.
 use warnings;
 use strict ; 
+use lib qw(lib /usr/local/openums/lib); 
 
 # change this to where you install openums
 # use lib qw(lib /usr/local/openums/lib); 

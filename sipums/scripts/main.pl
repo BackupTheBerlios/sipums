@@ -2,6 +2,7 @@
 
 #main.pl
 open STDERR, ">>/var/log/openums/script.err";
+print STDERR "HEllo kevin!";
 
 use strict; 
 
@@ -63,16 +64,18 @@ $log->debug("-- -- CALL FROM --$caller--");
 #my $dbh = OpenUMS::Common::get_dbh();
 my $dbh = OpenUMS::Common::get_dbh("ser");
 
-my $main_number_flag = &is_domain_main_number($dbh, $uname,$domain); 
+my $client_id = &get_client_id($dbh, $uname); 
+my $main_number_flag = &is_client_main_number($dbh, $uname,$client_id); 
 
+$log->debug("$uname client_id is $client_id");
 my $extension  = &get_user_extention($dbh,$uname,$domain); 
-my $domain_vm_db =  &change_domain_db($dbh,$domain); 
+my $client_vm_db =  &change_client_db($dbh,$client_id); 
 
 
 ## create a ctport, a phonesys and load global settings
 my $ctport    = new Telephony::CTPortJr($PORT);
 my $phone_sys = new OpenUMS::PhoneSystem::SIP;
-$CONF->load_settings($domain_vm_db);
+$CONF->load_settings($client_vm_db);
 
   syslog('info', "NEW CALL ON IS $PORT"); 
 
@@ -159,16 +162,16 @@ sub get_user_domain {
   return ($user,$domain) ; 
 
 }
-sub change_domain_db {
-  my ($dbh,$domain) = @_;
+sub change_client_db {
+  my ($dbh,$client_id) = @_;
 
-  my $sql = "SELECT voicemail_db FROM domain WHERE domain = '$domain'"; 
+  my $sql = "SELECT voicemail_db FROM clients WHERE client_id = $client_id "; 
   my $arr = $dbh->selectrow_arrayref($sql);
   my $db = $arr->[0];
   if (!$db) {
-    die "FATAL ERROR: No voicemail_db found for $domain";
+    die "FATAL ERROR: No voicemail_db found for $client_id";
   } 
-  $log->debug("Domain DB is $db");
+  $log->debug("Client DB is $db");
 
   $dbh->do("use $db") || die "Could not use $db " . $dbh->errstr;
   return $db;
@@ -211,11 +214,23 @@ sub get_user_extention {
   }
 
 }
-sub is_domain_main_number {
-  my ($dbh, $number,$domain) = @_;
-  my $sql = qq{SELECT count(*) FROM domain 
+sub get_client_id {
+  my ($dbh, $number) = @_;
+  my $sql = qq{SELECT client_id FROM subscriber 
+     WHERE username = '$number' };
+
+  $log->debug("$sql-----\n$number"); 
+
+  my $arr = $dbh->selectrow_arrayref($sql);
+  my $client_id = $arr->[0];
+  return $client_id ; 
+
+}
+sub is_client_main_number {
+  my ($dbh, $number,$client_id) = @_;
+  my $sql = qq{SELECT count(*) FROM clients 
      WHERE company_number = '$number' 
-        AND domain ='$domain' } ; 
+        AND client_id ='$client_id' } ; 
   my $arr = $dbh->selectrow_arrayref($sql);
   my $count = $arr->[0];
   return $count ; 

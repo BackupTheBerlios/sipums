@@ -1,4 +1,4 @@
-### $Id: SipUmsMwi.pm,v 1.8 2004/10/03 00:41:58 kenglish Exp $
+### $Id: SipUmsMwi.pm,v 1.9 2004/10/23 02:38:23 kenglish Exp $
 #
 # Copyright (C) 2003 Comtel
 #
@@ -268,8 +268,8 @@ sub send_mwi {
 NOTIFY
 sip:$ser_user
 .
-From:sipums\@o-matrix.org
-To:$ser_user
+From:sip:sipums\@o-matrix.org
+To:sip:$ser_user
 Event: message-summary
 Content-Type: application/simple-message-summary
                                                                                                                                                
