@@ -22,6 +22,7 @@ PHONESYS_LIBS = OpenUMS/PhoneSystem/PhoneSystemBase.pm OpenUMS/PhoneSystem/SIP.p
 CTPORT_LIBS = Telephony/CTPortJr.pm Telephony/SemsIvr.pm
 
 DELIVER_MAIL = bin/delivermail
+ADD_VM_USER = bin/addvmuser
 
 LIBS = $(OPENUMS_LIBS) $(MENU_LIBS) $(OBJ_LIBS)
 
@@ -48,4 +49,5 @@ install: $(LIBS)  .compiledok
 	$(INSTALL) -D -v -m 644 $(PHONESYS_LIBS) $(LIBDIR)/OpenUMS/PhoneSystem
 	$(INSTALL) -D -v -m 644 $(CTPORT_LIBS) $(LIBDIR)/Telephony
 	$(INSTALL) -v -m 774 $(DELIVER_MAIL) $(BASEDIR)/
+	$(INSTALL) -v -m 774 $(ADD_VM_USER) $(BASEDIR)/
 	rm -f .compiledok
