@@ -1,26 +1,11 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.11 2004/09/02 00:46:24 kenglish Exp $
+### $Id: delivermail,v 1.12 2004/09/02 00:52:37 kenglish Exp $
 #
 # delivermail
 #
 # Executable wrapper around process_unsent_messages
 #
-# Copyright (C) 2004 Servpac Inc.
-# 
-#  This library is free software; you can redistribute it and/or modify it
-#  under the terms of the GNU Lesser General Public License as published by the
-#  Free Software Foundation; either version 2.1 of the license, or (at your
-#  option) any later version.
-# 
-#  This library is distributed in the hope that it will be useful, but WITHOUT
-#  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-#  FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
-#  details.
-# 
-#  You should have received a copy of the GNU Lesser General Public License
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  US
-#
+# Copyright (C) 2004 Integrated Comtel Inc.
 use warnings;
 use strict ; 
 use lib qw(lib /usr/local/openums/lib); 
@@ -511,9 +496,8 @@ sub email_body($$$$$)
   my $datestring = date_string($file);
 
   my $return = "$MARKUP{'HEADER'}{$email_type}Hello,$MARKUP{'P'}{$email_type}";
-#  my $callout_link = "To hear this message over the phone, click ";
-#  $callout_link .=  &html_link(OpenUMS::Common::get_callout_url($file) );
-
+  my $callout_link = "To hear this message over the phone, click ";
+  $callout_link .=  &html_link(OpenUMS::Common::get_callout_url($file) );
   if ($recorded_call)
     {
 $return .= <<EOF;
@@ -536,10 +520,8 @@ $MARKUP{'LI'}{$email_type}Length:    $durationstring
 $MARKUP{'TSIL'}{$email_type}
 $MARKUP{'REDAEH'}{$email_type}
 
+$MARKUP{'P'}{$email_type}$callout_link 
 EOF
-
-
-### $MARKUP{'P'}{$email_type}$callout_link 
 
 
   return ($return);
@@ -667,7 +649,6 @@ sub deliver_email($$)
 
   my $success;
 
-<<<<<<< delivermail
   if ($msg_href->{'store_flag'} eq 'V') {
     ## they have voicemail store
     if ($msg_href->{'vstore_email'} eq 'C' || $msg_href->{'vstore_email'} eq 'S' ) { 
@@ -706,43 +687,10 @@ sub deliver_email($$)
          $sql .= " SET message_status_id = 'D' "; 
       }  else { 
          $sql .= " SET message_status_id = 'N' "; 
-=======
-  my $success;
-  if ( ($email_delivery eq 'S') || ($email_delivery eq 'F') ||($vstore_email eq 'C')  )
-    {
-      $log->debug("Sending message to $email_address");
-      if ($email_address) { 
-        $success = &fire_email($email_address, $msg);
-      } 
-    }
-  elsif ($email_delivery eq 'I')
-    {
-      $log->debug("Appending $wavfile to $email_address");
-      if ($email_address) {
-        $success = &append_email($dbh,$extension, $email_address, $msg);
->>>>>>> 1.7
       }
-<<<<<<< delivermail
       $sql .= " WHERE message_id = " . $msg_href->{'message_id'} ;
       $log->debug(" GONNA DO $sql"); 
       $dbh->do($sql); 
-=======
-    }
-
-  if ( ($success) || ($vstore_email eq 'C') )
-    {
-      $log->debug("Updating database.");
-      ## my $dbh = OpenUMS::Common::get_dbh();
-      my $sql = qq(UPDATE VM_Messages
-                   SET message_status_id = ?
-                   WHERE message_id = ?);
-      my $sth = $dbh->prepare($sql);
-      if (($msg_href->{store_flag} eq 'V') && ($email_delivery eq 'F'))
-        { $sth->execute('D', $msg_href->{'message_id'}); }
-      else
-        { $sth->execute('N', $msg_href->{'message_id'}); }
-      $sth->finish();
->>>>>>> 1.7
 
       ### Do they want a mobile notice?
 
