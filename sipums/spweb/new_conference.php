@@ -24,13 +24,13 @@ function get_init_time($name) {
   if ($date->getMinute() ==0 ) {
     $init_time = $date->getHour() .  ":00";
   } elseif($date->getMinute() <= 15) {
-    $init_time = $date->getHour() .  ":15";
+    $init_time = $date->getHour() .  ":00";
   } elseif ($date->getMinute() <= 30) {
-    $init_time = $date->getHour() .  ":30";
+    $init_time = $date->getHour() .  ":15";
   } elseif ($date->getMinute() <= 45) {
-    $init_time = $date->getHour() .  ":30";
+    $init_time = $date->getHour() .  ":45";
   } else {
-    $init_time = ($date->getHour()+1) .  ":00";
+    $init_time = $date->getHour() .  ":45";
   }
   $log->log("init_time $init_time ") ; 
   return $init_time ; 
@@ -73,7 +73,7 @@ function create_conference() {
   $endTime->setMinute($endMinute); 
 
   // see if it's the past
-  if ($beginTime->isPast() ){ 
+  if ($endTime->isPast() ){ 
     $msgs[] = "Conference date is in the Past.";
     return $msgs ; 
   }   
