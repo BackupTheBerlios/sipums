@@ -72,6 +72,16 @@
   <TH>
   Change Your Call Settings 
   </tH>
+ <!--{if $cpl_msgs}-->
+  <TR>
+    <TD colspan=2 align=center><font style="color: red">
+     <!--{foreach from=$cpl_msgs item=msg}-->
+         <!--{$msg}--><BR>
+     <!--{/foreach}-->
+      </font></td>
+  </tr>
+  <!--{/if}-->
+
 
   <TR>
     <TD valign='top'>
@@ -120,7 +130,7 @@
 <!-- B1 -->
 <td bgcolor="#EEEEEE"  valign="top" onmouseover="this.className='highlightOn'" onmouseout="this.className='highlightOff'">
 <form name=''  method='POST' action='' target='_self' onsubmit="return form_Validator(this)">
-<input type='hidden' name='func' value='update_user_vm'> 
+<input type='hidden' name='func' value='update_user_info'> 
 <b>User Information </b><br />
   <TABLE>
   <!--{if $user_info_msgs}-->
@@ -208,11 +218,17 @@
 
      <Td colspan=2><b>Message Storage Options</b></Td>
   </tr>
-  <!--{if $user_um_msg}-->
+
+  <!--{if $um_msgs}-->
   <TR>
-    <TD colspan=2 ><font style="color: red"><!--{$user_um_msg}--> </font></td>
+    <TD colspan=2 align=center><font style="color: red">
+     <!--{foreach from=$um_msgs item=msg}-->
+         <!--{$msg}--><BR>
+     <!--{/foreach}-->
+      </font></td>
   </tr>
   <!--{/if}-->
+
   <tr>
      <Td colspan=2><i><input type='radio' name='store_flag' value='V' <!--{if $store_flag eq 'V'}-->CHECKED<!--{/if}-->>
         Use Voicemail Store. </I></Td>
@@ -274,6 +290,16 @@
 <b>Voicemail Settings</b><br />
 
   <table>
+  <!--{if $vm_flags_msgs}-->
+  <TR>
+    <TD colspan=2 align=center><font style="color: red">
+     <!--{foreach from=$vm_flags_msg item=msg}-->
+         <!--{$msg}--><BR>
+     <!--{/foreach}-->
+      </font></td>
+  </tr>
+  <!--{/if}-->
+
   <tr>
      <Td colspan=2>
      <TABLE> <tr> 

@@ -51,6 +51,7 @@
         <!--{if $admin_voicemail}-->
 	<td align="center" nowrap <!--{if $thispage eq "voicemail.php"}--> bgcolor="#eeeeee" <!--{/if}--> ><a href="voicemail.php">Voicemail</a></td>
         <!--{/if}-->
+	<td align="right" nowrap><a href="conference.php">Kelepona Conference</a></td>
 	<td align="right" nowrap><b><a href="signout.php">Sign Out</a></b></td>
 
 	</tr>

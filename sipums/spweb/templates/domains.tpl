@@ -33,7 +33,7 @@
               <!--{if !$domain.voicemail_db}-->  
                      NO VOICEMAIL SETUP  
               <!--{/if}-->  
-              <!--<a href="edit_domain.php?domain=<!--{$domain.domain}-->&change_domain=1">-->
+              <!--<a href="edit_domain.php?func=edit_domain&domain=<!--{$domain.domain}-->">-->
               <!--{$domain.voicemail_db}--> <!--</a>-->
             </span>
 
@@ -48,7 +48,11 @@
               <!--{$domain.company_number}--> 
             </span>
         </td>
-        <td nowrap="nowrap">&nbsp;</td>
+        <td nowrap="nowrap">
+            <span style="overflow:hidden;text-overflow:ellipsis;">
+              <a href="edit_domain.php?func=edit_domain&domain=<!--{$domain.domain}-->">Edit</a>
+            </SPAn>
+        </td>
       </TR>
    <!--{/foreach}-->
      

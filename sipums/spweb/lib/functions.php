@@ -1,6 +1,6 @@
 <?
 /*
- * $Id: functions.php,v 1.5 2004/08/11 03:31:02 kenglish Exp $
+ * $Id: functions.php,v 1.6 2004/08/11 03:36:14 kenglish Exp $
  */
 
 

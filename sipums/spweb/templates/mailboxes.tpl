@@ -21,13 +21,14 @@
    <Th>Email</Th>
    <Th>Email UserName</Th>
    <Th>Storage</Th>
-   <Th>XFER</Th>
    <Th>ACT</Th>
-   <Th>NU</Th>
+   <Th>XFER</Th>
    <Th>MWI</Th>
+   <Th>NU</Th>
    <Th>AL</Th>
    <Th>ANM</Th>
    <Th>Permission</Th>
+   <Th>&nbsp;</Th>
    <Th>&nbsp;</Th>
    <Th>&nbsp;</Th>
 </tr>
@@ -35,20 +36,22 @@
 <TR>
    <Td><!--{$mb.extension}--></Td>
    <Td><a href='account.php?gfunc=change_edit_user&edit_user=<!--{$mb.user}-->'><!--{$mb.did|default:"&nbsp;"}--></a> </Td>
-   <Td><!--{if $mb.last_name}--><!--{$mb.last_name}-->, <!--{/if}--><!--{$mb.first_name}--> </Td>
+   <Td><!--{if $mb.last_name}--><!--{$mb.last_name}-->, <!--{/if}--><!--{$mb.first_name}-->
+       <!--{if !$mb.last_name && !$mb.last_name}-->&nbsp;<!--{/if}--> </Td>
    <Td><!--{$mb.email_address|default:"&nbsp;"}--> </Td>
    <Td><!--{$mb.email_user_name|default:"&nbsp;"}--> </Td>
    <TD><!--{$mb.store_flag}--> - <!--{$mb.email_delivery}--><!--{$mb.vstore_email}--></td>
-   <Td><!--{if $mb.transfer}-->Y<!--{else}-->N<!--{/if}--></Td>
    <Td><!--{if $mb.active}-->Y<!--{else}-->N<!--{/if}--></Td>
-   <Td><!--{if $mb.new_user_flag}-->Y<!--{else}-->N<!--{/if}--></Td>
+   <Td><!--{if $mb.transfer}-->Y<!--{else}-->N<!--{/if}--></Td>
    <Td><!--{if $mb.mwi_flag}-->Y<!--{else}-->N<!--{/if}--></Td>
+   <Td><!--{if $mb.new_user_flag}-->Y<!--{else}-->N<!--{/if}--></Td>
    <Td><!--{if $mb.auto_login_flag}-->Y<!--{else}-->N<!--{/if}--></Td>
    <Td><!--{if $mb.auto_new_messages_flag}-->Y<!--{else}-->N<!--{/if}--></Td>
    <Td><a href="edit_mb.php?func=edit_perm&ext=<!--{$mb.extension}-->"><!--{$mb.permission_id}--></a></td>
    
    <Td><!--{if !$mb.user}--><a href='edit_mb.php?func=delete_mailbox&ext=<!--{$mb.extension}-->'>delete</a><!--{else}-->&nbsp;<!--{/if}--> </td>
-   <Td><a href="edit_mb.php?func=change_password&ext=<!--{$mb.extension}-->">Change Mailbox Password</a></Td>
+   <Td><a href="edit_mb.php?func=change_password&ext=<!--{$mb.extension}-->">Reset Password</a></Td>
+   <Td><a href="edit_mb.php?func=edit_flags&ext=<!--{$mb.extension}-->">Change Flags</a></Td>
 </TR>
 <!--{foreachelse}-->
 <TR>
