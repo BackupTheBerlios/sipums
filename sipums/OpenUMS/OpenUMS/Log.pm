@@ -1,5 +1,5 @@
 package OpenUMS::Log;
-### $Id: Log.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: Log.pm,v 1.2 2004/07/31 21:51:15 kenglish Exp $
 #
 # Log.pm
 #
@@ -26,6 +26,7 @@ use warnings;
 
 use Date::Calc;
 use Exporter;
+use Sys::Syslog qw(:DEFAULT setlogsock);
 
 our $log;
 our @ISA = ("Exporter");
@@ -46,6 +47,10 @@ my $PORT = 0;
 sub new {
   my $class = shift;
   my $port  = shift;
+
+  my $program = 'ivr';
+  openlog($program, 'cons,pid', 'local6');
+
 
   $class = ref($class) || $class;
 
@@ -190,9 +195,9 @@ sub _logger {
     # strip off all the newlines to improve the logging format
     $line =~ s/\n+/ /g;
     $line =~ s/\s+$/ /;
-
-    printf "%04d/%02d/%02d %02d:%02d:%02d [%04d/%s]$file %s\n",
-     $yy, $mm, $dd, $hr, $min, $sec, $PORT, $level, $line;
+    syslog('info', "[$PORT/$level] = $line"); 
+    #printf "%04d/%02d/%02d %02d:%02d:%02d [%04d/%s]$file %s\n",
+    # $yy, $mm, $dd, $hr, $min, $sec, $PORT, $level, $line;
   }
 
   return 1;

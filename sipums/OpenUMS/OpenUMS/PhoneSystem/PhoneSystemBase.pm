@@ -1,5 +1,5 @@
 package OpenUMS::PhoneSystem::PhoneSystemBase; 
-### $Id: PhoneSystemBase.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: PhoneSystemBase.pm,v 1.2 2004/07/31 21:51:15 kenglish Exp $
 #
 ## this will be a template for functions that 
 
@@ -129,6 +129,10 @@ sub do_xfer {
 ##  or be treated as a transfer until later 
 #################################
 sub is_rec_msg () {
+  ## stub
+  return 0; 
+} 
+sub do_transfer {
   ## stub
   return 0; 
 } 

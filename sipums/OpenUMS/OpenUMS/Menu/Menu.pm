@@ -1,6 +1,6 @@
 package OpenUMS::Menu::Menu;
 
-### $Id: Menu.pm,v 1.2 2004/07/31 20:27:05 kenglish Exp $
+### $Id: Menu.pm,v 1.3 2004/07/31 21:51:15 kenglish Exp $
 #
 # Menu.pm
 #
@@ -293,7 +293,7 @@ sub run_menu {
 
   while ( $continue ) {
     ## if they want out, let 'em leave
-    $log->debug ("[Menu.pm] : MenMenu Type = " . $menu->{type}  );  
+    $log->debug ("[Menu.pm] : menu_type_code:" . $menu->{type} . ",menu_id:" . $menu->{id}   );  
     if ($menu->{type} eq 'EXIT') {
        $rotary_flag = 0 ;
        last ;
@@ -437,9 +437,11 @@ sub run_menu {
   if ($rotary_flag && !($hung_up_flag) ) {
     $self->xfer_to_extension(); 
   } else { 
-    $self->{CTPORT}->play(PROMPT_PATH . "goodbye.wav"); 
-    $log->debug("call done, going on hook....");
-    $self->{CTPORT}->on_hook(); 
+    if (!($hung_up_flag)) { 
+      $self->{CTPORT}->play(PROMPT_PATH . "goodbye.wav"); 
+      $self->{CTPORT}->on_hook(); 
+    }
+    $log->debug("call done");
   }
 }
 
@@ -493,11 +495,14 @@ sub xfer_to_extension {
 
   $log->debug("[Menu.pm] : transfering to $ext");
   ## play please hold...
-  $self->{CTPORT}->play(PROMPT_PATH . "pleasehold.vox");
+  $self->{CTPORT}->play(PROMPT_PATH . "pleasehold.wov");
                                                                                                                                                
   $self->{CTPORT}->clear();
   $self->{STANDALONE} = undef ;
-  $self->{CTPORT}->dial("&,$ext,");
+  
+  
+  ### $self->{CTPORT}->dial("&,$ext,");
+  $self->{PHONE_SYSTEM}->do_transfer($ext);
                                                                                                                                                
 #  $ctport->on_hook();
   $self->{CTPORT}->clear();
@@ -619,6 +624,8 @@ sub do_return_call {
   my $ctport =  $self->{CTPORT} ;
   $log->debug("[Menu.pm] RETURNING CALL DIALING $to_dial ") ; 
   $ctport->dial("&,$to_dial,");
+
+
                                                                                                                                                
 #  $ctport->on_hook();
   $ctport->clear();

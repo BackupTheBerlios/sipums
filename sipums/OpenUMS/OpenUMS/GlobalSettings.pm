@@ -1,5 +1,5 @@
 package OpenUMS::GlobalSettings;
-### $Id: GlobalSettings.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: GlobalSettings.pm,v 1.2 2004/07/31 21:51:15 kenglish Exp $
 # GlobalSettings.pm
 #
 # OpenUMS's global setting program
@@ -61,20 +61,24 @@ sub new {
 ## sub load_settings 
 #################
 
-sub load_settings {
+sub load_settings($) {
   my $self= shift ; 
-   
+  my $db = shift ; 
+  if (!$db) { 
+    $log->error("loading global settings called with no $db");
+    return ;
+  } 
 
-  my $dbh = OpenUMS::Common::get_dbh()  ; 
+  my $dbh = OpenUMS::Common::get_dbh($db)  ; 
   my $sql = qq{SELECT var_name, var_value FROM global_settings};  
   my $sth = $dbh->prepare($sql);
   ## undef the old one...
-  $log->debug("loading global settings");
   $self->{GLOBAL_SETTINGS} = undef; 
   $sth->execute();
   my %settings; 
   while (my ($name, $val) = $sth->fetchrow_array() ) {
     $settings{$name} = $val; 
+    $log->debug("loading global settings $name $val");
   } 
   $self->{GLOBAL_SETTINGS} = \%settings; 
   $dbh->disconnect(); 

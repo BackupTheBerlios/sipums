@@ -130,7 +130,7 @@ Places the port on hook, just like hanging up.
 sub on_hook() {
 	my $self = shift;
         ## get the perl ref to the java object...
-        syslog('debug', 'this is another test');
+        syslog('debug', 'CTPortJr::on_hook stub');
         return ;
 }
 
@@ -151,7 +151,7 @@ Takes port off hook, just like picking up the phone.
 sub off_hook() {
 	my $self = shift;
         ## get the perl ref to the java object...
-        $self->logger("stub for off hook..."); 
+   
         return ;
 }
 

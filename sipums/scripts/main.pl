@@ -5,9 +5,12 @@
 
 use strict; 
 
+use Sys::Syslog qw(:DEFAULT setlogsock);
+my $program = 'ivr';
+openlog($program, 'cons,pid', 'local6');
+
 use lib '/usr/local/openums/lib';
 
-use Sys::Syslog qw(:DEFAULT setlogsock);
 use Audio::Wav; 
 use Date::Calc; 
 use Telephony::SemsIvr;
@@ -28,8 +31,6 @@ use OpenUMS::CallRecorder ;
 use DBI; 
 
 ## open the syslog 
-my $program = 'ivr';
-openlog($program, 'cons,pid', 'local6');
 
 ## get the user and domain
 
@@ -47,14 +48,14 @@ syslog('info', "caller_id=$caller");
 my $dbh = OpenUMS::Common::get_dbh("ser");
 
 my $extension  = &get_user_extention($dbh,$uname,$domain); 
-&change_domain_db($dbh,$domain); 
+my $domain_vm_db =  &change_domain_db($dbh,$domain); 
 
 my $PORT = $$;  ## use pid as uniqure port identifier
 
 ## create a ctport, a phonesys and load global settings
 my $ctport    = new Telephony::CTPortJr($PORT);
 my $phone_sys = new OpenUMS::PhoneSystem::SIP;
-$GLOBAL_SETTINGS->load_settings();
+$GLOBAL_SETTINGS->load_settings($domain_vm_db);
 
   syslog('info', "NEW CALL ON IS $PORT"); 
 
@@ -85,7 +86,7 @@ $GLOBAL_SETTINGS->load_settings();
    ## default, take a message for that extension
    $action = 'take_message';
  }  
- $action = 'take_message';
+ $action = 'auto_attendant';
 
  my $menu_id = OpenUMS::DbQuery::get_action_menu_id($dbh, $action);
 
@@ -101,11 +102,12 @@ $menu->create_menu();
 ## dupe the shit!
 $menu->run_menu($menu_id, $data1, $data2); 
 $log->debug("Signalling delivermail");
-
 &OpenUMS::Common::signal_delivermail;
 
+$log->debug("finalize");
 $ctport->finalize();
-
+$log->debug("exit");
+exit; 
 
 ## open the sys log
 #  
@@ -117,8 +119,7 @@ $ctport->finalize();
 #ivr::sleep(2); 
 #
 #Telephony::SemsIvr::play("/tmp/kevin.wav");
-Telephony::SemsIvr::play("/var/spool/openums/prompts/goodbye.wav");
-
+## Telephony::SemsIvr::play("/var/spool/openums/prompts/goodbye.wav");
 #playrec();                       
 
 
@@ -153,7 +154,7 @@ sub change_domain_db {
   $log->debug("Domain DB is $db");
 
   $dbh->do("use $db") || die "Could not use $db " . $dbh->errstr;
-  return ;
+  return $db;
 
 }
 sub get_user_extention {

@@ -1,5 +1,5 @@
 package OpenUMS::PhoneSystem::SIP ; 
-### $Id: SIP.pm,v 1.3 2004/07/31 20:27:05 kenglish Exp $
+### $Id: SIP.pm,v 1.4 2004/07/31 21:51:15 kenglish Exp $
 #
 # SIP.pm
 #
@@ -218,6 +218,42 @@ sub send_mwi {
 #  close(FIFO);
 #
 }
+sub do_transfer {
+  my ($self, $ext) = @_; 
+  if (!$ext) { 
+     $log->error("CANNOT XFER, no ext") ;
+     return ;
+  } 
+
+  my $voicemail_db = $main::GLOBAL_SETTINGS->get_var('VOICEMAIL_DB'); 
+
+  if (!$voicemail_db) { 
+     $log->error("CANNOT XFER, no voicemail_db") ;
+     return ;
+  } 
+
+  my $dbh_ser = OpenUMS::Common::get_dbh(SER_DB_NAME); 
+  my $sql = "SELECT  s.username, d.domain, d.voicemail_db,s.mailbox
+      FROM subscriber s, domain d
+      WHERE d.domain = s.domain
+        AND d.voicemail_db = '$voicemail_db'
+        AND mailbox = $ext" ; 
+
+  $log->debug("$voicemail_db : $sql "); 
+  my ($username,$domain) = $dbh_ser->selectrow_array($sql);
+  $log->debug("$username,$domain");   
+  if ($username && $domain) { 
+    my $sip_user = "<sip:$username\@$domain>"; 
+    $log->debug("calling ivr::redirect($sip_user)");   
+
+    ivr::redirect($sip_user); 
+  }  else {
+    $log->error("TRANSFER COULD NOT FIND USERNAME FOR $ext");   
+  } 
+
+  $dbh_ser->disconnect(); 
+
+} 
 
 
 
