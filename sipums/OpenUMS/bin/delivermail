@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: delivermail,v 1.6 2004/08/13 19:32:47 kenglish Exp $
+### $Id: delivermail,v 1.7 2004/08/19 03:06:13 kenglish Exp $
 #
 # delivermail
 #
@@ -42,9 +42,9 @@ sub TERMINATE;
 sub RESTART;
 sub PROCESS;
 
-sub Log::logger($$);
-sub Log::log($);
-sub Log::new();
+## sub Log::logger($$);
+## sub Log::log($);
+## sub Log::new();
 
 sub validate_pidfile($);
 sub process_unsent_messages;
@@ -650,14 +650,14 @@ sub deliver_email($$)
   my $vstore_email = get_vstore_email($dbh,$extension);
 
   my $success;
-  if ( ($email_delivery eq 'S') || ($email_delivery eq 'F') )
+  if ( ($email_delivery eq 'S') || ($email_delivery eq 'F') ||($vstore_email eq 'C')  )
     {
       $log->debug("Sending message to $email_address");
       if ($email_address) { 
         $success = &fire_email($email_address, $msg);
       } 
     }
-  else ### ($email_delivery eq 'I')
+  elsif ($email_delivery eq 'I')
     {
       $log->debug("Appending $wavfile to $email_address");
       if ($email_address) {
@@ -668,7 +668,7 @@ sub deliver_email($$)
   if ( ($success) || ($vstore_email eq 'C') )
     {
       $log->debug("Updating database.");
-      my $dbh = OpenUMS::Common::get_dbh();
+      ## my $dbh = OpenUMS::Common::get_dbh();
       my $sql = qq(UPDATE VM_Messages
                    SET message_status_id = ?
                    WHERE message_id = ?);
