@@ -28,3 +28,10 @@ INSERT INTO menu (
 VALUES (
     '9', 'Goto Previous Menu', 'GOPREV', '1', 'ANON', NULL , NULL , NULL , NULL , NULL
 );
+-- 2/14/2004
+
+ALTER TABLE clients ADD client_domain VARCHAR( 240 ) AFTER client_name ;
+ALTER TABLE clients ADD INDEX ( client_domain ) ;
+
+
+
