@@ -1,5 +1,5 @@
 package OpenUMS::Menu::ForwardMessageMP; 
-### $Id: ForwardMessageMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: ForwardMessageMP.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
 #
 # MessagePresenter.pm
 #
@@ -67,7 +67,7 @@ sub _play_menu () {
 
      my $menuSounds = $self->{SOUNDS_ARRAY};
                                                                                                                                                
-     $sound .=   PROMPT_PATH . $menuSounds->{M}->[0]->{sound_file}  ;
+     $sound .=   OpenUMS::Common::get_prompt_sound(  $menuSounds->{M}->[0]->{sound_file})  ;
                                                                                                                                                
                                                                                                                                                
      if (defined($sound) ) {
@@ -122,13 +122,13 @@ sub _get_input {
       my $sound;
 
       if ($menuSounds->{M}->[1]->{sound_file} ) {
-         $sound .=    PROMPT_PATH . $menuSounds->{M}->[1]->{sound_file}  ;
+         $sound .=   OpenUMS::Common::get_prompt_sound( $menuSounds->{M}->[1]->{sound_file})  ;
          $ctport->play($sound);
       }
       OpenUMS::Common::comtel_record($ctport,"$path$file",60,"*#", SILENCE_TIMEOUT );
    } elsif ($self->menu_name() eq 'DBNM') {
      ## for dial by name results...
-     my $input = $ctport->collect(3,$main::GLOBAL_SETTINGS->get_var('COLLECT_TIME'));
+     my $input = $ctport->collect(3,$main::CONF->get_var('COLLECT_TIME'));
      $self->{INPUT} = $input;
    } else {
       return  $self->SUPER::_get_input(); 

@@ -1,5 +1,5 @@
 package OpenUMS::Menu::RecMsgMP; 
-### $Id: RecMsgMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: RecMsgMP.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
 #
 # RecMsgMP.pm
 #
@@ -101,12 +101,12 @@ sub _get_input {
   my $sound; 
 
   if ($menuSounds->{M}->[0]->{sound_file} ) {
-     $sound .=    PROMPT_PATH . $menuSounds->{M}->[0]->{sound_file}  ;
+     $sound .=    OpenUMS::Common::get_prompt_sound($menuSounds->{M}->[0]->{sound_file})  ;
   }
 
   $ctport->play($sound); 
-  my $deanret = OpenUMS::Common::comtel_record($ctport,BASE_PATH . TEMP_PATH . $message_file, 
-       $main::GLOBAL_SETTINGS->get_var('MESSAGE_TIMEOUT'), RECORD_TERM_KEYS, SILENCE_TIMEOUT);
+  my $deanret = OpenUMS::Common::comtel_record($ctport,$main::CONF->get_var('VM_PATH') . TEMP_PATH . $message_file, 
+       $main::CONF->get_var('MESSAGE_TIMEOUT'), RECORD_TERM_KEYS, SILENCE_TIMEOUT);
 
   $user->set_message_file($message_file,$message_path ); 
   

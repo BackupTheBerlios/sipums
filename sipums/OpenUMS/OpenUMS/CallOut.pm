@@ -61,7 +61,7 @@ sub do_callout {
 #################################
 sub end_call {
   my $ctport = shift ; 
-  $ctport->play(PROMPT_PATH .  'goodbye.vox');
+  $ctport->play($main::CONF->get_var('VM_PATH') . PROMPT_PATH .  'goodbye.vox');
   $ctport->on_hook()  ;
   return 1;
 

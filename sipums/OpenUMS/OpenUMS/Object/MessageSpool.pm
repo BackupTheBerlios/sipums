@@ -1,5 +1,5 @@
 package OpenUMS::Object::MessageSpool; 
-### $Id: MessageSpool.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
+### $Id: MessageSpool.pm,v 1.3 2004/08/11 03:32:27 kenglish Exp $
 #
 # MessageSpool.pm
 #
@@ -286,9 +286,9 @@ sub get_current_tds_sound {
   my $sound;
                                                                                                                              
   if ($dd == 0 ) {
-     $sound = PROMPT_PATH . "today.wav";
+     $sound = OpenUMS::Common::get_prompt_sound("today");
   } elsif ($dd == 1 ) {
-     $sound = PROMPT_PATH . "yesterday.wav";
+     $sound = OpenUMS::Common::get_prompt_sound("yesterday");
   } else {
     my $dow_name = Date::Calc::Day_of_Week_to_Text(
                 Date::Calc::Day_of_Week($msg_hr->{m_year}, $msg_hr->{m_month}, $msg_hr->{m_day})) ;
@@ -296,20 +296,22 @@ sub get_current_tds_sound {
 #   my $dow = Date::Calc::Day_of_Week($msg_hr->{m_year}, $msg_hr->{m_month}, $msg_hr->{m_day}) ;
                                                                                                                              
     $month_name = lcfirst($month_name);
-    $sound = PROMPT_PATH . $dow_name . ".wav " . PROMPT_PATH . $month_name . ".wav " ; 
-
-    $sound .=  OpenUMS::Common::count_sound_gen($msg_hr->{m_day},1) ;
+    $sound = OpenUMS::Common::get_prompt_sound($dow_name ); 
+    $sound .= " "; 
+    $sound .= OpenUMS::Common::get_prompt_sound($month_name ) ; 
+    $sound .= " "; 
+    $sound .=  OpenUMS::Common::get_prompt_sound(OpenUMS::Common::count_sound_gen($msg_hr->{m_day},1)) ;
   }
   if ($msg_hr->{m_hour} > 12) {
     $msg_hr->{m_hour} -= 12;
   }
-  $sound .= " " .  PROMPT_PATH . "at.wav " . PROMPT_PATH .  $msg_hr->{m_hour} . ".wav"  ;
+  $sound .= " " .  OpenUMS::Common::get_prompt_sound("at") . " " . OpenUMS::Common::get_prompt_sound($msg_hr->{m_hour})  ;
   if ($msg_hr->{m_minute} ) {
      if ( $msg_hr->{m_minute} ) {   
-       $sound .=  " " . OpenUMS::Common::count_sound_gen ($msg_hr->{m_minute});
+       $sound .=  " " . OpenUMS::Common::count_sound_gen ($msg_hr->{m_minute} );
      }
   }
-  $sound .= " " . PROMPT_PATH . $msg_hr->{m_am_pm} .".wav" ;
+  $sound .= " " . OpenUMS::Common::count_sound_gen ($msg_hr->{m_am_pm}) ;
   return $sound ;
                                                                                                                              
 }

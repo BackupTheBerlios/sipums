@@ -40,6 +40,11 @@ sub hang_up {
 
 sub get_key {
   my ($key) = @_;
+
+  if (($key < 0)  || ($key > 11) ) {
+     syslog('info', "get_key called with invalid key $key\n"); 
+     return ;
+  } 
   if ($key eq '10') {
     $key ='*'; 
   } elsif ($key eq '11') {
@@ -54,6 +59,7 @@ sub get_key {
   } elsif ($Telephony::SemsIvr::MEDIA_STATE == MEDIA_RECORDING) {
      ## stop the recording 
      ivr::stopRecording() ; 
+     $Telephony::SemsIvr::MEDIA_STATE = MEDIA_IDLE; 
      my $val = pop @Telephony::SemsIvr::keys; 
      syslog('info', "POPPED KEY val\n"); 
      ## the DTMF stopped the record so pop it
@@ -189,9 +195,11 @@ sub record {
    } 
    while ($Telephony::SemsIvr::MEDIA_STATE == MEDIA_PLAYING) {
       ## you must wait until media is done playing
-      ivr::msleep(10);     
-      syslog('info', "MEDIA STATE = $Telephony::SemsIvr::MEDIA_STATE "); 
+      my $woke_up = ivr::msleep(3600000); 
+      # ivr::msleep(1000);     
    } 
+
+
    syslog('info', "MEDIA STATE CHANGED = $Telephony::SemsIvr::MEDIA_STATE "); 
 
    ## make sure we are blocking everything else with the MEDIA State

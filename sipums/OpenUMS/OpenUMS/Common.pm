@@ -1,5 +1,5 @@
 package OpenUMS::Common;
-### $Id: Common.pm,v 1.6 2004/08/04 04:19:57 kenglish Exp $
+### $Id: Common.pm,v 1.7 2004/08/11 03:32:27 kenglish Exp $
 #
 # Common.pm
 #
@@ -91,7 +91,7 @@ sub message_store_size($)
 {
   my $extension = shift;
 
-  my $storedir = BASE_PATH . USER_PATH . "$extension/messages";
+  my $storedir = $main::CONF->get_var('VM_PATH') . USER_PATH . "$extension/messages";
 
   return(undef) unless ( (-d $storedir) && (-r $storedir) );
 
@@ -118,6 +118,11 @@ sub create_user
   my $dbh = shift;
   my $user_info = shift ; 
   my $extension = $user_info->{extension}; 
+
+  if (!$main::CONF || !($main::CONF->get_var('VM_PATH')) ) { 
+     return(0,"NO VM_PATH DEFINED"); 
+  } 
+
   if (OpenUMS::DbQuery::validate_mailbox($dbh, $extension, 1)) {
       
      return(0,"There is already a User record for extesion $extension. Make sure you look at inactive accounts as well as active before adding. ") ; 
@@ -128,7 +133,7 @@ sub create_user
 
   print STDERR " checking permission\n" ;
 
-  my $full_user_path = BASE_PATH . USER_PATH;
+  my $full_user_path = $main::CONF->get_var('VM_PATH') . USER_PATH;
   ## do exaustive checks of directory permissions...
   print STDERR "checking $full_user_path: " ;
   if ((-e $full_user_path)  ) {
@@ -222,6 +227,33 @@ sub create_user
   return (1,"User created for extension $user_info->{extension}");  
 
 }
+#################################
+## sub create_user
+#################################
+
+sub delete_user 
+{
+  my $dbh = shift;
+  my $extension = shift ; 
+  return(0,"Extesion is no a number") unless $extension =~ /^\d+$/;
+
+  my $full_user_path = $main::CONF->get_var('VM_PATH') . USER_PATH . $extension ;
+  
+  return (0,"User directory does not exist") if (!(-e $full_user_path) ); 
+  return (0,"User directory is not a directory") if (!(-d $full_user_path) ); 
+  return (0,"User directory is not writable") if (!(-w $full_user_path) ); 
+  return (0,"User directory is not executable") if (!(-x $full_user_path) ); 
+
+  print STDERR " full_user_path $full_user_path\n";
+
+  my $cmd = "rm -Rf $full_user_path"; 
+  print STDERR " cmd = $cmd\n";
+  my $ret = `$cmd`; 
+  my $sql = "DELETE FROM VM_Users WHERE extension = $extension "; 
+
+  return(0, "Delete failed : '$sql' " ) unless $dbh->do($sql); 
+  return(1, "User deleted" );
+} 
 
 ############################################################### add_user($$$$)
 ### Creates directory structure and database entry with default fields
@@ -239,10 +271,15 @@ sub add_user($$$$)
 
   return(0,"Extesion is no a number") unless $extension =~ /^\d+$/;
 
+                                                                                                                                               
+  if (!$main::CONF || !($main::CONF->get_var('VM_PATH')) ) {
+     return(0,"NO VM_PATH DEFINED");
+  }
+
 #  return(0, "Invalid Permissions on directories") unless ( (-e USER_PATH) && (-d USER_PATH) 
 #                        && (-w USER_PATH) && (-x USER_PATH) );
 
-  my $full_user_path = USER_PATH;
+  my $full_user_path = $main::CONF->get_var('VM_PATH') . USER_PATH;
   print STDERR " full_user_path $full_user_path\n"; 
   return(0,'User directories do not exists') unless ( (-e $full_user_path) && (-d $full_user_path) 
                         && (-w $full_user_path) && (-x $full_user_path) );
@@ -443,23 +480,23 @@ sub count_sound_gen {
         if ($i != 0 ) { 
            $ret_sound .= " " ; 
         } 
-        $ret_sound .= PROMPT_PATH . $files[$i]  ; 
+        $ret_sound .= $files[$i]  ; 
         if ($card_flag && ($i == ($num_files - 1) ) ) {
           $ret_sound .= "card"  ; 
         } 
-        $ret_sound .= ".wav"; 
      } 
   return $ret_sound;
 }
 sub get_no_greeting_sound {
   my $ext = shift; 
-  my $sound = PROMPT_PATH . "imsorry.wav "  ; 
-  $sound .= PROMPT_PATH . "extension.wav"; 
+  my $sound =  OpenUMS::Common::get_prompt_sound("imsorry")   ; 
+  $sound .= " "; 
+  $sound .= OpenUMS::Common::get_prompt_sound("extension"); 
   my $ext_sound = OpenUMS::Common::ext_sound_gen($ext ); 
   if ($ext_sound ) {
     $sound .= " $ext_sound"; 
   } 
-  $sound .= " " . PROMPT_PATH . "doesnotanswer.wav"; 
+  $sound .= " " . OpenUMS::Common::ext_sound_gen("doesnotanswer"); 
   return $sound ; 
 }
 
@@ -475,7 +512,7 @@ sub ext_sound_gen {
   for (my $i = 0; $i < $len; $i++ ) {
 
     my $num = substr($ext, $i, 1 ); 
-    my $num_file = PROMPT_PATH . $num . ".wav"; 
+    my $num_file =  OpenUMS::Common::ext_sound_gen($num); 
     push @sounds, $num_file; 
   }  
 
@@ -604,7 +641,7 @@ sub comtel_record  {
   my $term_digits = shift;
   my $silence_timeout = shift;
   my $no_beep_flag = shift;
-  # my $temphandle = new File::Temp(UNLINK => 1, SUFFIX => '.wav', DIR=>BASE_PATH . TEMP_PATH);
+  # my $temphandle = new File::Temp(UNLINK => 1, SUFFIX => '.wav', DIR=>$main::CONF->get_var('VM_PATH') . TEMP_PATH);
 
 #   my $tempfilename = $temphandle->filename;
 
@@ -709,7 +746,7 @@ sub cat_vox ($$)
 
   my $temp = new File::Temp(UNLINK => 1,
                             SUFFIX => '.vox',
-                            DIR=>BASE_PATH . TEMP_PATH);
+                            DIR=>$main::CONF->get_var('VM_PATH') . TEMP_PATH);
   unless(open(OUTFILE, ">$temp"))
     {
       $log->debug("Cat Unable to open $temp for output");
@@ -740,14 +777,14 @@ sub cat_vox ($$)
 
 sub validate_message {
   my $message_file = shift ; 
-  my $tmpfile  = BASE_PATH . TEMP_PATH . $message_file ;
+  my $tmpfile  = $main::CONF->get_var('VM_PATH') . TEMP_PATH . $message_file ;
   my ($retval, $msg); 
   $log->debug("[Common.pm] validate_mesage : $tmpfile" ); 
   if ( (-e $tmpfile) && (-r $tmpfile)  )  {
-     my $fileduration =  OpenUMS::Common::file_duration($message_file, BASE_PATH . TEMP_PATH); 
+     my $fileduration =  OpenUMS::Common::file_duration($message_file, $main::CONF->get_var('VM_PATH') . TEMP_PATH); 
      $log->debug("[Common.pm] validate_mesage : Message File duration is $fileduration sec" );
 
-     if ( $fileduration > $main::GLOBAL_SETTINGS->get_var('MIN_MESSAGE_LENGTH') ) {
+     if ( $fileduration > $main::CONF->get_var('MIN_MESSAGE_LENGTH') ) {
           $retval = 1; 
      } else {
         $retval =0; 
@@ -1087,6 +1124,17 @@ sub ser_to_extension {
   $dbh->do("use voicemail");
   
   return  $ext; 
+
+} 
+sub get_prompt_sound {
+  my $file = shift ; 
+  my $new_file = $main::CONF->get_var('VM_PATH') . PROMPT_PATH . $file ; 
+  if ($new_file !~ /\.wav$/) {
+     ## add the extension
+     $new_file .= ".wav"; 
+  } 
+  return $new_file; 
+  
 
 } 
 

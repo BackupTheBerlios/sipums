@@ -1,5 +1,5 @@
 package OpenUMS::Object::User;
-### $Id: User.pm,v 1.4 2004/08/05 09:14:14 kenglish Exp $
+### $Id: User.pm,v 1.5 2004/08/11 03:32:27 kenglish Exp $
 #
 # User.pm
 #
@@ -358,7 +358,7 @@ sub save_name {
   my $self = shift ;
   my ($temp_file, $temp_path) =  $self->get_temp_file('RECNAME');
   my ($new_file,$new_path) =  OpenUMS::DbQuery::get_new_name_file ($self->extension());
-  my $target_file  = BASE_PATH . "$new_path$new_file" ; 
+  my $target_file  = $main::CONF->get_var('VM_PATH') . "$new_path$new_file" ; 
    
   if (!(-e "$temp_path$temp_file") )  {
      ## if the file don't exist, return ...
@@ -559,7 +559,7 @@ sub create_temp_file {
   my $val = int (rand 998877 ) + 1 ;
   $self->{TEMP_FILE} = "$prefix$val.wav"; 
 
-  return ($self->{TEMP_FILE} , BASE_PATH .  TEMP_PATH ); 
+  return ($self->{TEMP_FILE} , $main::CONF->get_var('VM_PATH') .  TEMP_PATH ); 
 } 
 
 #######################################
@@ -577,7 +577,7 @@ sub get_temp_file {
  #    $self->{TEMP_FILE} = "$val.wav"   
  # }     
   if (defined($self->{TEMP_FILE} ) && ($self->{TEMP_FILE} =~/^$prefix/ || (!$prefix))  ) { 
-    return ($self->{TEMP_FILE} ,  BASE_PATH .  TEMP_PATH ); 
+    return ($self->{TEMP_FILE} ,  $main::CONF->get_var('VM_PATH') .  TEMP_PATH ); 
   } else {
      return (undef,undef); 
   } 
@@ -723,8 +723,8 @@ sub append_file {
   my $file2  = shift ;
   my ($file1,$gibber) =  $self->get_message_file(); 
   
-  $file1   =  BASE_PATH . TEMP_PATH . $file1; 
-  $file2   =  BASE_PATH . TEMP_PATH . $file2; 
+  $file1   =  $main::CONF->get_var('VM_PATH') . TEMP_PATH . $file1; 
+  $file2   =  $main::CONF->get_var('VM_PATH') . TEMP_PATH . $file2; 
   
   my @array = ($file1, $file2);
   $log->debug("calling append : $file1  $file2 "); 

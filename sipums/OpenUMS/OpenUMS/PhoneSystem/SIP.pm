@@ -1,5 +1,5 @@
 package OpenUMS::PhoneSystem::SIP ; 
-### $Id: SIP.pm,v 1.7 2004/08/05 09:14:14 kenglish Exp $
+### $Id: SIP.pm,v 1.8 2004/08/11 03:32:27 kenglish Exp $
 #
 # SIP.pm
 #
@@ -100,7 +100,7 @@ sub do_transfer {
      return ;
   } 
 
-  my $voicemail_db = $main::GLOBAL_SETTINGS->get_var('VOICEMAIL_DB'); 
+  my $voicemail_db = $main::CONF->get_var('VOICEMAIL_DB'); 
 
   if (!$voicemail_db) { 
      $log->error("CANNOT XFER, no voicemail_db") ;

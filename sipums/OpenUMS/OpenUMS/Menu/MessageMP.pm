@@ -1,5 +1,5 @@
 package OpenUMS::Menu::MessageMP; 
-### $Id: MessageMP.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
+### $Id: MessageMP.pm,v 1.3 2004/08/11 03:32:27 kenglish Exp $
 #
 # MessagePresenter.pm
 #
@@ -101,7 +101,9 @@ sub _play_menu () {
       my $var_ref = $self->get_sound_var_ref($event_var) ;
 
       if ($var_ref->{sound_file}) { 
-        $sound .= PROMPT_PATH . $var_ref->{sound_file} . " "  ;
+        $sound .= OpenUMS::Common::get_prompt_sound( $var_ref->{sound_file}) ;
+        $sound .= " " ; 
+  
         $message_spool->set_last_action(undef);
       } 
     }
@@ -109,10 +111,10 @@ sub _play_menu () {
     if (!$event_var ) { 
       ## they just got here, didn't do nothing...
       my $var_ref = $self->get_sound_var_ref('NOMSG') ;
-      $sound .= PROMPT_PATH . $var_ref->{sound_file} . " "  ;
+      $sound .= OpenUMS::Common::get_prompt_sound(  $var_ref->{sound_file}) . " "  ;
     } else {
       my $var_ref = $self->get_sound_var_ref('NOMOREMSG') ;
-      $sound .= PROMPT_PATH . $var_ref->{sound_file} . " "  ;
+      $sound .= OpenUMS::Common::get_prompt_sound(  $var_ref->{sound_file}) . " "  ;
     } 
 
     if (defined($sound) ) { 
@@ -123,7 +125,7 @@ sub _play_menu () {
   } 
 
   my $msg_obj = $message_spool->get_current_message(); 
-  my $msg_sound =BASE_PATH . $msg_obj->get_sound(); 
+  my $msg_sound = $main::CONF->get_var('VM_PATH')  . $msg_obj->get_sound(); 
 
 
   if (!$msg_obj->heard()) { 
@@ -131,7 +133,8 @@ sub _play_menu () {
 
     if ($event_var) { 
       my $var_ref = $self->get_sound_var_ref($event_var) ; 
-      $sound .= PROMPT_PATH . $var_ref->{sound_file} . " "  ; 
+      $sound .= OpenUMS::Common::get_prompt_sound($var_ref->{sound_file}) ; 
+      $sound .= " " ; 
       $message_spool->set_last_action(undef); 
     } 
     ## set the user's last sound_file, this is required for when they go into the forward message...
@@ -139,6 +142,7 @@ sub _play_menu () {
     $user->last_message_status_id($self->message_status_id() ); 
     $sound .=  "$msg_sound "; 
   } 
+
   if (defined($event_var) && ($event_var eq 'TDSMSG')) {
     $sound .=  $message_spool->get_current_tds_sound() . " "; 
     $message_spool->set_last_action(undef);
@@ -147,7 +151,7 @@ sub _play_menu () {
 
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
 
-  $sound .=   PROMPT_PATH . $menuSounds->{M}->[0]->{sound_file}  ; 
+  $sound .=   OpenUMS::Common::get_prompt_sound($menuSounds->{M}->[0]->{sound_file})  ; 
 
   if (!$msg_obj->heard()) {
     $msg_obj->play_started(); 
@@ -169,7 +173,7 @@ sub play_invalid {
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
   my $invalid_sound  = $menuSounds->{I}->[0]->{sound_file};
   if ($invalid_sound) { 
-      $ctport->play(PROMPT_PATH . $invalid_sound ) ; 
+      $ctport->play(OpenUMS::Common::get_prompt_sound($invalid_sound) ) ; 
   } 
   return ;
 } 

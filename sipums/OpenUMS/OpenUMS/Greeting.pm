@@ -1,5 +1,5 @@
 package OpenUMS::Greeting;
-### $Id: Greeting.pm,v 1.3 2004/08/05 09:14:14 kenglish Exp $
+### $Id: Greeting.pm,v 1.4 2004/08/11 03:32:27 kenglish Exp $
 # Greeting.pm
 #
 # Greets
@@ -44,35 +44,37 @@ sub user_is_on_vacation {
 }
 sub get_no_greeting_sound {
   my $ext = shift;
-  my $sound = PROMPT_PATH . "imsorry.wav "  ;
-  $sound .= PROMPT_PATH . "extension.wav";
+  my $sound = OpenUMS::Common::get_prompt_sound("imsorry")  ;
+  $sound .= " " ;
+  $sound .= OpenUMS::Common::get_prompt_sound("extension");
   my $ext_sound = OpenUMS::Common::ext_sound_gen($ext );
   if ($ext_sound ) {
     $sound .= " $ext_sound";
   }
-  $sound .= " " . PROMPT_PATH . "doesnotanswer.wav";
+  $sound .= " " . OpenUMS::Common::get_prompt_sound(  "doesnotanswer");
   return $sound ;
 }
 
 sub get_greeting_sound {
   my ($dbh, $ext ) = @_ ; 
   if (!$ext) {
-    return PROMPT_PATH . "invalid_mailbox.wav"; 
+    return OpenUMS::Common::get_prompt_sound("invalid_mailbox"); 
   } 
 
   if (OpenUMS::Greeting::user_is_on_vacation($dbh,$ext) ) {
 
-     my $ret_sound ; ##= PROMPT_PATH . "imsorry.wav" ; 
+     my $ret_sound ; ##= OpenUMS::Common::get_prompt_sound("imsorry") ; 
      my $name_sound = OpenUMS::Greeting::get_name_sound($dbh, $ext);
      my $dayback_sound = OpenUMS::Greeting::get_dayback_sound($dbh,$ext); 
-     $ret_sound .= "$name_sound " . PROMPT_PATH . "out_of_office_until.wav $dayback_sound ". PROMPT_PATH . "record_message_after_tone.wav";   
+     $ret_sound .= "$name_sound " .  OpenUMS::Common::get_prompt_sound("out_of_office_until") ;
+     $ret_sound .= " $dayback_sound " . OpenUMS::Common::get_prompt_sound("record_message_after_tone");   
      return $ret_sound ; 
   }  else {
      my ($greeting_wav_file, $greeting_wav_path) = OpenUMS::Greeting::get_current_greeting_file($dbh,$ext) ; 
      if (!$greeting_wav_file) {
        return OpenUMS::Greeting::get_no_greeting_sound($ext);    
      } else { 
-       return  BASE_PATH . "$greeting_wav_path$greeting_wav_file"; 
+       return  $main::CONF->get_var('VM_PATH') . "$greeting_wav_path$greeting_wav_file"; 
      }
   } 
   return "hi";
@@ -92,7 +94,7 @@ sub get_name_sound {
   if ($name_vox_file) { 
      return "$name_vox_path$name_vox_file";
   } else {
-    my $name_sound  = PROMPT_PATH . "extension.vox";
+    my $name_sound  =  OpenUMS::Common::get_prompt_sound("extension");
     $name_sound .=  " " .  OpenUMS::Common::ext_sound_gen($ext); 
      return $name_sound ;
   } 
@@ -107,11 +109,11 @@ sub get_dayback_sound {
      ## get the day name
      my $dow = Date::Calc::Day_of_Week($eyear,$emonth,$eday);
      my $dow_sound  = Date::Calc::Day_of_Week_to_Text($dow);
-     $dow_sound = PROMPT_PATH . $dow_sound . ".vox";
+     $dow_sound = OpenUMS::Common::get_prompt_sound($dow_sound);
                                                                                                                              
      ## get the month name
      my $month_sound = Date::Calc::Month_to_Text($emonth);
-     $month_sound = PROMPT_PATH . lc($month_sound) . ".vox";
+     $month_sound = OpenUMS::Common::get_prompt_sound(lc($month_sound) );
                                                                                                                              
      ## get the day in cardinal form
      my $day_sound = OpenUMS::Common::count_sound_gen($eday,1);

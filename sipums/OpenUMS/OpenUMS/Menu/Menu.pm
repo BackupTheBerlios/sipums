@@ -1,6 +1,6 @@
 package OpenUMS::Menu::Menu;
 
-### $Id: Menu.pm,v 1.4 2004/08/05 09:14:14 kenglish Exp $
+### $Id: Menu.pm,v 1.5 2004/08/11 03:32:27 kenglish Exp $
 #
 # Menu.pm
 #
@@ -438,7 +438,7 @@ sub run_menu {
     $self->xfer_to_extension(); 
   } else { 
     if (!($hung_up_flag)) { 
-      $self->{CTPORT}->play(PROMPT_PATH . "goodbye.wav"); 
+      $self->{CTPORT}->play(OpenUMS::Common::get_prompt_sound( "goodbye")); 
       $self->{CTPORT}->on_hook(); 
     }
     $log->debug("call done");
@@ -472,7 +472,7 @@ sub xfer_to_extension {
                                                                                                                                                
   if (!$ext) { ## this means they sent 0 or it's not defined, we'll transfer to the operator...
       $log->err("transfer called with no extension, settting it to OPERATOR_EXTENSION");
-     $ext = $main::GLOBAL_SETTINGS->get_var('OPERATOR_EXTENSION') ;
+     $ext = $main::CONF->get_var('OPERATOR_EXTENSION') ;
   } 
 
   ## let's look up and make sure it's a valid extension shoon....
@@ -495,7 +495,7 @@ sub xfer_to_extension {
 
   $log->debug("[Menu.pm] : transfering to $ext");
   ## play please hold...
-  $self->{CTPORT}->play(PROMPT_PATH . "pleasehold.wov");
+  $self->{CTPORT}->play(OpenUMS::Common::get_prompt_sound(  "pleasehold.wov"));
                                                                                                                                                
   $self->{CTPORT}->clear();
   $self->{STANDALONE} = undef ;
@@ -527,7 +527,7 @@ sub xfer_to_extension_old {
 
 
   if (!$ext) { ## this means they sent 0 or it's not defined, we'll transfer to the operator...
-     $ext = $main::GLOBAL_SETTINGS->get_var('OPERATOR_EXTENSION') ;
+     $ext = $main::CONF->get_var('OPERATOR_EXTENSION') ;
   }
   else {
      ## let's look up and make sure it's a valid extension shoon....
@@ -540,7 +540,7 @@ sub xfer_to_extension_old {
   }
   $log->debug("[Menu.pm] : transfering to $ext");
   ## play please hold...
-  $ctport->play(PROMPT_PATH . "pleasehold.wav");
+  $ctport->play(OpenUMS::Common::get_prompt_sound( "pleasehold"));
 
   $ctport->clear();
   $self->{STANDALONE} = undef ;

@@ -1,5 +1,5 @@
 package OpenUMS::Menu::DbnmResultMP; 
-### $Id: DbnmResultMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: DbnmResultMP.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
 #
 # DbnmResultPresenter.pm
 #
@@ -54,7 +54,7 @@ sub _play_menu () {
 
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
 
-  $sound .=   PROMPT_PATH . $menuSounds->{M}->[0]->{sound_file}  ; 
+  $sound .=   OpenUMS::Common::get_prompt_sound(  $menuSounds->{M}->[0]->{sound_file})  ; 
 
 
   if (defined($sound) ) { 

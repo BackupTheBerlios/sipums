@@ -1,5 +1,5 @@
 package OpenUMS::Menu::UserSettingsMP ; 
-### $Id: UserSettingsMP.pm,v 1.3 2004/08/05 09:14:14 kenglish Exp $
+### $Id: UserSettingsMP.pm,v 1.4 2004/08/11 03:32:27 kenglish Exp $
 #
 # UserSettingsMP.pm
 #
@@ -44,7 +44,7 @@ sub _play_menu () {
 
   my $menuSounds = $self->{SOUNDS_ARRAY};
   my $sound  ; 
-  $sound .=   PROMPT_PATH . $menuSounds->{M}->[0]->{sound_file}  ;
+  $sound .=   OpenUMS::Common::get_prompt_sound($menuSounds->{M}->[0]->{sound_file})  ;
   if ($self->setting_type() =~ /^PLAY/ ) {
      ## what's the variable to play....
      my $msound = $menuSounds->{M}->[1] ;  
@@ -56,9 +56,9 @@ sub _play_menu () {
           my ($greeting_file, $greeting_path) = $user->get_greeting();
           $log->debug("[UserSetting.pm] Got greeting: $greeting_path$greeting_file"); 
           if ($greeting_file) { 
-             $sound .=  " " . BASE_PATH .   $greeting_path . $greeting_file ; 
+             $sound .=  " " . $main::CONF->get_var('VM_PATH') .   $greeting_path . $greeting_file ; 
           }  else {
-             $sound =   PROMPT_PATH . "nogreetingrecorded.wav" 
+             $sound = OpenUMS::Common::get_prompt_sound( "nogreetingrecorded" ) ; 
           } 
        } 
      }  elsif ($self->setting_type eq 'PLAYNAME')  {
@@ -70,9 +70,9 @@ sub _play_menu () {
           my ($name_file, $name_path) = $user->get_name();
           $log->debug("[UserSetting.pm] Got name: $name_path$name_file"); 
           if ($name_file) { 
-             $sound .=  " " . BASE_PATH .   $name_path . $name_file ;
+             $sound .=  " " . $main::CONF->get_var('VM_PATH') .   $name_path . $name_file ;
           }  else {
-             $sound =   PROMPT_PATH . "nonamerecorded.wav" 
+             $sound =  OpenUMS::Common::get_prompt_sound("nonamerecorded") ; 
           } 
        }
     }
@@ -83,7 +83,7 @@ sub _play_menu () {
      while (defined($menuSounds->{M}->[$i] )  ) {
           my $msound = $menuSounds->{M}->[$i];
           if ($msound->{sound_file}) {
-            push @to_play_sounds,PROMPT_PATH . $msound->{sound_file} ;
+            push @to_play_sounds, OpenUMS::Common::get_prompt_sound( $msound->{sound_file}) ;
           }
                                                                                                                              
           if ($msound->{var_name} eq 'NEW_PASSWORD') {
@@ -99,9 +99,9 @@ sub _play_menu () {
  
   } elsif ($self->setting_type() =~ /^MOBILESTAT/) {
     if ($user->get_value('mobile_email_flag')  ) { 
-      $sound .= " " . PROMPT_PATH . "activated.wav";   
+      $sound .= " " . OpenUMS::Common::get_prompt_sound( "activated");   
     }  else {
-      $sound .= " " . PROMPT_PATH . "deactivated.wav";   
+      $sound .= " " . OpenUMS::Common::get_prompt_sound( "deactivated");   
     } 
   } 
 
@@ -233,22 +233,22 @@ sub process {
         $log->debug("[UserSetting.pm] Saving new password ");
         $user->save_new_password();
         my $ctport = $self->{CTPORT} ; 
-        $ctport->play(PROMPT_PATH . "password_saved.wav");
+        $ctport->play(OpenUMS::Common::get_prompt_sound("password_saved"));
      } elsif ($item_action eq 'SAVEMOBILE') { 
    
        my $ctport = $self->{CTPORT} ; 
        if ($self->setting_type() eq  'MOBILEDEACT') {
          ## they are trying to deactivate it...
            $user->save_mobile_email_flag(0);         
-           $ctport->play(PROMPT_PATH . "mobile_notification_deactivated.wav");
+           $ctport->play(OpenUMS::Common::get_prompt_sound("mobile_notification_deactivated"));
        } else {
          ## they are tryingt to activate it.
         if ($user->get_value('mobile_email')) { 
            $user->save_mobile_email_flag(1);         
-           $ctport->play(PROMPT_PATH . "mobile_notification_activated.wav");
+           $ctport->play( OpenUMS::Common::get_prompt_sound( "mobile_notification_activated"));
           ## make sure they have mobile e-mail defined...
         } else {
-           $ctport->play(PROMPT_PATH . "mobile_notification_error.wav");
+           $ctport->play(OpenUMS::Common::get_prompt_sound( "mobile_notification_error"));
         } 
          
        } 
@@ -257,12 +257,12 @@ sub process {
             $log->debug("[UserSetting.pm] SAVING GREETING FOR  USER " . $user->extension());
             $user->save_greeting(); 
             my $ctport = $self->{CTPORT} ; 
-            $ctport->play(PROMPT_PATH . "greeting_activate.wav");
+            $ctport->play(OpenUMS::Common::get_prompt_sound( "greeting_activate") );
         } elsif ($item_action eq 'SAVENAME') {
             $log->debug("[UserSetting.pm] SAVING NAME FOR USER " . $user->extension());
             $user->save_name();
 #           my $ctport = $self->{CTPORT} ;
-#           $ctport->play(PROMPT_PATH . "greeting_activate.wav");
+#           $ctport->play(OpenUMS::Common::get_prompt_sound(  "greeting_activate"));
         }
         $user->clear_temp_file(); 
      } 

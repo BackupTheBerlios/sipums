@@ -1,0 +1,58 @@
+#!/usr/bin/perl -w
+### $Id: deletevmuser,v 1.1 2004/08/11 03:32:27 kenglish Exp $
+#
+# addvmuser
+#
+# add a user (w/ appropriate defaults) into database.  Doesn't do much
+# errorchecking.
+
+use strict;
+use warnings;
+use lib '/usr/local/openums/lib'; 
+
+print_and_die("not enuff arguments") if (@ARGV < 2);
+
+use OpenUMS::GlobalSettings;
+use OpenUMS::Config;
+use OpenUMS::Common;
+use OpenUMS::DbUtils;
+ 
+ 
+my $extension = $ARGV[0];
+my $voicemail_db = $ARGV[1];
+ 
+print_and_die("extension non-numeric" ) unless ($extension =~ /^\d+$/);
+print_and_die("extension is less than 0") unless ($extension > 0);
+
+#  
+#  ## get the dbh, load CONF
+
+
+my $dbh = OpenUMS::Common::get_dbh($voicemail_db);
+print_and_die("no DBH") unless defined($dbh);
+$CONF->load_settings($voicemail_db);
+
+my ($success, $message)  = OpenUMS::Common::delete_user($dbh, $extension);
+
+print "($success, $message)\n"; 
+
+if (!$success) 
+{
+    print_and_die("Error:$message\n");
+} 
+
+#print("Changing file modes.\n");
+#open(FH, "| sudo chown -R openums:openums $full_user_path");
+#open(FH, "| sudo chmod -R g+w $full_user_path");
+
+print("Success!\n");
+exit(1);
+
+sub print_and_die
+{
+  my $msg = shift ;
+  print STDERR "Error: $msg\n";
+  exit (-1);
+}
+
+1;

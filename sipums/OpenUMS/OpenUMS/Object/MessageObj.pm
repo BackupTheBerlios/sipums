@@ -41,7 +41,7 @@ sub new {
   my $self = {}; ## self is a hash ref
   ## we'll add the parameters to the hash ref..
   $self->{MSG_DB_HR} = $msg_hr; 
-  my $duration = OpenUMS::Common::file_duration($msg_hr->{message_wav_file}, BASE_PATH .  $msg_hr->{message_wav_path}) ;
+  my $duration = OpenUMS::Common::file_duration($msg_hr->{message_wav_file}, $main::CONF->get_var('VM_PATH')  .  $msg_hr->{message_wav_path}) ;
   $self->{TOTAL_DURATION} = $duration; 
   bless($self, $class);
   return $self;
@@ -68,7 +68,7 @@ sub get_sound {
   my $msg_hr = $self->{MSG_DB_HR} ; 
   if ( $self->{TEMP_FILE} ) { 
     my $temp_file = $self->{TEMP_FILE}->filename(); 
-    my $base_begin = BASE_PATH;  
+    my $base_begin = $main::CONF->get_var('VM_PATH') ;  
     $temp_file  =~ s/^$base_begin//g ;
     $log->debug("get_sound temp_file = $temp_file");
     return $temp_file; 
@@ -134,7 +134,7 @@ sub played_duration {
 #################################
 sub rewind {
   my $self = shift ;
-  $self->shift_position (- ($main::GLOBAL_SETTINGS->get_var('REWIND_SECS')) ,'REWIND' )  ;
+  $self->shift_position (- ($main::CONF->get_var('REWIND_SECS')) ,'REWIND' )  ;
 }
 
 #################################
@@ -142,7 +142,7 @@ sub rewind {
 #################################
 sub fast_forward {
   my $self = shift ;
-  $self->shift_position ( ($main::GLOBAL_SETTINGS->get_var('REWIND_SECS')) ,'FASTFORWARD' )  ;
+  $self->shift_position ( ($main::CONF->get_var('REWIND_SECS')) ,'FASTFORWARD' )  ;
 }
 
 
@@ -176,9 +176,9 @@ sub shift_position {
   if ($to_jump > 0  && $to_jump < $self->{TOTAL_DURATION} ) { 
      $self->{LAST_OFFSET} = $to_jump; 
      $log->debug("$name : to_jump is negative, just repeating message"); 
-     my $temphandle = new File::Temp(UNLINK => 1, SUFFIX => '.vox', DIR=>BASE_PATH . TEMP_PATH);
+     my $temphandle = new File::Temp(UNLINK => 1, SUFFIX => '.vox', DIR=>$main::CONF->get_var('VM_PATH')  . TEMP_PATH);
      my $soxout = $temphandle->filename;
-     OpenUMS::Common::trim_file( "$soxout", BASE_PATH ."$wav_path$wav_file", $to_jump);
+     OpenUMS::Common::trim_file( "$soxout", $main::CONF->get_var('VM_PATH')  ."$wav_path$wav_file", $to_jump);
      $self->{TEMP_FILE} = $temphandle ; 
      ## mark it unheard...
      $self->repeat(); 
@@ -198,9 +198,9 @@ sub shift_position {
      $to_jump = $self->{TOTAL_DURATION} + $jump_secs ; 
      $self->{LAST_OFFSET} = $to_jump; 
      $log->debug("$name : to_jump is greater than TOTAL_DURATION" . $self->{TOTAL_DURATION} . " , new to_jump = $to_jump "); 
-     my $temphandle = new File::Temp(UNLINK => 1, SUFFIX => '.vox', DIR=>BASE_PATH . TEMP_PATH);
+     my $temphandle = new File::Temp(UNLINK => 1, SUFFIX => '.vox', DIR=>$main::CONF->get_var('VM_PATH')  . TEMP_PATH);
      my $soxout = $temphandle->filename;
-     OpenUMS::Common::trim_file( "$soxout", BASE_PATH ."$wav_path$wav_file", $to_jump);
+     OpenUMS::Common::trim_file( "$soxout", $main::CONF->get_var('VM_PATH')  ."$wav_path$wav_file", $to_jump);
      $self->{TEMP_FILE} = $temphandle ; 
      $self->repeat(); 
      return ;

@@ -1,5 +1,5 @@
 package OpenUMS::PhoneSystem::NECAspire ; 
-### $Id: NECAspire.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: NECAspire.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
 #
 # NECAspire.pm
 #
@@ -43,7 +43,7 @@ sub integration_digits {
 
   if (!$digits) { 
     $log->debug("NECAspire::intergration_digits Digits not present, collecting '$digits'\n");
-    $digits = $ctport->collect(22, $main::GLOBAL_SETTINGS->get_var('INTERGRATION_WAIT') , 3);
+    $digits = $ctport->collect(22, $main::CONF->get_var('INTERGRATION_WAIT') , 3);
   } else {
      $log->debug("NECAspire::intergration_digits Digits already present, processing '$digits'\n");
   } 

@@ -1,5 +1,5 @@
 package OpenUMS::Menu::MenuProcessor;
-### $Id: MenuProcessor.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
+### $Id: MenuProcessor.pm,v 1.3 2004/08/11 03:32:27 kenglish Exp $
 #
 # MenuProcessor.pm
 #
@@ -118,11 +118,11 @@ sub new {
   $self->{MENU_ID} = $menu_id;
   $self->{PERMISSION_ID} = $permission_id;
   if (!defined($collect_time) ) { 
-     $self->{COLLECT_TIME} =  $main::GLOBAL_SETTINGS->get_var('COLLECT_TIME') ;
+     $self->{COLLECT_TIME} =  $main::CONF->get_var('COLLECT_TIME') ;
   } elsif ($collect_time =~ /[0-9]+/) {
      $self->{COLLECT_TIME} = $collect_time;
   }  else { 
-     $self->{COLLECT_TIME} =  $main::GLOBAL_SETTINGS->get_var('COLLECT_TIME') ;
+     $self->{COLLECT_TIME} =  $main::CONF->get_var('COLLECT_TIME') ;
   }
   $self->{FIRST_FLAG} = 1;
 
@@ -286,7 +286,7 @@ sub _play_menu () {
   ## get the array of sounds  
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
   ## get the first sound off that sound array 
-  my $sound =  PROMPT_PATH . $menuSounds->{M}->[0]->{sound_file}  ; 
+  my $sound =  OpenUMS::Common::get_prompt_sound($menuSounds->{M}->[0]->{sound_file})  ; 
   if (defined($sound) ) { 
     ## hey, if there, let 'em hear it
       $ctport->play($sound); 
@@ -309,10 +309,10 @@ sub play_invalid {
      ## they could define a blank invalid sound.... 
       my $invalid_sound  = $menuSounds->{I}->[0]->{sound_file};
       if ($invalid_sound) { 
-        $ctport->play(PROMPT_PATH . $invalid_sound ) ; 
+        $ctport->play(OpenUMS::Common::get_prompt_sound( $invalid_sound) ) ; 
       } 
     }  else {
-        $ctport->play(PROMPT_PATH . DEFAULT_INVALID_SOUND) ; 
+       $ctport->play(OpenUMS::Common::get_prompt_sound(DEFAULT_INVALID_SOUND)) ; 
   } 
   return ;
 } 
@@ -614,12 +614,13 @@ sub is_valid_extension {
   my $self = shift  ;
   my $ext_to = shift  ;
   my $exts = $self->get_active_extensions();
+
   foreach  my $ext ( @{$exts} ) {
+    $log->debug("is_valid_extension $ext $ext_to"); 
     if ($ext eq $ext_to) {
       return 1;
     }
   }
   return 0;
-                                                                                                                                               
 }
 1;

@@ -1,5 +1,5 @@
 package OpenUMS::Config;
-### $Id: Config.pm,v 1.6 2004/08/05 09:14:14 kenglish Exp $
+### $Id: Config.pm,v 1.7 2004/08/11 03:32:27 kenglish Exp $
 #
 # Config.pm
 #
@@ -33,10 +33,10 @@ use constant SAFE_PATH => "/bin:/usr/bin";
 ### These are the basic paths for the OpenUMS directory tree.
 ### All paths are relative to the BASE_PATH.
 use constant BASE_PATH          => "/var/spool/openums/";
-use constant PROMPT_PATH        => BASE_PATH . "prompts/";
+use constant PROMPT_PATH        => "prompts/";
 use constant TEMP_PATH          => "spool/temp/";
 use constant STORE_PATH         =>  "spool/store/";
-use constant USER_PATH          => BASE_PATH . "users/";
+use constant USER_PATH          => "users/";
 use constant USER_REL_PATH          => "users/";
 use constant DEFAULT_INVALID_SOUND => "invalid.wav";
 

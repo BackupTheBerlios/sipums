@@ -1,5 +1,5 @@
 package OpenUMS::Menu::AppendMsgMP; 
-### $Id: AppendMsgMP.pm,v 1.2 2004/07/30 20:22:13 kenglish Exp $
+### $Id: AppendMsgMP.pm,v 1.3 2004/08/11 03:32:27 kenglish Exp $
 #
 # RecMsgMP.pm
 #
@@ -87,15 +87,15 @@ sub _get_input {
   my $sound; 
 
   if ($menuSounds->{M}->[1]->{sound_file} ) {
-     $sound .=    PROMPT_PATH . $menuSounds->{M}->[1]->{sound_file}  ;
+     $sound .=    OpenUMS::Common::get_prompt_sound(  $menuSounds->{M}->[1]->{sound_file})  ;
   }
 
   my ($old_message_file,$old_message_path) =  $user->get_message_file(); 
-  my $old_file_duration = OpenUMS::Common::file_duration($old_message_file, BASE_PATH . TEMP_PATH);
-  my $new_timeout=  $main::GLOBAL_SETTINGS->get_var('MESSAGE_TIMEOUT') - $old_file_duration ; 
+  my $old_file_duration = OpenUMS::Common::file_duration($old_message_file, $main::CONF->get_var('VM_PATH') . TEMP_PATH);
+  my $new_timeout=  $main::CONF->get_var('MESSAGE_TIMEOUT') - $old_file_duration ; 
   $ctport->play($sound); 
 
-  OpenUMS::Common::comtel_record($ctport, BASE_PATH . TEMP_PATH . $message_file, $new_timeout, RECORD_TERM_KEYS, SILENCE_TIMEOUT);
+  OpenUMS::Common::comtel_record($ctport, $main::CONF->get_var('VM_PATH') . TEMP_PATH . $message_file, $new_timeout, RECORD_TERM_KEYS, SILENCE_TIMEOUT);
 
   $user->append_file($message_file); 
   

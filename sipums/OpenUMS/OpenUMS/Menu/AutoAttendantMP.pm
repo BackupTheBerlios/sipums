@@ -1,5 +1,5 @@
 package OpenUMS::Menu::AutoAttendantMP; 
-### $Id: AutoAttendantMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: AutoAttendantMP.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
 #
 # AAGMP.pm
 #
@@ -45,7 +45,7 @@ sub play_invalid {
 
     my $invalid_sound  = $menuSounds->{I}->[0]->{sound_file};
     if ($invalid_sound) { 
-      $ctport->play(PROMPT_PATH . $invalid_sound ) ; 
+      $ctport->play(OpenUMS::Common::get_prompt_sound($invalid_sound) ) ; 
     } 
   return ;
 } 
@@ -65,10 +65,10 @@ sub _get_input {
 
 
     ## phone mode here dood...
-    $log->debug("GS Collect Time is:  " . $main::GLOBAL_SETTINGS->get_var('COLLECT_TIME')  ); 
-    $input = $ctport->collect(1,$main::GLOBAL_SETTINGS->get_var('COLLECT_TIME') );
+    $log->debug("GS Collect Time is:  " . $main::CONF->get_var('COLLECT_TIME')  ); 
+    $input = $ctport->collect(1,$main::CONF->get_var('COLLECT_TIME') );
     $log->debug("AA input = $input  "); 
-    $log->debug("Collected  TIME was:  " . $main::GLOBAL_SETTINGS->get_var('COLLECT_TIME')  ); 
+    $log->debug("Collected  TIME was:  " . $main::CONF->get_var('COLLECT_TIME')  ); 
 
     ## if they are using the direct ??? to transfer to extension...
     if ( defined($self->{MENU_OPTIONS}->{EXT}) && ($input =~ /[1-9]/) ) { 
@@ -91,11 +91,11 @@ sub _get_input {
       my $opt = $potential_opts[0];  
       if (length($opt) > 1 ) { 
         if ($opt =~ /^($input)EXT/ ) {
-          my $input2 = $ctport->collect($self->{MAX_EXT_LENGTH}, $main::GLOBAL_SETTINGS->get_var('COLLECT_TIME')); 
+          my $input2 = $ctport->collect($self->{MAX_EXT_LENGTH}, $main::CONF->get_var('COLLECT_TIME')); 
           $self->{EXTENSION_TO}  = $input2;
           $input .= 'EXT'             
         }  else { 
-          my $input2 = $ctport->collect( (length($opt) - 1), $main::GLOBAL_SETTINGS->get_var('COLLECT_TIME')); 
+          my $input2 = $ctport->collect( (length($opt) - 1), $main::CONF->get_var('COLLECT_TIME')); 
           $input .= $input2; 
         } 
       } 

@@ -1,5 +1,5 @@
 package OpenUMS::CallRecorder; 
-### $Id: CallRecorder.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: CallRecorder.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
 #
 # CallRecorder.pm
 #
@@ -75,7 +75,7 @@ sub record  {
   $self->{RECORD_FILE} = $record_file ; 
   $self->{RECORD_PATH} = $record_path ; 
 
-  OpenUMS::Common::comtel_record($ctport, BASE_PATH . TEMP_PATH . $record_file, (60 * ($main::GLOBAL_SETTINGS->get_var('RC_TIMEOUT')) ) , RECORD_TERM_KEYS, RC_SILENCE_TIMEOUT,1);
+  OpenUMS::Common::comtel_record($ctport, $main::CONF->get_var('VM_PATH') . TEMP_PATH . $record_file, (60 * ($main::CONF->get_var('RC_TIMEOUT')) ) , RECORD_TERM_KEYS, RC_SILENCE_TIMEOUT,1);
    
   return ;
 } 
@@ -103,7 +103,7 @@ sub save_message {
   my $ext_to = $self->{EXTENSION_TO} ; 
   ## all the checks for saving a message...
   if ( $self->{RECORD_PATH} && $self->{RECORD_FILE} ) { 
-      my $livefile  = BASE_PATH . TEMP_PATH . $self->{RECORD_FILE} ;
+      my $livefile  = $main::CONF->get_var('VM_PATH') . TEMP_PATH . $self->{RECORD_FILE} ;
       ## check that file exists and is readable
       if ( (-e $livefile) && (-r $livefile)  )  {
 
@@ -112,7 +112,7 @@ sub save_message {
          my $fileduration = &sound_duration($livefile);
          $log->debug("Message File duration is $fileduration sec" );
 
-         if ( $fileduration > $main::GLOBAL_SETTINGS->get_var('MIN_MESSAGE_LENGTH') ) {
+         if ( $fileduration > $main::CONF->get_var('MIN_MESSAGE_LENGTH') ) {
 
             $log->debug("Message created for " . $self->{EXTENSION_TO} . ", file = " . $self->{RECORD_FILE} );
             my $msg_id = OpenUMS::DbUtils::create_message( $dbh,

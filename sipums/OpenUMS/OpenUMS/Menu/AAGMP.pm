@@ -1,5 +1,5 @@
 package OpenUMS::Menu::AAGMP; 
-### $Id: AAGMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: AAGMP.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
 #
 # AAGMP.pm
 #
@@ -111,7 +111,7 @@ sub _play_menu () {
   my @sounds ; 
   foreach my $hr (@{$menuSounds->{M}} ) {
      $log->debug("sound_file = $hr->{sound_file} ...");
-     push @sounds, PROMPT_PATH . $hr->{sound_file}; 
+     push @sounds, OpenUMS::Common::get_prompt_sound(  $hr->{sound_file}); 
   } 
 
   my $sound =  join(" ", @sounds); 
@@ -139,7 +139,7 @@ sub play_invalid {
 
   my $invalid_sound  = $menuSounds->{I}->[0]->{sound_file};
   if ($invalid_sound) { 
-      $ctport->play(PROMPT_PATH . $invalid_sound ) ; 
+      $ctport->play(OpenUMS::Common::get_prompt_sound(  $invalid_sound) ) ; 
   } 
   return ;
 } 
@@ -200,6 +200,7 @@ sub _get_input {
         # did they enter the entire extension?
         if (length($input2) == ($self->{MAX_EXT_LENGTH} - 1)) {
            $input .= $input2;
+           $log->debug("[AAGMP.pm] Setting extension to $input "); 
            $self->{EXTENSION_TO}  = $input;
            $self->{INPUT_COLLECTED}  = $input;
 
@@ -230,6 +231,7 @@ sub _get_input {
       } 
     }  
     $log->info("[AAGMP.pm] Input is $input"); 
+    $log->info("[AAGMP.pm] EXTENSIONT_TO  " . $self->{EXTENSION_TO} . " "); 
     $self->{INPUT} = $input; 
 }
 
@@ -243,6 +245,8 @@ sub validate_input {
 
   my $menuOptions = $self->{MENU_OPTIONS} ; 
   if ($input =~/EXT/) {
+      
+     $log->info("[AAGMP.pm] Input is $input"); 
      if (!($self->is_valid_extension($self->{EXTENSION_TO} )) )  {
        return 0 ; 
      } 

@@ -84,7 +84,7 @@ sub forward_message {
 
 
    my $message_file = $user->last_message_file();   
-   my $message_path = BASE_PATH . USER_PATH . $user->extension() . "/messages/" ; 
+   my $message_path = $main::CONF->get_var('VM_PATH') . USER_PATH . $user->extension() . "/messages/" ; 
 
     $log->debug("COMMENT_POSITION = " . $self->{COMMENT_POSITION} ) ; 
    if (defined($self->{COMMENT_POSITION}) ) { 
@@ -92,8 +92,8 @@ sub forward_message {
      $message_file =~ s/\.vox$//g;
      $message_file .= "_fwd.vox";
 
-     my $dst = BASE_PATH . TEMP_PATH .  $message_file;
-     $message_path = BASE_PATH . TEMP_PATH ; 
+     my $dst = $main::CONF->get_var('VM_PATH') . TEMP_PATH .  $message_file;
+     $message_path = $main::CONF->get_var('VM_PATH') . TEMP_PATH ; 
      my $cp_cmd = "cp $src $dst" ; 
      $log->debug("COMMENT 1 : $cp_cmd"); 
      my $success = system("$cp_cmd");
@@ -112,7 +112,7 @@ sub forward_message {
   $log->debug("gonna create "); 
   foreach my $ext_to (@{$self->{MAILBOX_ARRAY}} ) { 
        my ($dest_message_file,$dest_message_path) =  OpenUMS::DbQuery::get_new_message_file_name ($ext_to, 1);
-       my $dst =  BASE_PATH . TEMP_PATH . $dest_message_file ; 
+       my $dst =  $main::CONF->get_var('VM_PATH') . TEMP_PATH . $dest_message_file ; 
        my $cp_cmd = "cp $message_path$message_file $dst" ; 
     
        my $success = system("$cp_cmd");

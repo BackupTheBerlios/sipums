@@ -1,5 +1,5 @@
 package OpenUMS::Menu::AdminMP ; 
-### $Id: AdminMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: AdminMP.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
 #
 # AdminMP.pm
 #
@@ -44,7 +44,7 @@ sub _play_menu () {
 
   my $menuSounds = $self->{SOUNDS_ARRAY}; 
   ## always get the first one... 
-  $sound =   PROMPT_PATH . $menuSounds->{M}->[0]->{sound_file}  ; 
+  $sound =   OpenUMS::Common::get_prompt_sound(  $menuSounds->{M}->[0]->{sound_file})  ; 
 
   $log->debug ("[AdminMP.pm] setting_type  = " .  $self->setting_type() ); 
 
@@ -63,7 +63,7 @@ sub _play_menu () {
            $log->warning("[AdminMP.pm] RECPLAY no menu sound");
            return ;
          } else {
-            $sound = PROMPT_PATH . $sound ; 
+            $sound = OpenUMS::Common::get_prompt_sound( $sound) ; 
          } 
 
      }  
@@ -80,7 +80,7 @@ sub _play_menu () {
   
       ## stack it on, bra
       if ($msound->{sound_file}) {
-        push @to_play_sounds,PROMPT_PATH . $msound->{sound_file} ;
+        push @to_play_sounds,OpenUMS::Common::get_prompt_sound(  $msound->{sound_file}) ;
       } else { 
       ## deal with the variable.
          if ($msound->{var_name} eq 'ADMINEXT') {
@@ -92,7 +92,7 @@ sub _play_menu () {
                $log->warning("[AdminMP.pm] RECPLAY no menu sound"); 
                return ; 
             } 
-            push @to_play_sounds,  PROMPT_PATH . $sound;
+            push @to_play_sounds,  OpenUMS::Common::get_prompt_sound(  $sound);
          } elsif ($msound->{var_name} eq 'IPADDRESS') { 
             my $ipObj =  $user->get_ip_object(); 
             push @to_play_sounds,  $ipObj->get_internal_ip_address_sound(); 
@@ -179,7 +179,7 @@ sub _get_input {
      my $sound;
 #
      if ($menuSounds->{M}->[1]->{sound_file} ) {
-        $sound .=    PROMPT_PATH . $menuSounds->{M}->[1]->{sound_file}  ;
+        $sound .=    OpenUMS::Common::get_prompt_sound(  $menuSounds->{M}->[1]->{sound_file})  ;
       }
 #
       $ctport->play($sound);
@@ -291,7 +291,7 @@ sub process {
        ## see if there's a verify sound, if so, play it
        my $menuSounds = $self->{SOUNDS_ARRAY};
        if ($menuSounds->{V}->[0]->{sound_file}) { 
-          my $confirm_sound = PROMPT_PATH . $menuSounds->{V}->[0]->{sound_file}  ;
+          my $confirm_sound = OpenUMS::Common::get_prompt_sound(  $menuSounds->{V}->[0]->{sound_file})  ;
           my $ctport = $self->{CTPORT}; 
           $ctport->play($confirm_sound); 
        } 
@@ -383,7 +383,7 @@ sub process {
             my $file_id = OpenUMS::DbUtils::add_sound_file($self->{DBH}, $file, $path);
 
             my $menuSounds = $self->{SOUNDS_ARRAY};
-            my $confirm_sound .=  PROMPT_PATH . $menuSounds->{V}->[0]->{sound_file}  ;
+            my $confirm_sound .=  OpenUMS::Common::get_prompt_sound(  $menuSounds->{V}->[0]->{sound_file})  ;
             $confirm_sound .= " " . OpenUMS::Common::ext_sound_gen($file_id);
             my $ctport = $self->{CTPORT};
             $ctport->play($confirm_sound);

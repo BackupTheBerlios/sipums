@@ -1,5 +1,5 @@
 package OpenUMS::IMAP;
-### $Id: IMAP.pm,v 1.2 2004/07/31 20:27:05 kenglish Exp $
+### $Id: IMAP.pm,v 1.3 2004/08/11 03:32:27 kenglish Exp $
 #
 # IMAP.pm
 #
@@ -153,7 +153,7 @@ sub recreate_message($$$)
   return(undef) unless $file =~ /^(\d{3})_(\d{14})_(\d{2})\.vox$/;
   my ($extension, $timestamp, $port) = ($1, $2, $3);
                                                                                 
-  my $soundfile = BASE_PATH . USER_PATH . "$extension/messages/$file";
+  my $soundfile = $main::CONF->get_var('VM_PATH') . USER_PATH . "$extension/messages/$file";
                                                                                 
   return($soundfile) if( (-e $soundfile) && (-r $soundfile) );
                                                                                 
@@ -193,7 +193,7 @@ sub recreate_message($$$)
   $imap->logout;
 
   my $parser = new MIME::Parser;
-  $parser->output_dir(BASE_PATH . USER_PATH . "$extension/messages");
+  $parser->output_dir($main::CONF->get_var('VM_PATH') . USER_PATH . "$extension/messages");
   $log->debug("Exploding MIME message $soundfile.txt");
   my $entity = $parser->parse_open("$soundfile.txt");
   unlink("$soundfile.txt");
@@ -205,7 +205,7 @@ sub recreate_message($$$)
       ### Kevin: The database insert code goes here.
       ###
       use OpenUMS::DbUtils ; 
-       my $message_path = BASE_PATH . USER_PATH . "$extension/messages/"; 
+       my $message_path = $main::CONF->get_var('VM_PATH') . USER_PATH . "$extension/messages/"; 
        my $statement = qq{SELECT count(*) from VM_Messages WHERE message_wav_file = '$file' }; 
        my @row_ary  = $dbh->selectrow_array($statement); 
        ## if it doesn't exist, we'll create the db record

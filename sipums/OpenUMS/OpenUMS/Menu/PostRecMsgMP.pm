@@ -1,5 +1,5 @@
 package OpenUMS::Menu::PostRecMsgMP; 
-### $Id: PostRecMsgMP.pm,v 1.1 2004/07/20 02:52:15 richardz Exp $
+### $Id: PostRecMsgMP.pm,v 1.2 2004/08/11 03:32:27 kenglish Exp $
 #
 # RecMsgMP.pm
 #
@@ -45,16 +45,16 @@ sub _play_menu() {
      $log->debug("[PostRecMsgMP.pm] message_file = $message_file, " . TEMP_PATH . $message_file);
      $sound = TEMP_PATH . $message_file; 
   }  else {
-     my $max_duration = $main::GLOBAL_SETTINGS->get_var('MESSAGE_TIMEOUT') ; 
-     my $file_duration  = OpenUMS::Common::file_duration($message_file, BASE_PATH . TEMP_PATH ) ; 
+     my $max_duration = $main::CONF->get_var('MESSAGE_TIMEOUT') ; 
+     my $file_duration  = OpenUMS::Common::file_duration($message_file, $main::CONF->get_var('VM_PATH') . TEMP_PATH ) ; 
 
      my $menuSounds = $self->{SOUNDS_ARRAY};
      
      $log->debug("[PostRecMsgMP.pm]  file_duration = $file_duration, max_duration = $max_duration");
      if ($file_duration >= $max_duration ) { 
-        $sound =  PROMPT_PATH . $menuSounds->{M}->[1]->{sound_file}  ;
+        $sound =  OpenUMS::Common::get_prompt_sound($menuSounds->{M}->[1]->{sound_file})  ;
      } else {
-        $sound =  PROMPT_PATH . $menuSounds->{M}->[0]->{sound_file}  ;
+        $sound =  OpenUMS::Common::get_prompt_sound( $menuSounds->{M}->[0]->{sound_file})  ;
      } 
   }
   $log->debug("[PostRecMsgMP] will play sound $sound");
@@ -92,8 +92,8 @@ sub validate_input {
     my $valid = $self->SUPER::validate_input(); 
     if ($valid )  { 
        my $menuOptions =  $self->{MENU_OPTIONS} ;
-       my $max_duration = $main::GLOBAL_SETTINGS->get_var('MESSAGE_TIMEOUT') ; 
-       my $file_duration  = OpenUMS::Common::file_duration($message_file, BASE_PATH . TEMP_PATH ) ; 
+       my $max_duration = $main::CONF->get_var('MESSAGE_TIMEOUT') ; 
+       my $file_duration  = OpenUMS::Common::file_duration($message_file, $main::CONF->get_var('VM_PATH') . TEMP_PATH ) ; 
 
        if ($menuOptions->{$input}->{item_action} eq 'APPMSG' &&  $file_duration >= $max_duration){
           $valid = 0 ; 
@@ -119,7 +119,7 @@ sub process {
      $user->save_message();
   } elsif ($item_action =~ /^CANCELMSG/) { 
      $user->clear_message_file();
-     $self->{CTPORT}->play(PROMPT_PATH . "messagecanceled.vox"); 
+     $self->{CTPORT}->play(OpenUMS::Common::get_prompt_sound( "messagecanceled")); 
   } 
   if ($self->post_opt() =~ /^PLAYMSG/) {
      $next_id = $self->{MENU_OPTIONS}->{DEFAULT}->{dest_id} ;

@@ -23,6 +23,7 @@ CTPORT_LIBS = Telephony/CTPortJr.pm Telephony/SemsIvr.pm
 
 DELIVER_MAIL = bin/delivermail
 ADD_VM_USER = bin/addvmuser
+ADD_VM_USER = bin/deletevmuser
 
 LIBS = $(OPENUMS_LIBS) $(MENU_LIBS) $(OBJ_LIBS)
 

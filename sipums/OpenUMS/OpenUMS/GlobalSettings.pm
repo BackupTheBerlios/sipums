@@ -1,5 +1,5 @@
 package OpenUMS::GlobalSettings;
-### $Id: GlobalSettings.pm,v 1.3 2004/08/01 20:06:13 kenglish Exp $
+### $Id: GlobalSettings.pm,v 1.4 2004/08/11 03:32:27 kenglish Exp $
 # GlobalSettings.pm
 #
 # OpenUMS's global setting program
@@ -25,12 +25,13 @@ use warnings;
 
 use Date::Calc;
 use OpenUMS::Common;
+use OpenUMS::Config;
 use OpenUMS::Log;
 use Exporter;
 
-our $GLOBAL_SETTINGS;
+our $CONF;
 our @ISA = ("Exporter");
-our @EXPORT = qw($GLOBAL_SETTINGS);
+our @EXPORT = qw($CONF);
 
 
 =pod
@@ -79,7 +80,12 @@ sub load_settings($) {
   $sth->execute();
   my %settings; 
   while (my ($name, $val) = $sth->fetchrow_array() ) {
-    $settings{$name} = $val; 
+    if ($name =~ /VM_PATH/) { 
+      $settings{$name} = BASE_PATH . $val . "/" ; 
+      $log->debug("$name = $settings{$name}"); 
+    } else {  
+      $settings{$name} = $val; 
+    }
   } 
   $self->{GLOBAL_SETTINGS} = \%settings; 
   $dbh->disconnect(); 
@@ -97,8 +103,8 @@ sub get_var{
 }
 
 BEGIN {
-  if (!defined($GLOBAL_SETTINGS)) {
-      $GLOBAL_SETTINGS = new OpenUMS::GlobalSettings;
+  if (!defined($CONF)) {
+      $CONF = new OpenUMS::GlobalSettings;
   }
   $SIG{CHLD} = 'IGNORE';
 }

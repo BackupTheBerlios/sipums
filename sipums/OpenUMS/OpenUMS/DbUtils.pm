@@ -1,5 +1,5 @@
 package OpenUMS::DbUtils;
-### $Id: DbUtils.pm,v 1.2 2004/08/01 20:06:13 kenglish Exp $
+### $Id: DbUtils.pm,v 1.3 2004/08/11 03:32:27 kenglish Exp $
 #
 # DbUtils.pm
 #
@@ -363,7 +363,7 @@ sub delete_user {
 
     if ($dir_flag) {
       ## they want to delete the user's directory too
-      my $dir = BASE_PATH . USER_PATH . $ext ; 
+      my $dir = $main::CONF->get_var('VM_PATH') . USER_PATH . $ext ; 
       print STDERR "dir=$dir \n";
       my $val = `rm -R $dir` ; 
       print STDERR "delete dir = $val\n";
@@ -450,15 +450,16 @@ sub reset_password {
 #################################
 sub update_sound_file {
   my ($dbh , $file_id, $file, $path) = @_; 
-  my $new_file = "sound_file_$file_id.vox" ; 
+  my $new_file = "sound_file_$file_id.wav" ; 
 
-  $log->debug( "moving ... $path$file " . BASE_PATH . PROMPT_PATH ."$new_file\n" );  
   if (!(-e "$path$file") )  {
      ## if the file don't exist, return it...
      return 0; 
   } 
+  my $new_sound_full_path = OpenUMS::Common::get_prompt_sound($new_file ) ;  
+  $log->debug( "moving ... $path$file $new_sound_full_path" );
 
-  move("$path$file", BASE_PATH . PROMPT_PATH ."$new_file");
+  move("$path$file", $new_sound_full_path); 
   my $upd = qq{ UPDATE sound_files set sound_file =  '$new_file' WHERE file_id = $file_id }; 
   my $affected = $dbh->do($upd)  ; 
 
@@ -477,13 +478,14 @@ sub add_sound_file {
 
   my $file_id = $dbh->{'mysql_insertid'};
 
-  my $new_file = "sound_file_$file_id.vox" ;
+  my $new_file = "sound_file_$file_id.wav" ;
   if (!(-e "$path$file") )  {
      ## if the file don't exist, return it...
      return 0;
   }
+  $new_file = OpenUMS::Common::get_prompt_sound($new_file) ;  
 
-  move("$path$file", BASE_PATH . PROMPT_PATH ."$new_file");
+  move("$path$file", $new_file); 
   $log->debug( "add_sound_file: new_file  = $new_file " );
 
   my $upd = qq{ UPDATE sound_files SET sound_file =  '$new_file' WHERE file_id = $file_id };
@@ -502,37 +504,36 @@ sub add_sound_file {
 sub save_new_greeting {
   my ($dbh , $box, $file, $path) = @_; 
 
-  my $new_file = "custom_aa_$box.vox" ; 
-  $log->debug( "moving ... $path$file " . BASE_PATH . PROMPT_PATH ."$new_file\n" );  
+  my $new_file = "custom_aa_$box.wav" ; 
   if (!(-e "$path$file") )  {
      ## if the file don't exist, return it...
      return 0; 
   } 
-  my $sql = qq{SELECT sound_file from menu_sounds 
+  my $sql = qq{SELECT sound_file FROM menu_sounds 
                WHERE menu_id = $box 
                AND order_no = 1 
                AND sound_type = 'M' } ; 
   my @row_ary  = $dbh->selectrow_array($sql);
   my $old_sound_file = $row_ary[0]; 
    
-  if (-e (BASE_PATH . PROMPT_PATH . "$old_sound_file" ) ) { 
+  if (-e (OpenUMS::Common::get_prompt_sound("$old_sound_file") ) ) { 
      my $ts = OpenUMS::Common::get_timestamp(); 
-     # move(BASE_PATH . PROMPT_PATH . "$old_sound_file", BASE_PATH . PROMPT_PATH ."$old_sound_file.$ts.bak");
   }
+  $new_file = OpenUMS::Common::get_prompt_sound($new_file); 
+  move("$path$file", $new_file);
 
-  move("$path$file", BASE_PATH . PROMPT_PATH ."$new_file");
-
+  my  $affected = 0; 
   if (!$old_sound_file) {
      # we need to create.... 
      my $ins = qq{INSERT INTO sound_files values (0, '$new_file', 'CUstom Sound for box $box', 0) };
-     my $affected = $dbh->do($ins)  ; 
+     $affected = $dbh->do($ins)  ; 
      $ins = qq{REPLACE INTO menu_sounds (menu_id, sound_title, sound_file, order_no , sound_type)
         VALUES ($box, 'Greeting for box $box', '$new_file',1,'M') } ; 
      $affected = $dbh->do($ins)  ; 
   } else { 
      ## we just update ...
      my $upd = qq{ UPDATE menu_sounds set sound_file =  '$new_file' WHERE menu_id = $box and order_no = 1 and sound_type = 'M' }; 
-     my $affected = $dbh->do($upd)  ; 
+     $affected = $dbh->do($upd)  ; 
   }
   return ; 
 }
@@ -547,7 +548,7 @@ sub save_new_greeting {
 #     return 0; 
 #  } 
 #  
-#  move("$path$file", BASE_PATH . "$new_path$new_file");
+#  move("$path$file", $main::CONF->get_var('VM_PATH') . "$new_path$new_file");
 #  # we need to set all others as inactive... and bump up their number
 #  
 #

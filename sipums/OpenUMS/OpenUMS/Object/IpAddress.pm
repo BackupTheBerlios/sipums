@@ -148,9 +148,9 @@ sub get_sound  {
   for (my $i = 0 ;  $i < length($IP); $i++ ) {
      my $num = substr($IP,$i,1);
      if ($num =~ /[0-9]/) {
-       $wavs[$i] = PROMPT_PATH . "$num.vox"
+       $wavs[$i] = OpenUMS::Common::get_prompt_sound($num); 
      } else {
-       $wavs[$i] = PROMPT_PATH . "dot.vox"
+       $wavs[$i] = OpenUMS::Common::get_prompt_sound("dot") ; 
      }
   }
                                                                                                                                                

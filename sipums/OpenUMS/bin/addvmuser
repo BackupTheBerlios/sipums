@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-### $Id: addvmuser,v 1.2 2004/08/04 04:19:57 kenglish Exp $
+### $Id: addvmuser,v 1.3 2004/08/11 03:32:27 kenglish Exp $
 #
 # addvmuser
 #
@@ -10,8 +10,8 @@ use strict;
 use warnings;
 use lib '/usr/local/openums/lib'; 
 
+use OpenUMS::GlobalSettings;
 use OpenUMS::Config;
-
 use OpenUMS::Common;
 use OpenUMS::DbUtils;
 
@@ -27,14 +27,16 @@ print_and_die() unless ($extension > 0);
 # print_and_die() unless ($first_name =~ /^[a-zA-Z]+$/);
 # print_and_die() unless ($last_name =~ /^[a-zA-Z]+$/);
 
+## get the dbh, load CONF
 my $dbh = OpenUMS::Common::get_dbh($voicemail_db);
+$CONF->load_settings($voicemail_db);
 #if ($voicemail_db ) { 
 #  $dbh->do("use $voicemail_db");
 #}
 
 print_and_die() unless defined($dbh);
 
-my ($success, $message)  = OpenUMS::Common::add_user($dbh, $extension, $first_name, $last_name);
+my ($success, $message)  = OpenUMS::Common::add_user($dbh, $extension,  $first_name, $last_name);
 
 print "($success, $message)\n"; 
 
