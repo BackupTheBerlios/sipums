@@ -12,7 +12,6 @@ Before you install openums, install all of the following perl modules. Otherwise
 Audio::Wav
   http://search.cpan.org/CPAN/authors/id/K/KG/KGJERDE/Audio-Wav-0.03.tar.gz
 
-
 Bit Vector
   http://search.cpan.org/CPAN/authors/id/S/ST/STBEY/Bit-Vector-6.3.tar.gz
 
@@ -57,6 +56,9 @@ HTML-Template-2.7 :
 CGI-Enurl-1.07
   http://search.cpan.org/CPAN/authors/id/J/JE/JENDA/CGI-Enurl-1.07.tar.gz
 
+CGI-Session-3.95
+  http://search.cpan.org/CPAN/authors/id/S/SH/SHERZODR/CGI-Session-3.95.tar.gz
+
 File-Temp-0.14
   http://search.cpan.org/~tjenness/File-Temp-0.14/
 
@@ -65,10 +67,10 @@ INSTALLATION:
 
   Warning: Don't skip anything. OpenUMS is a new project and we haven't perfected installing it yet. For the Dialogic version, we used a cd image to install openums on a new box. For the SER/Sems installation, you will have to follow each step carefully. 
   
-  1) Create the database. 
-    mysql -user -p voicemail < OpenUMS/db/voicemaildb.sql
+  1) Create your first voicemail database . 
+    mysql -user -p voicemail_db1 < OpenUMS/db/voicemaildb.sql
 
-You may need root password to do this. The best way is to install the voicemail database under the same user that is using the ser database. In our case this is the 'ser' user. The best way is to allow the ser user to create databases and run create script as ser. If you do not have root access, you should ask your sysadmin to create a database for you. Openums is intended to run in a seperate database from ser. If you are running ser with multiple domains, each domain should have it's own OpenUMS database. This will be supported in the next version.  
+You may need root password to do this. The best way is to install the 'voicemail_db1' database under the same user that is using the ser database. In our case this is the 'ser' user. The best way is to allow the ser user to create databases and run create script as ser. If you do not have root access, you should ask your sysadmin to create a database for you. Openums is intended to run in a seperate database from ser. Later in this installation, we'll show you how to use multiple voicemail dbs. 
   
   2) Install OpenUMS
   
@@ -80,7 +82,11 @@ You may need root password to do this. The best way is to install the voicemail 
 
   perl -wc /usr/local/openums/delivermail
 
-  If you get errors, the something is not installed
+  If you get errors, the something is not installed.
+  
+  NOTE: If you are using the cvs version, the delivermail file is often out of sync with, circe line 11, make sure this is changed to reflect your installation directory:
+
+   use lib qw(lib /usr/local/openums/lib);
 
   4) Configure OpenUMS & Create media directories
 
@@ -88,44 +94,79 @@ You may need root password to do this. The best way is to install the voicemail 
    The Media directories are in the Config.pm
   
    BASE_PATH          => "/var/spool/openums/";
-   
-   All media follows a simple directory structure:
 
-   /var/spool/openums/prompts/  -- Voicemail prompts, included in this package under 'prompts'
+   The BASE_PATH is the path for general openums.  You should create the following directory in it:
+
+   /var/spool/openums/prompts/  -- Global voicemail prompts, included in this package under 'prompts'
    /var/spool/openums/spool/temp -- Temp directory where messages are put
                                     WHILE they are being recorded
+  
+   Because sipums now accomodates multiple databases, the directories for users has changed. To set it up correctly, you must change the following values in the voicemail db's global_settings table:
 
-   /var/spool/openums/spool/temp -- Temp directory where messages are put
-                                    while they are being recorded
+   UPDATE global_settings SET var_value = 'voicemail_db1' WHERE var_name = 'VOICEMAIL_DB' ;
+   UPDATE global_settings SET var_value = 'vm1' WHERE var_name = 'VM_PATH' ;
+   
+   the first value will be the name of the current database, the second value will be the relative path for the user directories:
 
-   /var/spool/openums/users   -- where user messages are put
+   /var/spool/openums/vm1/users   -- where user messages are put
    
    In order for the default accounts to work 799 and 798, you must create the directory stucture for them. Every additional user will have his own directory too and it will follow the same structure. For now, make the default account directories. You can add users later with the TUI or  the web interface if you have persmissions set right. 
 
-  /var/spool/openums/users/799
-  /var/spool/openums/users/799/messages
-  /var/spool/openums/users/799/greetings
+
+  /var/spool/openums/users/vm1/799
+  /var/spool/openums/users/vm1/799/messages
+  /var/spool/openums/users/vm1/799/greetings
+  
+  THe add 'addvmuser' script will also create a database entry and a directory structure for a user.
    
-  4) Add Sems Media scripts
+  4) Modify ser database:
+	The ser database needs to be modified so that you can link subscriber numbers to mailboxes. Fields need to be added to the subscriber table and you need to create a clients table. 
+    Add the following fields to subscriber:
+  
+     ALTER TABLE subscribers ADD client_id int(10) unsigned NOT NULL default '0';
+     ALTER TABLE subscribers ADD mailbox int(5) default NULL;
+    
+    Also, add a clients table:
+
+   CREATE TABLE clients (
+    client_id int(10) unsigned NOT NULL auto_increment,
+    client_name varchar(100) NOT NULL default '',
+    reseller_flag tinyint(1) NOT NULL default '0',
+    reseller_client_id int(10) default NULL,
+    client_website varchar(200) default NULL,
+    company_logo_image varchar(100) default NULL,
+    voicemail_db varchar(40) NOT NULL default 'vm_corp_servpac_com',
+    client_main_number varchar(15) default NULL,
+    PRIMARY KEY  (client_id)
+  ) TYPE=MyISAM;
+  
+  If you are only using one voicemail db, simply create one record in the  clients table:
+   
+  INSERT INTO clients(client_id, client_name, voicemail_db,client_main_number)
+     VALUES (8000, 'My Voicemail Client', 'voicemail', '8085559595');
+  
+  Then update all of your subscribers to use this client_id:
+  
+   UPDATE subscribers SET client_id = 8000; 
+  
+  THen you should go in and set mailbox for each subscriber record. 
+
+  If you are going to use multiple voicemail databases, you will create additional records in the client table. Simply create a new database and use the voicemail db create script the voicemail table. Then add a record to the client table with the name of that value in voicemail_db.
+
+  5) Add Sems Media scripts
 
    These scripts are written to use OpenUMS unders SEMS. They are still in development. WE will answer any question you have on the mailing list.
     Under the 'scripts' directory, you find our sample scripts for using OpenUMS. Add the test.pl to your SEMS enviornment and call that number assoicated with it. You should be played back the test prompt. If this doesn't work, please contact the mailing list, we will try to help you.
 
-  5) Testing your installation
+  6) Testing your installation
 
    If you have f0llowed these directions, you should have a working openums system. The default admin accounts are 799 and 798. Bath have a default password of 9876. Once you have confirmed that the basic test works, you are ready to test openums. Do this by setting the $TEST variable to '0' in the test.pl script. Now when you call, you should be ask to leave a message for 799. During this playback, you can hit the '*' button and you will be prompted for the 799 password which is the default 9876.  Once you are in the 799, you can change it's greeting, name,etc by hitting 3. The hidden administration menu is found by pressing 4. From the Administration menu, you can add extensions and re-record system prompts. 
   
   If this doesn't work, please contact the mailing list, we will try to help you.
 
-
-    Getting Help:
-    We have made a mailing list call 'sipusm-support', feel free to subscribe. WE will monitor it and try to fix any bugs that you find in a timely fashi.
+  Getting Help:
+    We have made a mailing list call 'sipusm-support', feel free to subscribe. WE will monitor it and try to fix any bugs that you find in a timely fashion.
 
 
 Kevin English
 kevin@x5dev.com
-
-
-   
-  
-

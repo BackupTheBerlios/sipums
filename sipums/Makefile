@@ -5,6 +5,7 @@ INSTALL=/usr/bin/install
 
 DOMAIN_DIRS = $(BASEDIR)/scripts/o-matrix.org $(BASEDIR)/scripts/o-matrix.net $(BASEDIR)/scripts/o-matrix.com
 SEMS_SCRIPT= scripts/main.pl scripts/conference.pl
+MYSQL_PASSWORD='mysql_pass'
 
 default: compile
 .compiledok : compile

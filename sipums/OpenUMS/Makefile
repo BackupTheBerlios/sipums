@@ -25,6 +25,7 @@ CTPORT_LIBS = Telephony/CTPortJr.pm Telephony/SemsIvr.pm
 DELIVER_MAIL = bin/delivermail
 ADD_VM_USER = bin/addvmuser
 DEL_VM_USER = bin/deletevmuser
+SIPUMS_MYSQL_PASSORD = put_mysql_password_here
 
 LIBS = $(OPENUMS_LIBS) $(MENU_LIBS) $(OBJ_LIBS)
 
@@ -45,6 +46,7 @@ install: $(LIBS)  .compiledok
 	mkdir -p $(LIBDIR)/OpenUMS/Object
 	mkdir -p $(LIBDIR)/OpenUMS/PhoneSystem
 	mkdir -p $(LIBDIR)/Telephony
+#   replace mysql password        
 	$(INSTALL) -D -v -m 644 $(OPENUMS_LIBS) $(LIBDIR)/OpenUMS
 	$(INSTALL) -D -v -m 644 $(MENU_LIBS) $(LIBDIR)/OpenUMS/Menu
 	$(INSTALL) -D -v -m 644 $(OBJ_LIBS) $(LIBDIR)/OpenUMS/Object
@@ -53,4 +55,6 @@ install: $(LIBS)  .compiledok
 	$(INSTALL) -v -m 774 $(DELIVER_MAIL) $(BASEDIR)/
 	$(INSTALL) -v -m 774 $(ADD_VM_USER) $(BASEDIR)/
 	$(INSTALL) -v -m 774 $(DEL_VM_USER) $(BASEDIR)/
+	# remove change the password
+	perl -pi -e " s/SIPUMS_MYSQL_PASSORD/$(SIPUMS_MYSQL_PASSORD)/g; " $(LIBDIR)/OpenUMS/Config.pm
 	rm -f .compiledok
