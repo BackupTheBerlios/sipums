@@ -108,6 +108,11 @@ You may need root password to do this. The best way is to install the voicemail 
    These scripts are written to use OpenUMS unders SEMS. They are still in development. WE will answer any question you have on the mailing list.
     Under the 'scripts' directory, you find our sample scripts for using OpenUMS. Add the test.pl to your SEMS enviornment and call that number assoicated with it. You should be played back the test prompt. If this doesn't work, please contact the mailing list, we will try to help you.
 
+  5) Testing your installation
+
+   If you have f0llowed these directions, you should have a working openums system. The default admin accounts are 799 and 798. Bath have a default password of 9876. Once you have confirmed that the basic test works, you are ready to test openums. Do this by setting the $TEST variable to '0' in the test.pl script. Now when you call, you should be ask to leave a message for 799. During this playback, you can hit the '*' button and you will be prompted for the 799 password which is the default 9876.  Once you are in the 799, you can change it's greeting, name,etc by hitting 3. The hidden administration menu is found by pressing 4. From the Administration menu, you can add extensions and re-record system prompts. 
+  
+  If this doesn't work, please contact the mailing list, we will try to help you.
 
 
     Getting Help:
