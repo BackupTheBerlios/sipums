@@ -1,0 +1,42 @@
+
+<SCRIPT language='javascript'>
+  var begin_date = <TMPL_VAR name='begin_date'>; 
+  var end_date = <TMPL_VAR name='end_date'>; 
+</script>
+
+<h3>Call Details Report</h3>
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+   <TR>
+     <TD colspan=9>
+       <TABLE> <TR>
+         <TMPL_LOOP name='disp_params'>
+            <TD><B><TMPL_VAR name='title'>:</b> <TMPL_VAR name='value'> </td>
+         </TMPL_LOOP>
+       </tr></TABLE>
+     </td>
+   </TR>
+   <TR>
+     <TH><a href="user.cgi?mod=<TMPL_VAR NAME=mod>&func=<TMPL_VAR name=func>&sb1=smdr_call_type&sb2=<TMPL_VAR NAME='smdr_call_type_sb'>&<TMPL_VAR NAME=http_args>">CALL TYPE</a></TH>
+     <TH><a href="user.cgi?mod=<TMPL_VAR NAME=mod>&func=<TMPL_VAR name=func>&sb1=received_datetime&sb2=<TMPL_VAR NAME='received_datetime_sb'>&<TMPL_VAR NAME=http_args>">RECEIVED DATE</a></TH>
+     <TH><a href="user.cgi?mod=<TMPL_VAR NAME=mod>&func=<TMPL_VAR name=func>&sb1=call_init_datetime&sb2=<TMPL_VAR NAME='call_init_datetime_sb'>&<TMPL_VAR NAME=http_args>">START</a></TH>
+     <TH><a href="user.cgi?mod=<TMPL_VAR NAME=mod>&func=<TMPL_VAR name=func>&sb1=call_end_datetime&sb2=<TMPL_VAR NAME='call_end_datetime_sb'>&<TMPL_VAR NAME=http_args>">END</a></TH>
+     <TH><a href="user.cgi?mod=<TMPL_VAR NAME=mod>&func=<TMPL_VAR name=func>&sb1=station&sb2=<TMPL_VAR NAME='station_sb'>&<TMPL_VAR NAME=http_args>">EXT</a></th>
+     <TH><a href="user.cgi?mod=<TMPL_VAR NAME=mod>&func=<TMPL_VAR name=func>&sb1=number_dialed&sb2=<TMPL_VAR NAME=number_dialed_sb>&<TMPL_VAR NAME=http_args>"><TMPL_IF name='number_dialed_label'><TMPL_VAR Name='number_dialed_label'><TMPL_ELSE>NUMBER</tmpl_if></a></TH>
+     <TH><a href="user.cgi?mod=<TMPL_VAR NAME=mod>&func=<TMPL_VAR name=func>&sb1=account_number&sb2=<TMPL_VAR NAME=account_number_sb>&<TMPL_VAR NAME=http_args>">ACCOUNT</a></th>
+     <TH><a href="user.cgi?mod=<TMPL_VAR NAME=mod>&func=<TMPL_VAR name=func>&sb1=trunk_line&sb2=<TMPL_VAR NAME=trunk_line_sb>&<TMPL_VAR NAME=http_args>">TRUNK LINE</a></TH>
+     <TH><a href="user.cgi?mod=<TMPL_VAR NAME=mod>&func=<TMPL_VAR name=func>&sb1=duration&sb2=<TMPL_VAR NAME=duration_sb>&<TMPL_VAR NAME=http_args>">DURATION</a></th>
+   </tr>
+
+<TMPL_LOOP name='report'>
+<TR<TMPL_IF NAME='odd_row'>  bgcolor='eeeeee'</TMPL_IF> > 
+    <TD><TMPL_VAR NAME='smdr_call_type'></TD><TD><TMPL_VAR NAME='received_date'></TD><TD><TMPL_VAR NAME='call_init_time'></TD>
+    <TD><TMPL_VAR NAME='call_end_time'></TD><TD><TMPL_VAR NAME='station'></TD>
+    <TD><TMPL_VAR NAME='number_dialed'></TD><TD><TMPL_VAR NAME='account_number'></TD>
+    <TD><TMPL_VAR NAME='trunk_line'></TD><TD><TMPL_VAR NAME='duration'></TD>
+</TR>
+</TMPL_LOOP>
+<TR>
+  <TD colspan=3>Total : <TMPL_VAR NAME='total'></td>
+<tr>
+</table>
+<!-- <TMPL_VAR NAME=mod><TMPL_VAR name=func> -->

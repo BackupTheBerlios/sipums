@@ -1,0 +1,38 @@
+<center>
+   <h3>SMDR Station Group Members: <TMPL_VAR NAME='group_name'></h3>
+<TMPL_IF NAME=msg>
+ 
+     <font color='red'> <TMPL_VAR NAME=msg></font>
+</TMPL_IF>
+
+<FORM action='admin.cgi' method='POST' >
+  <INPUT TYPE='hidden' name='mod' VALUE="<TMPL_VAR name='mod'>">
+  <INPUT TYPE='hidden' name='func' VALUE="<TMPL_VAR name='func'>">
+  <INPUT TYPE='hidden' name='group_id' VALUE="<TMPL_VAR name='group_id'>">
+
+<TABLE border=0> 
+<TR>
+   <Th>&nbsp;&nbsp; </Th> 
+   <Th>Station</Th> 
+   <Th>First Name</Th> 
+   <Th>Last Name</Th> 
+</tr>
+<TMPL_LOOP NAME="GROUP_STATION_DATA">
+<TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+   <Td><input type=checkbox name="station" value="<TMPL_VAR NAME='station'>"> </td>
+   <Td><TMPL_VAR NAME='station'> </td>
+   <Td><TMPL_VAR NAME='first_name'> </td>
+   <Td><TMPL_VAR NAME='last_name'> </td>
+<tr>
+</TMPL_LOOP>
+<TR > <td colspan=4 align='center'>
+<input type='submit' value='Remove Selected Stations'> 
+</td></tr>
+</table>
+</form>
+
+<!-- <TMPL_VAR name='group_id'> -->
+<!-- <TMPL_VAR name='mod'> -->
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=station_search">Add New Members</a>|
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=station_groups">List All Groups</a>|
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=stations">View Station Info </a>

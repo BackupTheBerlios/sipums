@@ -1,0 +1,53 @@
+<FORM action='admin.cgi' method='GET'>
+<INPUT TYPE='hidden' name='mod' VALUE="<TMPL_VAR name='mod'>">
+<INPUT TYPE='hidden' name='func' VALUE="<TMPL_VAR name='search_func'>">
+   <TABLE>
+   <TR><TD><B>Enter Station Number, First Name or Last Name:</b></td></tr>
+   <TR><TD><input type='text' name='search_val' value="<TMPL_VAR NAME='search_val'>"><input type='submit' name='submit' value='Search'></td></tr>
+</table>
+</FORM>
+<TMPL_IF NAME=msg> 
+
+  <BR><BR>
+     <font color='red'> <TMPL_VAR NAME=msg></font>
+</TMPL_IF>
+
+<TMPL_IF NAME='SEARCH_DATA'>
+<FORM action='admin.cgi' name=add_member method='post'>
+<INPUT TYPE='hidden' name='mod' VALUE="<TMPL_VAR name='mod'>">
+<INPUT TYPE='hidden' name='func' VALUE="<TMPL_VAR name='add_func'>">
+
+<TABLE border=0> 
+<TR>
+   <Th>&nbsp;</Th> 
+   <Th>Station</Th> 
+   <Th>First Name</Th> 
+   <Th>Last Name </Th> 
+</tr>
+<TMPL_LOOP NAME="SEARCH_DATA">
+
+<TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+   <Td><input type=checkbox name="station" value="<TMPL_VAR NAME='station'>"> </td>
+   <Td><TMPL_VAR NAME='station'> </Td> 
+   <Td><TMPL_VAR NAME='first_name'> </Td> 
+   <Td><TMPL_VAR NAME='last_name'> </Td> 
+</tr>
+</TMPL_LOOP>
+</table>
+<table>
+<tr><td >
+Add to Existing Group:<BR><SELECT NAME='group_id'>
+  <TMPL_LOOP NAME="GROUP_OPTS">
+  <OPTION value="<TMPL_VAR name='group_id'>"><TMPL_VAR name='group_name'></option>
+  </TMPL_LOOP>
+</select> 
+<input type=submit name='add_to_group' value='Add'><BR>
+  OR<BR>
+Add to New Group (supply group name): <BR><INPUT TYPE='text' name='new_group_name' value=''><input type=submit name='add_new_group' value='Add'><BR>
+</td></tr>
+</table>
+<TMPL_ELSE> 
+<font color='red'>No Matches</font>
+
+</TMPL_IF>
+

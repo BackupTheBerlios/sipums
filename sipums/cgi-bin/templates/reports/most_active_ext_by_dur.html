@@ -1,0 +1,13 @@
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+    <TH>Extension</TH><TH>Duration</TH><TH>Number </th><TH>Call Type</th>
+</tr>
+   <TMPL_LOOP name='report'>
+      <TR<TMPL_IF NAME='odd_row'>  bgcolor='eeeeee'</TMPL_IF> >
+      <TD><TMPL_VAR NAME='station'><TD><TMPL_VAR Name='duration'></TD>
+      <TD><TMPL_VAR NAME='number_dialed'></TD>
+      <TD><TMPL_VAR NAME='call_type'></TD>
+      </tr>
+   </TMPL_LOOP>
+</table>
+<!-- <TMPL_VAR NAME=mod><TMPL_VAR name=func> -->

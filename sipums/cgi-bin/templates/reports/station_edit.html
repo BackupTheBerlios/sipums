@@ -1,0 +1,36 @@
+<B>Edit Station Info<BR>
+
+<FORM Action='admin.cgi' METHOD='POST'>
+
+<INPUT TYPE=hidden name="mod" VALUE="<TMPL_VAR name='mod'>">
+<INPUT TYPE=hidden name="func" VALUE="<TMPL_VAR name='func'>">
+<INPUT TYPE=hidden name="station" VALUE="<TMPL_VAR name='station'>">
+
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+   <TD colspan=2>
+<TMPL_IF name='error_message'>
+     <FONT COlOR='red'><TMPL_VAR name='error_message'></font>
+</TMPL_IF> 
+   </Td> 
+</TR>
+
+<TR>
+   <Td>Station</Td> 
+   <Td><B><TMPL_VAR NAME='station'></B>
+   </Td> 
+</TR>
+<TR>
+   <Td>First Name</b></Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="first_name" value="<TMPL_VAR name='first_name'>">  </TD>
+</TR>
+<TR>
+   <Td>Last Name</b></Td>
+   <TD><INPUT TYPE='TEXT' size=30 NAME="last_name" value="<TMPL_VAR name='last_name'>">  </TD>
+</TR>
+<TR>
+   <Td colspan=2><INPUT TYPE='submit' name='submit' value='Save'>&nbsp;&nbsp;<Input type='button' onClick='javascript:history.go(-1)' value='Cancel' ></Td>
+</TR>
+
+</TABLE>
+</FORM>

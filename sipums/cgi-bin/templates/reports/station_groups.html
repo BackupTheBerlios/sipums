@@ -1,0 +1,29 @@
+<center>
+   <B>SMDR Station Groups</b>
+<TMPL_IF NAME=msg> 
+  <BR><BR>
+     <font color='red'> <TMPL_VAR NAME=msg></font>
+</TMPL_IF>
+
+<TABLE border=0> 
+<TR>
+   <Th>Group Name</Th> 
+   <Th>&nbsp;</Th> 
+</tr>
+<TMPL_LOOP NAME="GROUP_DATA">
+
+<TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+   <Td><TMPL_VAR NAME='group_name'> 
+   <Td><TMPL_UNLESS name='everyone'><a href='admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=edit_group&group_id=<TMPL_VAR NAME='group_id'>'>edit</a> |
+    <a href='admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=delete_group_conf&group_id=<TMPL_VAR NAME='group_id'>'>delete</a>   |</TMPL_UNLESS>
+ <a href='admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=list_group&group_id=<TMPL_VAR NAME='group_id'>'>list</a>   
+   </td>
+<tr>
+</TMPL_LOOP>
+<TR > <td colspan=2 align='center'>
+
+</td></tr>
+</table><BR>
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=station_search">Add New Members</a>|
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=station_groups">List All Groups</a>|
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=stations">View Station Info </a>

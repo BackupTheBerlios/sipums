@@ -1,0 +1,22 @@
+<FORM action='admin.cgi' method='GET'>
+<INPUT TYPE='hidden' name='mod' VALUE="<TMPL_VAR name='mod'>">
+<INPUT TYPE='hidden' name='func' VALUE="<TMPL_VAR name='func'>">
+<INPUT TYPE='hidden' name='group_id' VALUE="<TMPL_VAR name='group_id'>">
+   <TABLE>
+   <TR><TD colspan=2><B>Modify a Group</b></td></tr>
+   <TR>
+     <TD>Old Group Name</td>
+     <TD><TMPL_VAR name='old_group_name'></td>
+   </tr>
+   <TR>
+     <TD>New Group Name</td>
+     <TD><input type='text' name='new_group_name' value="<TMPL_VAR name='old_group_name'>"></td>
+   </tr>
+   <TR>
+     <TD colspan=2><input type='submit' name='submit' value='Save'>&nbsp&nbsp;</td>
+   </tr>
+</table>
+</FORM>
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=station_search">Add New Members</a>|
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=station_groups">List All Groups</a>|
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=stations">View Station Info </a>

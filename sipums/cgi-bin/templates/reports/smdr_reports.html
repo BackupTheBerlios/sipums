@@ -1,0 +1,40 @@
+<HTML>
+<HEAD> <TITLE>ConvergePro Administration Module </TITLE> 
+
+<style type="text/css">@import url("/style/style.css"); </style>
+</TITLE></HEAD>
+<Body> 
+<TABLE> 
+<Tr> <Td colspan=2> 
+  <!-- top menu/ log --> 
+  <a href='admin.cgi' border=0> <img  height='80'   src='/images/company_logo.jpg' border='0'>
+  </a>
+</td> </tr>
+<Tr> <Td align='center' valign='top' width="100" > 
+  <!-- left column--> 
+  <table> 
+     <TR> <td> Detailed Reports</a></td> </TR>
+     <TR> <td> <a href='smdr_reports.cgi?mod=Reports&func=detail_params'>Call Details</a></td> </TR>
+     <TR> <td> Summary Reports</a></td> </TR>
+     <TR> <td> <a href='smdr_reports.cgi?mod=Reports&func=extension_summary'>Extension Summary</a></td> </TR>
+     <TR> <td> <a href='smdr_reports.cgi?mod=Reports&func=group_summary'>Group Summary</a></td> </TR>
+     <TR> <td> <a href='smdr_reports.cgi?mod=Reports&func=most_active_phone_numbers'>Most Active Number</a></td> </TR>
+     <TR> <td> <a href='smdr_reports.cgi?mod=Reports&func=longest_calls'>Longest Calls</a></td> </TR>
+     <!--<TR> <td> <a href='smdr_reports.cgi?mod=Reports&func=most_active_extension'>Most Active Extension By Duration</a></td> </TR>
+     <TR> <td> <a href='smdr_reports.cgi?mod=Reports&func=most_active_extension'>Most Active Extension By Call Count</a></td> </TR> -->
+     <TR> <td> <li><a href='admin.cgi?mod=Stations'>SMDR Groups</a></td> </TR>
+     <TR> <td> <li><a href='admin.cgi'>Administration</a></td> </TR>
+     <TR> <td> <li><a href='user.cgi'>My Information</a></td> </TR>
+     <TR> <td> <li><a href='logout.cgi'>Sign Out</a></td> </TR>
+   </table> 
+</td> 
+
+<Td align='center' valign='top'>
+  <TMPL_VAR NAME=RIGHT_COL>
+</td> </tr>
+
+
+
+</TABLE>
+</Body> 
+</HTML> 

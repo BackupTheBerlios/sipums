@@ -1,0 +1,37 @@
+
+
+<H3>Extension Summary Report</h3>
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TMPL_LOOP name='report'>
+<TR>
+   <Td COLSPAN=3>Date: <TMPL_VAR NAME=received_date> </td>
+</tr>
+<TR>
+    <TH>Group Name</TH>
+    <TH>Call Count</TH>
+    <TH>Average Duration</TH>
+    <TH>Incoming</th>
+    <th>Outgoing</th>
+    <th>Xfers</TH>
+    <th>Blocked</th>
+</tr>
+   <TMPL_LOOP name='date_report'>
+      <TR<TMPL_IF NAME='odd_row'>  bgcolor='eeeeee'</TMPL_IF> >
+      <TD><a href="smdr_reports.cgi?mod=<TMPL_VAR name=mod>&func=extension_summary&group_id=<TMPL_VAR name=group_id>&date=<TMPL_VAR name=date>"><TMPL_VAR NAME='group_name'></a></TD>
+      <TD><TMPL_VAR NAME='Call_Count'></td>
+      <TD><TMPL_VAR Name='average_duration'></TD>
+      <TD><TMPL_VAR NAME='incoming_sum'></TD>
+      <TD><TMPL_VAR NAME='outgoing_sum'></td>
+      <TD><TMPL_VAR Name='xfered_sum'></TD>
+      <TD><TMPL_VAR Name='blocked_sum'></TD>
+      </tr>
+   </TMPL_LOOP>
+</TMPL_LOOP>
+<TR>
+   <Td COLSPAN=3 align=center><TMPL_IF name='prev_date'><a href="smdr_reports.cgi?mod=<TMPL_VAR name=mod>&func=<TMPL_VAR name=func>&date=<TMPL_VAR name='prev_date'>">prev</a>&nbsp;&nbsp;</TMPL_IF> 
+     <TMPL_IF name='next_date'> <a href="smdr_reports.cgi?mod=<TMPL_VAR name=mod>&func=<TMPL_VAR name=func>&date=<TMPL_VAR name='next_date'>">next</a></TMPL_IF>
+
+
+</td>
+</tr>
+</table>

@@ -1,0 +1,8 @@
+start_date = <TMPL_VAR Name='start_date'><BR>
+end_date = <TMPL_VAR Name='end_date'><BR>
+url_param = <TMPL_VAR Name='url_params'>
+
+<FORM action='smdr_reports.cgi?<TMPL_VAR NAME=url_params>'>
+  <INPUT TYPE='hidden' name='url_params' value='<TMPL_VAR NAME=url_params>' > 
+  <input type='submit'>
+</FORM>

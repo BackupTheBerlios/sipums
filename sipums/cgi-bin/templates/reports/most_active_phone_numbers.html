@@ -1,0 +1,29 @@
+<TABLE border=1 celpadding=3 cellspacing=5 > 
+  <TR><TD valign=top>
+   <h3>OutGoing Calls</h3>
+  <TABLE>
+    <TR>
+        <TH>Number</TH><TH>Call Count</TH><TH>Call Type</th>
+    </tr>
+   <TMPL_LOOP name='out_report'>
+      <TR<TMPL_IF NAME='odd_row'>  bgcolor='eeeeee'</TMPL_IF> >
+      <TD><TMPL_VAR NAME='number_dialed'></TD><TD><TMPL_VAR NAME='count_dialed'><TD><TMPL_VAR Name='smdr_call_type'></TD>
+      </tr>
+   </TMPL_LOOP>
+  </table>
+  </td><td valign=top>
+   <h3>Incoming Calls</h3>
+  <TABLE>
+    <TR>
+        <TH>Caller Id</TH><TH>Call Count</TH><TH>Call Type</th>
+    </tr>
+   <TMPL_LOOP name='in_report'>
+      <TR<TMPL_IF NAME='odd_row'>  bgcolor='eeeeee'</TMPL_IF> >
+      <TD><TMPL_VAR NAME='number_dialed'></TD><TD><TMPL_VAR NAME='count_dialed'><TD><TMPL_VAR Name='smdr_call_type'></TD>
+      </tr>
+   </TMPL_LOOP>
+  </table>
+  </td><tr>
+  
+<table>
+<!-- <TMPL_VAR NAME=mod><TMPL_VAR name=func> -->

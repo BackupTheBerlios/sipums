@@ -1,0 +1,15 @@
+
+<H3> TOP 20 LONGEST CALLS</H3>
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+<TR>
+    <TH>Extension</TH><TH>Number</TH><TH>Call Type</TH><TH>Call Duration</th>
+</tr>
+   <TMPL_LOOP name='report'>
+      <TR<TMPL_IF NAME='odd_row'>  bgcolor='eeeeee'</TMPL_IF> >
+      <TD><TMPL_VAR NAME='station'></TD>
+      <TD><TMPL_VAR NAME='number_dialed'></TD><TD><TMPL_VAR Name='call_type'></TD>
+      <TD><TMPL_VAR NAME='duration'></TD>
+      </tr>
+   </TMPL_LOOP>
+</table>
+<!-- <TMPL_VAR NAME=mod><TMPL_VAR name=func> -->

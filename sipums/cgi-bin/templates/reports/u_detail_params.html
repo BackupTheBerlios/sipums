@@ -1,0 +1,95 @@
+<script language="JavaScript1.2" src="/js-lib/tjmlib.js"></script>
+<script language="JavaScript1.2" src="/js-lib/calendar.js"></script>
+<script language="JavaScript1.2">
+<!--
+// fixPosition() attaches the element named eltname
+// to an image named eltname+'Pos'
+//
+function fixPosition(divname) {
+ divstyle = getDivStyle(divname);
+ positionerImgName = divname + 'Pos';
+ // hint: try setting isPlacedUnder to false
+ isPlacedUnder = false;
+ if (isPlacedUnder) {
+  setPosition(divstyle,positionerImgName,true);
+ } else {
+  setPosition(divstyle,positionerImgName)
+ }
+}
+                                                                                                                                               
+function toggleDatePicker(eltName,formElt) {
+  var x = formElt.indexOf('.');
+  var formName = formElt.substring(0,x);
+  var formEltName = formElt.substring(x+1);
+  newCalendar(eltName,document.forms[formName].elements[formEltName]);
+  toggleVisible(eltName);
+}
+                                                                                                                                               
+// fixPositions() puts everything back in the right place after a resize.
+function fixPositions()
+{
+ // add a fixPosition call here for every element
+ // you think might get stranded in a resize/reflow.
+ fixPosition('daysOfMonth');
+ fixPosition('daysOfMonth2');
+}
+                                                                                                                                               
+// -->
+</script>
+
+<FORM name="date" action='user.cgi' method='GET'>
+  <INPUT TYPE='hidden' name='mod' value='<TMPL_VAR NAME=mod>'>
+  <INPUT TYPE='hidden' name='func' value='<TMPL_VAR NAME=func>'>
+<TABLE border=0 celpadding=3 cellspacing=5 > 
+   <TR>
+     <TD colspan=2>SMDR Detail Report</TD>
+   </tr>
+   <TR><td colspan=2><input type='radio' name='date_opt_sel' value='date_opt' CHECKED>Use Date Options</td><td>
+   <TR><td>Date Option:</td><td>
+   <select NAME='date_opt'> 
+     <option VALUE="any" >Any Day</option>
+     <option VALUE="today" >Today</option>
+     <option VALUE="yesterday" >Yesterday</option>
+     <option VALUE="thisweek" >This Week</option>
+     <option VALUE="lastweek" >Last Week</option>
+     <option VALUE="thismonth" >This Month</option>
+   </select>
+   </td>
+   <TR><TD colspan=2><B>OR</b>
+   <TR><td colspan=2><input type='radio' name='date_opt_sel' value='date_params'>Use Date Parameters</td><td>
+   </TR>
+   <TR>
+     <TD>Start Date </td>
+     <td><input name='begin_received_date' size="10" value="<TMPL_VAR name='begin_received_date'>"> <img onmouseup="toggleDatePicker('daysOfMonth','date.begin_received_date')" id=daysOfMonthPos name=daysOfMonthPos width=19 height=19 src="/images/calendaricon.gif" align=absmiddle border=0 alt="date picker"><div id="daysOfMonth" style="position:absolute;"></div></td>
+   </tr>
+   <TR>
+     <TD>End Date </td>
+     <td><input name='end_received_date' size="10" value="<TMPL_VAR name='end_received_date'>"> <img onmouseup="toggleDatePicker('daysOfMonth2','date.end_received_date')" id="daysOfMonth2Pos" name='daysOfMonth2Pos' width=19 height=19 src="/images/calendaricon.gif" align=absmiddle border=0 alt="date picker"><div id="daysOfMonth2" style="position:absolute;"></div></td>
+   </tr>
+   <TR>
+     <TD COLSPAN=2><HR> </td>
+   </tr>
+   <TR>
+      <TD>Number Dialed</td>
+      <td><INPUT name='number_dialed' value='<TMPL_VAR name=number_dialed>'></td>
+   </tr>
+  <TR>
+      <TD>Call Type</td>
+      <td><SELECT name='smdr_call_type'>
+          <TMPL_LOOP name='smdr_call_types'>
+          <option value="<TMPL_VAR NAME='smdr_call_type'>" <TMPL_IF NAME='sel'>SELECTED</TMPL_IF>><TMPL_VAR NAME='smdr_call_type'></option>
+          </TMPL_LOOP>
+          </SELECT>
+   </tr>
+
+
+   <tr><td>Sort By</td>
+   <td><SELECT name='sb1'>
+    <TMPL_LOOP name='sb'>
+    <option value="<TMPL_VAR NAME='field_name'>" <TMPL_IF NAME='sel'>SELECTED</TMPL_IF>><TMPL_VAR NAME='field_desc'></option> 
+    </TMPL_LOOP>
+           </SELECT>
+    
+   <tr> <TD COLSPAN=2><INPUT TYPE='submit' name='submit' value='Run Report'> </td></tr>
+</table>
+</FORM>

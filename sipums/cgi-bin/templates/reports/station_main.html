@@ -1,0 +1,33 @@
+<center>
+   <B>SMDR Stations </b>
+<TMPL_IF NAME=msg> 
+  <BR><BR>
+     <font color='red'> <TMPL_VAR NAME=msg></font>
+</TMPL_IF>
+<!--<BR><BR>
+   <a href='admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=add_user'>Add a New User/Extension to Voicemail</a>
+<BR><BR>
+-->
+
+
+<TABLE border=0> 
+<TR>
+   <Th>Station</Th> 
+   <Th>First Name</Th> 
+   <Th>Last Name </Th> 
+   <Th>&nbsp;</Th> 
+</tr>
+<TMPL_LOOP NAME="STATION_DATA">
+
+<TR <TMPL_IF NAME='odd_row'> bgcolor='eeeeee'</TMPL_IF> >
+   <Td><TMPL_VAR NAME='station'> </Td> 
+   <Td><TMPL_VAR NAME='first_name'> </Td> 
+   <Td><TMPL_VAR NAME='last_name'> </Td> 
+   <Td><a href='admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=edit_station&station=<TMPL_VAR NAME='station'>'>edit</a> </td>
+<tr>
+</TMPL_LOOP>
+</table><BR>
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=station_search">Add New Members</a>|
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=station_groups">List All Groups</a>|
+<a href="admin.cgi?mod=<TMPL_VAR NAME='mod'>&func=stations">View Station Info </a>
+
