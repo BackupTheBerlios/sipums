@@ -82,18 +82,18 @@ $CONF->load_settings($client_vm_db);
 
   $log->debug("User $ser_to is extension $extension ");
 
-  my $TEST = 0 ; 
-   if ($TEST){ 
-
-      $ctport->play("/var/spool/openums/prompts/7.wav /var/spool/openums/prompts/2.wav /var/spool/openums/prompts/3.wav /var/spool/openums/prompts/3.wav /var/spool/openums/prompts/4.wav /var/spool/openums/prompts/5.wav /var/spool/openums/prompts/6.wav /var/spool/openums/prompts/7.wav /var/spool/openums/prompts/8.wav /var/spool/openums/prompts/9.wav /var/spool/openums/prompts/1000.wav");
-
-      my $keys = $ctport->collect(5,10); 
-      $ctport->play("/var/spool/openums/prompts/goodbye.wav"); 
-      $log->debug("GOT BACK $keys ");
-
-     sleep(10);
-     exit ;
-  } 
+#  my $TEST = 0 ; 
+#   if ($TEST){ 
+#
+#      $ctport->play("/var/spool/openums/prompts/7.wav /var/spool/openums/prompts/2.wav /var/spool/openums/prompts/3.wav /var/spool/openums/prompts/3.wav /var/spool/openums/prompts/4.wav /var/spool/openums/prompts/5.wav /var/spool/openums/prompts/6.wav /var/spool/openums/prompts/7.wav /var/spool/openums/prompts/8.wav /var/spool/openums/prompts/9.wav /var/spool/openums/prompts/1000.wav");
+#
+#      my $keys = $ctport->collect(5,10); 
+#      $ctport->play("/var/spool/openums/prompts/goodbye.wav"); 
+#      $log->debug("GOT BACK $keys ");
+#
+#     sleep(10);
+#     exit ;
+#  } 
  ## this figures out what menu to play
  my $action = 'auto_attendant';  ## default is always auto_attendant
  if  (!$extension || $main_number_flag) {
@@ -143,15 +143,6 @@ exit;
 #playrec();                       
 
 
-sub get_dbh() {
- 
-  my $dsn = 'DBI:mysql:database=ser;host=localhost';
-  my $user = "ser";
-  my $password = "olseh";
-  syslog('info', "conneting to ser db...");
-  my $dbh = DBI->connect($dsn, $user, $password) || die "Database connection not made: $DBI::errstr";
- 
-}
 sub get_user_domain {
   my $ser_from  = shift ; 
   $ser_from =~ s/^<sip://g;

@@ -142,15 +142,6 @@ exit;
 #playrec();                       
 
 
-sub get_dbh() {
- 
-  my $dsn = 'DBI:mysql:database=ser;host=localhost';
-  my $user = "ser";
-  my $password = "olseh";
-  syslog('info', "conneting to ser db...");
-  my $dbh = DBI->connect($dsn, $user, $password) || die "Database connection not made: $DBI::errstr";
- 
-}
 sub get_user_domain {
   my $ser_from  = shift ; 
   $ser_from =~ s/^<sip://g;

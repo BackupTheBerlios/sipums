@@ -98,16 +98,3 @@ Telephony::SemsIvr::play("/var/spool/openums/prompts/goodbye.wav");
 
 #playrec();                       
 
-
-
-sub get_dbh() {
- 
-  my $dsn = "DBI:mysql:database=" . "ser" . ";host=localhost";
-  my $user = "ser";
-  my $password = "olseh";
-  syslog('info', "connectiinh ....");
-  my $dbh = DBI->connect($dsn, $user, $password) || die "Database connection not made: $DBI::errstr";
-  syslog('info', "connecting to db....");
- 
-}
-
